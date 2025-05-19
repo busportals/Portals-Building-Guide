@@ -44,7 +44,7 @@ jobs:
           # Strip surrounding JSON quotes
           # Build JSON payload with full description
           PAYLOAD=$(jq -nc \
-            --arg username "GitBook" \
+            --arg username "Portals" \
             --arg title "Building Guide Update" \
             --arg url "$URL" \
             --arg desc "$MESSAGE" \
