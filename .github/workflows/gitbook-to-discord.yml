@@ -40,15 +40,13 @@ jobs:
           RAW_ESCAPED=${RAW_MESSAGE#\"}
           RAW_ESCAPED=${RAW_ESCAPED%\"}
           MESSAGE=$(printf '%b' "$RAW_ESCAPED")
-          URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
           # Strip surrounding JSON quotes
           # Build JSON payload with full description
           PAYLOAD=$(jq -nc \
             --arg username "Portals" \
             --arg title "Building Guide Update" \
-            --arg url "$URL" \
             --arg desc "$MESSAGE" \
-            '{"username":$username,"embeds":[{"title":$title,"url":$url,"description":$desc,"color":3066993}]}')
+            '{"username":$username,"embeds":[{"title":$title,"description":$desc,"color":3066993}]}')
           curl -H "Content-Type: application/json" \
                -d "$PAYLOAD" \
                "${{ secrets.DISCORD_WEBHOOK }}"
