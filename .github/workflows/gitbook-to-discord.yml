@@ -18,33 +18,35 @@ jobs:
           DIFF=$(sed ':a;N;$!ba;s/\n/\\n/g' diff.txt)
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
 
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install openai
+
       - name: Generate human-friendly summary
         id: ai_summary
-        uses: openai/openai-action@v1
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        with:
-          model: gpt-4
-          prompt: |
-            You are a helpful assistant summarizing updates to GitBook documentation. For each change:
-            - Identify the specific section or feature affected by inferring from filenames or diff content.
-            - Write a single, clear sentence describing the update, mentioning the section name.
-            Present summaries as bullet points.
-            Diff:
-            ${{ steps.diff.outputs.diff }}
-          max_tokens: 200
-          temperature: 0.3
-
-      - name: Prepare summary
-        id: prepare_summary
+          DIFF: ${{ steps.diff.outputs.diff }}
         run: |
-          MESSAGE="${{ steps.ai_summary.outputs.completion }}"
-          MESSAGE_JSON=$(jq -Rs . <<< "$MESSAGE")
-          echo "message=$MESSAGE_JSON" >> $GITHUB_OUTPUT
+          python3 - << 'EOF' > summary.txt
+import os, openai
+diff = os.environ["DIFF"]
+openai.api_key = os.environ["OPENAI_API_KEY"]
+response = openai.ChatCompletion.create(
+    model="gpt-4",
+    messages=[{"role":"system","content":"You are a helpful assistant summarizing updates to GitBook documentation."},
+              {"role":"user","content":f"Summarize the following changes as bullet points, one sentence each:\\n{diff}"}],
+    temperature=0.3,
+    max_tokens=200
+)
+print(response.choices[0].message.content.strip())
+EOF
+          echo "message=$(jq -Rs . < summary.txt)" >> $GITHUB_OUTPUT
 
       - name: Send to Discord
         env:
-          RAW_MESSAGE: ${{ steps.prepare_summary.outputs.message }}
+          RAW_MESSAGE: ${{ steps.ai_summary.outputs.message }}
         run: |
           # Strip surrounding JSON quotes and unescape newlines
           RAW_ESCAPED=${RAW_MESSAGE#\"}
