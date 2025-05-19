@@ -1,4 +1,4 @@
-name: Post GitBook updates to Discord
+name: Post Building Guide updates to Discord
 
 on:
   push:
@@ -8,16 +8,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Get latest commit summary
+
+      - name: Build change summary
         id: summary
         run: |
-          SUMMARY=$(git log -1 --pretty=format:"%h: %s")
-          echo "message=$SUMMARY" >> $GITHUB_OUTPUT
+          FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+          STATS=$(git diff --stat ${{ github.event.before }} ${{ github.event.after }})
+          printf "**Changed files:**\n" > summary.md
+          for f in $FILES; do printf "• %s\n" "$f" >> summary.md; done
+          printf "\n**Stats:**\n%s" "$STATS" >> summary.md
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          cat summary.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Send to Discord
         run: |
-          payload=$(jq -c --arg title "GitBook Update" \
-                           --arg desc "${{ steps.summary.outputs.message }}" \
-                           '{username: "GitBook", embeds: [{title: $title, description: $desc}]}')
+          URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          PAYLOAD=$(jq -c \
+            --arg title "Building Guide Update" \
+            --arg url   "$URL" \
+            --arg desc  "${{ steps.summary.outputs.message }}" \
+            '{username:"GitBook", embeds:[{title:$title, url:$url, description:$desc}]}')
           curl -H "Content-Type: application/json" \
-               -d "$payload" \
+               -d "$PAYLOAD" \
                "${{ secrets.DISCORD_WEBHOOK }}"
