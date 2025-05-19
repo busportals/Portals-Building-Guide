@@ -25,13 +25,13 @@ jobs:
           echo "message=$DESC_JSON" >> $GITHUB_OUTPUT
 
       - name: Send to Discord
+        env:
+          RAW_MESSAGE: ${{ steps.summary.outputs.message }}
         run: |
-          URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-          # Read the summary output safely into a variable
-          read -r RAW_MESSAGE <<< "${{ steps.summary.outputs.message }}"
-          # Strip surrounding JSON quotes
           MESSAGE=${RAW_MESSAGE#\"}
           MESSAGE=${MESSAGE%\"}
+          URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          # Strip surrounding JSON quotes
           # Build JSON payload with full description
           PAYLOAD=$(jq -nc \
             --arg username "GitBook" \
