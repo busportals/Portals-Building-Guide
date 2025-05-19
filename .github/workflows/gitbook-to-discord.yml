@@ -42,7 +42,7 @@ jobs:
           
           # Request a summary via the new API interface
           response = client.chat.completions.create(
-              model="gpt-4",
+              model="gpt-3.5-turbo",
               messages=[
                   {"role": "system", "content": "You are a helpful assistant summarizing updates to GitBook documentation."},
                   {"role": "user", "content": f"Summarize the following changes as bullet points, one sentence each:\n{diff}"}
