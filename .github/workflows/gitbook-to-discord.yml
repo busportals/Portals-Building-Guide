@@ -28,8 +28,10 @@ jobs:
         env:
           RAW_MESSAGE: ${{ steps.summary.outputs.message }}
         run: |
-          MESSAGE=${RAW_MESSAGE#\"}
-          MESSAGE=${MESSAGE%\"}
+          # Strip surrounding JSON quotes and unescape newlines
+          RAW_ESCAPED=${RAW_MESSAGE#\"}
+          RAW_ESCAPED=${RAW_ESCAPED%\"}
+          MESSAGE=$(printf '%b' "$RAW_ESCAPED")
           URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
           # Strip surrounding JSON quotes
           # Build JSON payload with full description
@@ -38,7 +40,7 @@ jobs:
             --arg title "Building Guide Update" \
             --arg url "$URL" \
             --arg desc "$MESSAGE" \
-            '{"username":$username,"embeds":[{"title":$title,"url":$url,"description":$desc}]}')
+            '{"username":$username,"embeds":[{"title":$title,"url":$url,"description":$desc,"color":3066993}]}')
           curl -H "Content-Type: application/json" \
                -d "$PAYLOAD" \
                "${{ secrets.DISCORD_WEBHOOK }}"
