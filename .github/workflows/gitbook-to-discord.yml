@@ -1,0 +1,25 @@
+name: Post GitBook updates to Discord
+
+on:
+  push:
+    paths:
+      - 'content/**'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get latest commit summary
+        id: summary
+        run: |
+          SUMMARY=$(git log -1 --pretty=format:"%h: %s")
+          echo "message=$SUMMARY" >> $GITHUB_OUTPUT
+      - name: Send to Discord
+        run: |
+          payload=$(jq -c --arg title "GitBook Update" \
+                           --arg desc "${{ steps.summary.outputs.message }}" \
+                           '{username: "GitBook", embeds: [{title: $title, description: $desc}]}')
+          curl -H "Content-Type: application/json" \
+               -d "$payload" \
+               "${{ secrets.DISCORD_WEBHOOK }}"
