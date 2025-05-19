@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip install openai==1.30.0  # Pin specific version for stability
+          pip install openai==0.28.0  # Use legacy client without proxies issue
 
       - name: Debug OPENAI_API_KEY presence
         env:
@@ -48,15 +48,13 @@ jobs:
           fi
           python3 - << 'EOF' > summary.txt
           import os
-          from openai import OpenAI
+          import openai
 
           diff = os.environ["DIFF"]
-          api_key = os.environ["OPENAI_API_KEY"]
-
-          client = OpenAI(api_key=api_key)
+          openai.api_key = os.environ["OPENAI_API_KEY"]
 
           try:
-              response = client.chat.completions.create(
+              response = openai.ChatCompletion.create(
                   model="gpt-3.5-turbo",
                   messages=[
                       {"role": "system", "content": "You are a helpful assistant summarizing updates to GitBook documentation."},
@@ -66,7 +64,7 @@ jobs:
                   max_tokens=200
               )
               summary = response.choices[0].message.content.strip()
-          except Exception as e:
+          except openai.error.OpenAIError as e:
               summary = f"AI summary unavailable: {str(e)}"
           print(summary)
           EOF
