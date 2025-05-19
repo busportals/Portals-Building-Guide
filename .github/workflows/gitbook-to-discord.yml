@@ -32,7 +32,6 @@ jobs:
           python3 - << 'EOF' > summary.txt
           import os
           from openai import OpenAI
-          from openai.error import RateLimitError
 
           diff = os.environ["DIFF"]
           api_key = os.environ["OPENAI_API_KEY"]
@@ -50,7 +49,7 @@ jobs:
                   max_tokens=200
               )
               summary = response.choices[0].message.content.strip()
-          except RateLimitError:
+          except Exception:
               summary = ("AI summary unavailable due to rate limits. " 
                          "Here is a fallback list of changed files:\n" + 
                          diff.replace("\\n", "\n"))
