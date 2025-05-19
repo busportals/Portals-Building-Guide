@@ -42,36 +42,36 @@ jobs:
           DIFF: ${{ steps.diff.outputs.diff }}
         run: |
           python3 - << 'EOF' > summary.txt
-import os
-from openai import OpenAI
-from openai.error import RateLimitError, AuthenticationError, APIConnectionError
+          import os
+          from openai import OpenAI
+          from openai.error import RateLimitError, AuthenticationError, APIConnectionError
 
-diff = os.environ["DIFF"]
-api_key = os.environ["OPENAI_API_KEY"]
+          diff = os.environ["DIFF"]
+          api_key = os.environ["OPENAI_API_KEY"]
 
-client = OpenAI(api_key=api_key)
+          client = OpenAI(api_key=api_key)
 
-try:
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant summarizing updates to GitBook documentation."},
-            {"role": "user", "content": f"Summarize the following changes as bullet points, one sentence each:\n{diff}"}
-        ],
-        temperature=0.3,
-        max_tokens=200
-    )
-    summary = response.choices[0].message.content.strip()
-except RateLimitError:
-    summary = "AI summary unavailable due to rate limits."
-except AuthenticationError:
-    summary = "AI summary unavailable due to invalid API key."
-except APIConnectionError:
-    summary = "AI summary unavailable due to connection issues."
-except Exception as e:
-    summary = f"AI summary failed: {str(e)}"
-print(summary)
-EOF
+          try:
+              response = client.chat.completions.create(
+                  model="gpt-3.5-turbo",
+                  messages=[
+                      {"role": "system", "content": "You are a helpful assistant summarizing updates to GitBook documentation."},
+                      {"role": "user", "content": f"Summarize the following changes as bullet points, one sentence each:\n{diff}"}
+                  ],
+                  temperature=0.3,
+                  max_tokens=200
+              )
+              summary = response.choices[0].message.content.strip()
+          except RateLimitError:
+              summary = "AI summary unavailable due to rate limits."
+          except AuthenticationError:
+              summary = "AI summary unavailable due to invalid API key."
+          except APIConnectionError:
+              summary = "AI summary unavailable due to connection issues."
+          except Exception as e:
+              summary = f"AI summary failed: {str(e)}"
+          print(summary)
+          EOF
           echo "message=$(jq -Rs . < summary.txt)" >> $GITHUB_OUTPUT
 
       - name: Send to Discord
