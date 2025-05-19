@@ -11,22 +11,34 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build change summary
-        id: summary
+      - name: Get commit diff
+        id: diff
         run: |
-          FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
-          STATS=$(git diff --stat ${{ github.event.before }} ${{ github.event.after }})
-          DESC="**Changed files:**\n"
-          for f in $FILES; do
-            DESC+=$(printf "• %s\n" "$f")
-          done
-          DESC+="\n**Stats:**\n$STATS"
-          DESC_JSON=$(printf '%s' "$DESC" | jq -Rs '.')
-          echo "message=$DESC_JSON" >> $GITHUB_OUTPUT
+          git fetch --depth=0
+          git diff ${{ github.event.before }} ${{ github.event.after }} > diff.txt
+          DIFF=$(sed ':a;N;$!ba;s/\n/\\n/g' diff.txt)
+          echo "diff=$DIFF" >> $GITHUB_OUTPUT
+
+      - name: Generate human-friendly summary
+        id: ai_summary
+        uses: peter-evans/openai-gpt3-action@v1
+        with:
+          openai-token: ${{ secrets.OPENAI_API_KEY }}
+          prompt: |
+            Summarize the following GitBook update in a clear, reader-friendly style:
+            ${{ steps.diff.outputs.diff }}
+          max_tokens: 200
+
+      - name: Prepare summary
+        id: prepare_summary
+        run: |
+          MESSAGE="${{ steps.ai_summary.outputs.completion }}"
+          MESSAGE_JSON=$(jq -Rs . <<< "$MESSAGE")
+          echo "message=$MESSAGE_JSON" >> $GITHUB_OUTPUT
 
       - name: Send to Discord
         env:
-          RAW_MESSAGE: ${{ steps.summary.outputs.message }}
+          RAW_MESSAGE: ${{ steps.prepare_summary.outputs.message }}
         run: |
           # Strip surrounding JSON quotes and unescape newlines
           RAW_ESCAPED=${RAW_MESSAGE#\"}
