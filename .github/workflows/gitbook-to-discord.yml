@@ -27,11 +27,12 @@ jobs:
       - name: Send to Discord
         run: |
           URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-          RAW_MESSAGE="${{ steps.summary.outputs.message }}"
-          # strip surrounding JSON quotes
+          # Read the summary output safely into a variable
+          read -r RAW_MESSAGE <<< "${{ steps.summary.outputs.message }}"
+          # Strip surrounding JSON quotes
           MESSAGE=${RAW_MESSAGE#\"}
           MESSAGE=${MESSAGE%\"}
-          # build JSON payload safely, with parentheses and newlines handled
+          # Build JSON payload with full description
           PAYLOAD=$(jq -nc \
             --arg username "GitBook" \
             --arg title "Building Guide Update" \
