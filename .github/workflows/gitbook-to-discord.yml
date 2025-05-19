@@ -1,9 +1,7 @@
 name: Post GitBook updates to Discord
 
-on:
-  push:
-    paths:
-      - 'content/**'
++ on:
++   push:
 
 jobs:
   notify:
