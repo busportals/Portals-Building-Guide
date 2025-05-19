@@ -1,7 +1,7 @@
 name: Post GitBook updates to Discord
 
-+ on:
-+   push:
+on:
+  push:
 
 jobs:
   notify:
