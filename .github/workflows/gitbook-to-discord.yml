@@ -19,9 +19,9 @@ jobs:
           printf "**Changed files:**\n" > summary.md
           for f in $FILES; do printf "• %s\n" "$f" >> summary.md; done
           printf "\n**Stats:**\n%s" "$STATS" >> summary.md
-          echo "message<<EOF" >> $GITHUB_OUTPUT
+          printf "message<<EOF\n" >> $GITHUB_OUTPUT
           cat summary.md >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          printf "EOF\n" >> $GITHUB_OUTPUT
 
       - name: Send to Discord
         run: |
