@@ -14,14 +14,20 @@ jobs:
       - name: Get commit diff
         id: diff
         run: |
-          git diff ${{ github.event.before }} ${{ github.event.after }} > diff.txt
-          DIFF=$(sed ':a;N;$!ba;s/\n/\\n/g' diff.txt)
+          # Check if valid SHAs are available to avoid empty diff
+          if [[ -n "${{ github.event.before }}" && -n "${{ github.event.after }}" ]]; then
+            git diff ${{ github.event.before }} ${{ github.event.after }} > diff.txt
+          else
+            echo "No valid diff available" > diff.txt
+          fi
+          # Limit diff size to avoid token limits in OpenAI API
+          DIFF=$(head -c 10000 diff.txt | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip install openai
+          pip install openai==1.30.0  # Pin specific version for stability
 
       - name: Debug OPENAI_API_KEY presence
         env:
@@ -36,30 +42,36 @@ jobs:
           DIFF: ${{ steps.diff.outputs.diff }}
         run: |
           python3 - << 'EOF' > summary.txt
-          import os
-          from openai import OpenAI
-          from openai.error import RateLimitError
+import os
+from openai import OpenAI
+from openai.error import RateLimitError, AuthenticationError, APIConnectionError
 
-          diff = os.environ["DIFF"]
-          api_key = os.environ["OPENAI_API_KEY"]
+diff = os.environ["DIFF"]
+api_key = os.environ["OPENAI_API_KEY"]
 
-          client = OpenAI(api_key=api_key)
+client = OpenAI(api_key=api_key)
 
-          try:
-              response = client.chat.completions.create(
-                  model="gpt-3.5-turbo",
-                  messages=[
-                      {"role": "system", "content": "You are a helpful assistant summarizing updates to GitBook documentation."},
-                      {"role": "user", "content": f"Summarize the following changes as bullet points, one sentence each:\n{diff}"}
-                  ],
-                  temperature=0.3,
-                  max_tokens=200
-              )
-              summary = response.choices[0].message.content.strip()
-          except RateLimitError:
-              summary = "AI summary unavailable due to rate limits."
-          print(summary)
-          EOF
+try:
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant summarizing updates to GitBook documentation."},
+            {"role": "user", "content": f"Summarize the following changes as bullet points, one sentence each:\n{diff}"}
+        ],
+        temperature=0.3,
+        max_tokens=200
+    )
+    summary = response.choices[0].message.content.strip()
+except RateLimitError:
+    summary = "AI summary unavailable due to rate limits."
+except AuthenticationError:
+    summary = "AI summary unavailable due to invalid API key."
+except APIConnectionError:
+    summary = "AI summary unavailable due to connection issues."
+except Exception as e:
+    summary = f"AI summary failed: {str(e)}"
+print(summary)
+EOF
           echo "message=$(jq -Rs . < summary.txt)" >> $GITHUB_OUTPUT
 
       - name: Send to Discord
@@ -70,7 +82,8 @@ jobs:
           RAW_ESCAPED=${RAW_MESSAGE#\"}
           RAW_ESCAPED=${RAW_ESCAPED%\"}
           MESSAGE=$(printf '%b' "$RAW_ESCAPED")
-          # Strip surrounding JSON quotes
+          # Truncate message to fit Discord embed limits
+          MESSAGE=$(echo "$MESSAGE" | head -c 2000)
           # Build JSON payload with full description
           PAYLOAD=$(jq -nc \
             --arg username "Portals" \
