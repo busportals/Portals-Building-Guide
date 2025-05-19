@@ -20,19 +20,16 @@ jobs:
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
 
       - name: Generate human-friendly summary
-        id: ai_summary
-        uses: peter-evans/openai-gpt3-action@v1
+        id: explain
+        uses: captradeoff/openai-summarize-diff-action@v1.0.0
         with:
-          openai-token: ${{ secrets.OPENAI_API_KEY }}
-          prompt: |
-            Summarize the following GitBook update in a clear, reader-friendly style:
-            ${{ steps.diff.outputs.diff }}
-          max_tokens: 200
+          diff: ${{ steps.diff.outputs.diff }}
+          apikey: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Prepare summary
         id: prepare_summary
         run: |
-          MESSAGE="${{ steps.ai_summary.outputs.completion }}"
+          MESSAGE="${{ steps.explain.outputs.explanation }}"
           MESSAGE_JSON=$(jq -Rs . <<< "$MESSAGE")
           echo "message=$MESSAGE_JSON" >> $GITHUB_OUTPUT
 
