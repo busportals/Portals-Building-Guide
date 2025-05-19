@@ -16,12 +16,13 @@ jobs:
         run: |
           FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
           STATS=$(git diff --stat ${{ github.event.before }} ${{ github.event.after }})
-          printf "**Changed files:**\n" > summary.md
-          for f in $FILES; do printf "• %s\n" "$f" >> summary.md; done
-          printf "\n**Stats:**\n%s" "$STATS" >> summary.md
-          printf "message<<EOF\n" >> $GITHUB_OUTPUT
-          cat summary.md >> $GITHUB_OUTPUT
-          printf "EOF\n" >> $GITHUB_OUTPUT
+          DESC="**Changed files:**\n"
+          for f in $FILES; do
+            DESC+=$(printf "• %s\n" "$f")
+          done
+          DESC+="\n**Stats:**\n$STATS"
+          DESC_JSON=$(printf '%s' "$DESC" | jq -Rs '.')
+          echo "message=$DESC_JSON" >> $GITHUB_OUTPUT
 
       - name: Send to Discord
         run: |
