@@ -19,16 +19,25 @@ jobs:
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
 
       - name: Generate human-friendly summary
-        id: explain
-        uses: captradeoff/openai-summarize-diff-action@v1.0.0
+        id: ai_summary
+        uses: peter-evans/openai-gpt3-action@v2
         with:
-          diff: ${{ steps.diff.outputs.diff }}
-          apikey: ${{ secrets.OPENAI_API_KEY }}
+          openai-token: ${{ secrets.OPENAI_API_KEY }}
+          prompt: |
+            You are a helpful assistant summarizing updates to GitBook documentation.  For each change:
+            - Identify the specific section or feature affected (e.g., Space Dashboard, Editor, Templates) by inferring from filenames or diff content.
+            - Write a single, clear sentence describing the update, mentioning the section name (e.g., "Space Dashboard was updated to include additional documentation on templates").
+            - Provide the summary as a bullet point.
+            Diff:
+            ${{ steps.diff.outputs.diff }}
+          model: gpt-4
+          temperature: 0.3
+          max_tokens: 200
 
       - name: Prepare summary
         id: prepare_summary
         run: |
-          MESSAGE="${{ steps.explain.outputs.explanation }}"
+          MESSAGE="${{ steps.ai_summary.outputs.completion }}"
           MESSAGE_JSON=$(jq -Rs . <<< "$MESSAGE")
           echo "message=$MESSAGE_JSON" >> $GITHUB_OUTPUT
 
