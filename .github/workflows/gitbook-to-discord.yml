@@ -34,4 +34,4 @@ jobs:
             '{username:"GitBook", embeds:[{title:$title, url:$url, description:$desc}]}')
           curl -H "Content-Type: application/json" \
                -d "$PAYLOAD" \
-               "${{ secrets.DISCORD_WEBHOOK }}"
+               "https://discord.com/api/webhooks/1267257028934631564/M65rfb-d41tLgDJb7IdnrfN772IPB7XLBTH4niybVmL8uZD3uF3xavKCu4WcCpuV7sy3"
