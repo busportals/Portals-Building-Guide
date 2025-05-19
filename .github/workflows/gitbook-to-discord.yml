@@ -27,11 +27,17 @@ jobs:
       - name: Send to Discord
         run: |
           URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-          PAYLOAD=$(jq -c \
+          RAW_MESSAGE="${{ steps.summary.outputs.message }}"
+          # strip surrounding JSON quotes
+          MESSAGE=${RAW_MESSAGE#\"}
+          MESSAGE=${MESSAGE%\"}
+          # build JSON payload safely, with parentheses and newlines handled
+          PAYLOAD=$(jq -nc \
+            --arg username "GitBook" \
             --arg title "Building Guide Update" \
-            --arg url   "$URL" \
-            --arg desc  "${{ steps.summary.outputs.message }}" \
-            '{username:"GitBook", embeds:[{title:$title, url:$url, description:$desc}]}')
+            --arg url "$URL" \
+            --arg desc "$MESSAGE" \
+            '{"username":$username,"embeds":[{"title":$title,"url":$url,"description":$desc}]}')
           curl -H "Content-Type: application/json" \
                -d "$PAYLOAD" \
-               "https://discord.com/api/webhooks/1267257028934631564/M65rfb-d41tLgDJb7IdnrfN772IPB7XLBTH4niybVmL8uZD3uF3xavKCu4WcCpuV7sy3"
+               "${{ secrets.DISCORD_WEBHOOK }}"
