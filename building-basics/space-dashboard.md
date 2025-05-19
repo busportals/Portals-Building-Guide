@@ -1,3 +1,3 @@
 # Space Dashboard
 
-Select your optimal template for building.
+Select from one of the many templates to start building.
