@@ -14,7 +14,7 @@ jobs:
       - name: Get commit diff
         id: diff
         run: |
-          git fetch --depth=0
+          git fetch --prune --unshallow
           git diff ${{ github.event.before }} ${{ github.event.after }} > diff.txt
           DIFF=$(sed ':a;N;$!ba;s/\n/\\n/g' diff.txt)
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
