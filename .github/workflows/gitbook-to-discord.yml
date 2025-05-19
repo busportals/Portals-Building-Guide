@@ -26,7 +26,8 @@ jobs:
       - name: Debug OPENAI_API_KEY presence
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: echo "Key length: ${#OPENAI_API_KEY}"
+        run: |
+          echo "Key length: ${#OPENAI_API_KEY}"
 
       - name: Generate human-friendly summary
         id: ai_summary
