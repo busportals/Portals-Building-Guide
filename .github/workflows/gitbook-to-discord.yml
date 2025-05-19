@@ -41,10 +41,14 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DIFF: ${{ steps.diff.outputs.diff }}
         run: |
+          # Skip AI call if no meaningful diff
+          if [ -z "$DIFF" ] || [ "$DIFF" = "No valid diff available" ]; then
+            echo "message=$(jq -Rs . <<< \"$DIFF\")" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           python3 - << 'EOF' > summary.txt
           import os
           from openai import OpenAI
-          from openai.error import RateLimitError, AuthenticationError, APIConnectionError
 
           diff = os.environ["DIFF"]
           api_key = os.environ["OPENAI_API_KEY"]
@@ -62,14 +66,8 @@ jobs:
                   max_tokens=200
               )
               summary = response.choices[0].message.content.strip()
-          except RateLimitError:
-              summary = "AI summary unavailable due to rate limits."
-          except AuthenticationError:
-              summary = "AI summary unavailable due to invalid API key."
-          except APIConnectionError:
-              summary = "AI summary unavailable due to connection issues."
           except Exception as e:
-              summary = f"AI summary failed: {str(e)}"
+              summary = f"AI summary unavailable: {str(e)}"
           print(summary)
           EOF
           echo "message=$(jq -Rs . < summary.txt)" >> $GITHUB_OUTPUT
