@@ -34,7 +34,7 @@ jobs:
           PAYLOAD=$(jq -nc \
             --arg system "You are a helpful assistant summarizing GitBook updates." \
             --arg user "$DIFF" \
-            '{"model":"gpt-4.1","messages":[{"role":"system","content":$system},{"role":"user","content":$user}],"max_tokens":200,"temperature":0.3}')
+            '{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":$system},{"role":"user","content":$user}],"max_tokens":200,"temperature":0.3}')
           echo "DEBUG: PAYLOAD:"
           echo "$PAYLOAD"
           # Call OpenAI chat completions endpoint
