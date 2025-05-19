@@ -20,19 +20,20 @@ jobs:
 
       - name: Generate human-friendly summary
         id: ai_summary
-        uses: peter-evans/openai-gpt3-action@v2
+        uses: openai/openai-action@v1
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
-          openai-token: ${{ secrets.OPENAI_API_KEY }}
+          model: gpt-4
           prompt: |
-            You are a helpful assistant summarizing updates to GitBook documentation.  For each change:
-            - Identify the specific section or feature affected (e.g., Space Dashboard, Editor, Templates) by inferring from filenames or diff content.
-            - Write a single, clear sentence describing the update, mentioning the section name (e.g., "Space Dashboard was updated to include additional documentation on templates").
-            - Provide the summary as a bullet point.
+            You are a helpful assistant summarizing updates to GitBook documentation. For each change:
+            - Identify the specific section or feature affected by inferring from filenames or diff content.
+            - Write a single, clear sentence describing the update, mentioning the section name.
+            Present summaries as bullet points.
             Diff:
             ${{ steps.diff.outputs.diff }}
-          model: gpt-4
-          temperature: 0.3
           max_tokens: 200
+          temperature: 0.3
 
       - name: Prepare summary
         id: prepare_summary
