@@ -1,2 +1,6 @@
-# 🌊 Elemental
+---
+icon: wave
+---
+
+# Elemental
 

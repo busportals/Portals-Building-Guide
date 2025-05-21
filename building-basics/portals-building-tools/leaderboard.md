@@ -1,2 +1,6 @@
-# 🎖️ Leaderboard
+---
+icon: medal
+---
+
+# Leaderboard
 

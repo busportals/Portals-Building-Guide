@@ -1,2 +1,6 @@
-# 💣 Destructible
+---
+icon: bomb
+---
+
+# Destructible
 

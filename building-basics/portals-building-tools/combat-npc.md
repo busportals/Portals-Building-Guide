@@ -1,2 +1,6 @@
-# 🤺 Combat NPC
+---
+icon: swords
+---
+
+# Combat NPC
 
