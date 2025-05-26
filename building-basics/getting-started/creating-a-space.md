@@ -1,3 +1,7 @@
+---
+icon: laptop-code
+---
+
 # Creating a Space
 
 ### Visual Tutorial

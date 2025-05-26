@@ -4,6 +4,7 @@
 
 * [Getting Started](README.md)
   * [Creating a Space](building-basics/getting-started/creating-a-space.md)
+  * [Entering Build mode & Placing Items](building-basics/getting-started/entering-build-mode-and-placing-items.md)
 * [Space Dashboard](building-basics/space-dashboard.md)
 * [Portals Building Tools](building-basics/portals-building-tools/README.md)
   * [Image](building-basics/portals-building-tools/image.md)
