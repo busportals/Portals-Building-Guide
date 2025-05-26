@@ -20,13 +20,13 @@ We will just one multiplayer task called "door".
 
 We will setup the following trigger on the _**animated door**_.
 
-<img src="../../.gitbook/assets/image (3).png" alt="" data-size="original">&#x20;
+<img src="../../.gitbook/assets/image (4).png" alt="" data-size="original">&#x20;
 
 This will make it so when a user clicks the door  the task "door" will change from not active to active.
 
 We will setup the following trigger on the _**trigger cube**._
 
-![](<../../.gitbook/assets/image (4).png>)
+![](<../../.gitbook/assets/image (5).png>)
 
 This will make it so when a user exits the trigger cube zone the task "door" will change from active to not active, with a 1 second delay. We add the delay mainly to give users time to get away from the door.
 
@@ -34,11 +34,11 @@ This will make it so when a user exits the trigger cube zone the task "door" wil
 
 We then will add the following effects to the _**animated door.**_
 
-![](<../../.gitbook/assets/image (6).png>)
+![](<../../.gitbook/assets/image (7).png>)
 
 We setup the animation to play once at the speed and direction of -1 when the task "door" is in the not active state. This will mean the door animation will play in reverse at 100% speed, giving it the appearance of closing.
 
-<img src="../../.gitbook/assets/image (5).png" alt="" data-size="original">
+<img src="../../.gitbook/assets/image (6).png" alt="" data-size="original">
 
 We setup the animation to play once at the speed and direction of 1 when the task "door" is in the active state. This will mean the door animation will play in normally at 100% speed, giving it the opening animation.
 
