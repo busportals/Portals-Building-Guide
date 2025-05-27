@@ -117,3 +117,7 @@
     * [🎭 Change Avatar Mood](interactive-studio/effects/npc-specific-effects/change-avatar-mood.md)
     * [👁️ Show NPC](interactive-studio/effects/npc-specific-effects/show-npc.md)
     * [🫣 Hide NPC](interactive-studio/effects/npc-specific-effects/hide-npc.md)
+
+## How To
+
+* [Setup Side Scroller Camera](how-to/setup-side-scroller-camera.md)
