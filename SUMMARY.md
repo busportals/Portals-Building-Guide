@@ -117,7 +117,7 @@
     * [🎭 Change Avatar Mood](interactive-studio/effects/npc-specific-effects/change-avatar-mood.md)
     * [👁️ Show NPC](interactive-studio/effects/npc-specific-effects/show-npc.md)
     * [🫣 Hide NPC](interactive-studio/effects/npc-specific-effects/hide-npc.md)
-* [🖼️ Using Iframes](interactive-studio/using-iframes.md)
+* [🖼️ Using Iframes in Portals](interactive-studio/using-iframes-in-portals.md)
 
 ## How To
 
