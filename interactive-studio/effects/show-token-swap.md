@@ -14,11 +14,12 @@ description: 'Effect: Shows a previously hidden object.'
 
 ***
 
-| Setting       | Permitted Values                                                                                      | Description                                                                                 |
-| ------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Buy           | toggle                                                                                                | When toggled on the token swap modal will allow users to buy the token                      |
-| Sell          | toggle                                                                                                | When toggled on the token swap modal will allow users to sell the token                     |
-| token address | text string, currently requires a valid solana token CA. Only tradable tokens are currently permitted | The inputted token address will be the token available to buy and/or sell in the swap modal |
+| Setting       | Permitted Values                                                                                      | Description                                                                                                                    |
+| ------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Buy           | toggle                                                                                                | When toggled on the token swap modal will allow users to buy the token                                                         |
+| Sell          | toggle                                                                                                | When toggled on the token swap modal will allow users to sell the token                                                        |
+| token address | text string, currently requires a valid solana token CA. Only tradable tokens are currently permitted | The inputted token address will be the token available to buy and/or sell in the swap modal                                    |
+| fee wallet    | text string, enter a valid solana wallet address                                                      | Enter a solana wallet address that you can log in to Portals with. This wallet will be required to claim accumulated earnings. |
 
 ## Compatibility
 
