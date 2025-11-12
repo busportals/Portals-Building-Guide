@@ -24,17 +24,31 @@ jobs:
           DIFF=$(head -c 10000 diff.txt | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
 
+      - name: Get changed files
+        id: files
+        run: |
+          # Produce a name-status list for the commit range (e.g., A/M/R/D file.md)
+          if [[ -n "${{ github.event.before }}" && -n "${{ github.event.after }}" ]]; then
+            git diff --name-status ${{ github.event.before }} ${{ github.event.after }} > files.txt
+          else
+            echo "No files list available" > files.txt
+          fi
+          # Escape newlines for GitHub Actions outputs
+          FILES=$(head -c 5000 files.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
       - name: Generate AI summary
         id: summary
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DIFF: ${{ steps.diff.outputs.diff }}
+          FILES: ${{ steps.files.outputs.files }}
         run: |
-          # Construct OpenAI API request payload
+          # Construct OpenAI API request payload with GitBook-focused guidance
           PAYLOAD=$(jq -nc \
-            --arg system "You are a helpful assistant summarizing GitBook updates." \
-            --arg user "$DIFF" \
-            '{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":$system},{"role":"user","content":$user}],"max_tokens":200,"temperature":0.3}')
+            --arg system "You write public release notes for a GitBook documentation site (Markdown pages). Convert git changes into a concise, user‑facing 'Building Guide Update'. Rules:\n- Treat each *.md as a GitBook page, not a file.\n- Prefer page titles over filenames: use the first '# ' heading seen in the diff; otherwise derive a human title from the filename (drop '.md', replace '-'/'_' with spaces, Title Case).\n- Group items under sections: Added, Updated, Renamed, Removed (omit empty sections).\n- Focus on what changed for readers (e.g., 'Added fee wallet setting to Token Swap page'), not raw paths or code.\n- Be concise: 3–8 bullets total, under ~800 characters. No code blocks or file paths.\n- If details are unclear, say 'Minor edits to existing pages.'\n" \
+            --arg user "Changed files (name-status):\n$FILES\n\nUnified diff (may be truncated):\n$DIFF" \
+            '{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":$system},{"role":"user","content":$user}],"max_tokens":300,"temperature":0.2}')
           echo "DEBUG: PAYLOAD:"
           echo "$PAYLOAD"
           # Call OpenAI chat completions endpoint
@@ -48,7 +62,7 @@ jobs:
           # Extract the summary text
           SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
           if [ "$SUMMARY" = "null" ] || [ -z "$SUMMARY" ]; then
-            SUMMARY="AI summary unavailable; here is the diff:\n\n$DIFF"
+            SUMMARY="AI summary unavailable; here are the changed files:\n\n$FILES"
           fi
           # Output for next steps
           echo "message=$(jq -Rs . <<< \"$SUMMARY\")" >> $GITHUB_OUTPUT
