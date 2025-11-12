@@ -16,10 +16,10 @@ description: 'Effect: Displays a notification pill on the users screen.'
 
 ***
 
-| Setting           | Permitted Values | Description                                                                                   |
-| ----------------- | ---------------- | --------------------------------------------------------------------------------------------- |
-| Notification Text | String           | Type in the text you want to display in the notification.                                     |
-| Select Color      | Color Selector   | Choose a color from the color palette. This will be the background color of the notification. |
+| Setting           | Permitted Values | Description                                                                                                                                                                                                 |
+| ----------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Notification Text | String           | <p>Type in the text you want to display in the notification.<br><br>Rich text formatting for bold, italics, underline, and color can be applied by highlighting words or sentences in the notification.</p> |
+| Select Color      | Color Selector   | Choose a color from the color palette. This will be the background color of the notification.                                                                                                               |
 
 ## Compatibility
 
