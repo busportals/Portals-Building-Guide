@@ -76,16 +76,18 @@ jobs:
           pairs = {'"':'"', '“':'”', "'":"'", '‘':'’', '`':'`'}
           if s and s[0] in pairs and s.rstrip().endswith(pairs[s[0]]):
               s = s[1:-1].strip()
-          # Remove first line if it's a markdown heading
           lines = s.splitlines()
           while lines and not lines[0].strip():
               lines.pop(0)
+          # If the first non-empty line starts with a quoted section label, drop the quote
+          if lines:
+              lines[0] = re.sub(r'^\s*["“”\'`]+(Added|Updated|Renamed|Removed)\b', r'\1', lines[0])
+          # Remove first line if it's a markdown heading
           if lines and re.match(r'^\s{0,3}#{1,6}\s', lines[0]):
               lines.pop(0)
           s = "\n".join(lines).strip()
-          # One more pass for stray wrapping quotes after trimming
-          if s and s[0] in pairs and s.endswith(pairs[s[0]]):
-              s = s[1:-1].strip()
+          # Strip a dangling closing quote at very end if present
+          s = re.sub(r'["”\'`]+\s*$', '', s)
           print(s)
           PY
           )
@@ -100,11 +102,13 @@ jobs:
         env:
           RAW_MESSAGE: ${{ steps.summary.outputs.message }}
         run: |
-          # Strip surrounding JSON quotes and unescape newlines
-          RAW_ESCAPED=${RAW_MESSAGE#\"}
-          RAW_ESCAPED=${RAW_ESCAPED%\"}
-          MESSAGE=$(printf '%b' "$RAW_ESCAPED")
-          MESSAGE=$(printf '%s' "$MESSAGE" | sed -E '1s/^[[:space:]]*["“]+//; $s/["”]+[[:space:]]*$//')
+          # Decode the JSON string to raw text (handles \n and \")
+          MESSAGE=$(printf '%s' "$RAW_MESSAGE" | jq -r .)
+          # Remove leading/trailing quotes and quotes before section labels
+          MESSAGE=$(printf '%s' "$MESSAGE" | sed -E \
+            -e '1s/^[[:space:]]*["“”`]+[[:space:]]*//' \
+            -e '$s/[[:space:]]*["“”`]+[[:space:]]*$//' \
+            -e 's/(^|\n)[[:space:]]*["“]+(Added|Updated|Renamed|Removed)(:)/\1\2\3/g')
           # Truncate message to fit Discord embed limits
           MESSAGE=$(echo "$MESSAGE" | head -c 2000)
           # Build JSON payload with full description
