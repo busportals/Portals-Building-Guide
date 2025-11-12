@@ -26,6 +26,7 @@
   * [Collectible GLB](building-basics/portals-building-tools/collectible-glb.md)
   * [Leaderboard](building-basics/portals-building-tools/leaderboard.md)
   * [Elemental](building-basics/portals-building-tools/elemental.md)
+  * [Chart](building-basics/portals-building-tools/chart.md)
   * [Combat NPC](building-basics/portals-building-tools/combat-npc.md)
   * [Destructible](building-basics/portals-building-tools/destructible.md)
 * [Space Options](building-basics/space-options/README.md)
