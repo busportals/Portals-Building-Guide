@@ -46,7 +46,7 @@ jobs:
         run: |
           # Construct OpenAI API request payload with GitBook-focused guidance
           PAYLOAD=$(jq -nc \
-            --arg system "You write public release notes for a GitBook documentation site (Markdown pages). Convert git changes into a concise, user‑facing 'Building Guide Update'. Rules:\n- Treat each *.md as a GitBook page, not a file.\n- Prefer page titles over filenames: use the first '# ' heading seen in the diff; otherwise derive a human title from the filename (drop '.md', replace '-'/'_' with spaces, Title Case).\n- Group items under sections: Added, Updated, Renamed, Removed (omit empty sections).\n- Focus on what changed for readers (e.g., 'Added fee wallet setting to Token Swap page'), not raw paths or code.\n- Be concise: 3–8 bullets total, under ~800 characters. No code blocks or file paths.\n- If details are unclear, say 'Minor edits to existing pages.'\n" \
+            --arg system "You write public release notes for a GitBook documentation site (Markdown pages). Convert git changes into a concise, user‑facing 'Building Guide Update'. Rules:\n- Treat each *.md as a GitBook page, not a file.\n- Prefer page titles over filenames: use the first '# ' heading seen in the diff; otherwise derive a human title from the filename (drop '.md', replace '-'/'_' with spaces, Title Case).\n- Group items under sections: Added, Updated, Renamed, Removed (omit empty sections).\n- Focus on what changed for readers (e.g., 'Added fee wallet setting to Token Swap page'), not raw paths or code.\n- Be concise: 3–8 bullets total, under ~800 characters.\n- Do NOT wrap your answer in any quotation marks, code fences, or blockquotes.\n- Do NOT use '# ' headings; use bold for section names instead (e.g., **Added**, **Updated**), and do not restate the overall title.\n- If details are unclear, say 'Minor edits to existing pages.'\n" \
             --arg user "Changed files (name-status):\n$FILES\n\nUnified diff (may be truncated):\n$DIFF" \
             '{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":$system},{"role":"user","content":$user}],"max_tokens":300,"temperature":0.2}')
           echo "DEBUG: PAYLOAD:"
@@ -61,6 +61,14 @@ jobs:
           echo "$RESPONSE"
           # Extract the summary text
           SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+          # Sanitize summary: strip wrapping quotes/backticks and any leading markdown H1/H2
+          CLEAN="$SUMMARY"
+          CLEAN=$(printf '%s\n' "$CLEAN" | sed -E '1s/^[[:space:]]*["'\''`“”‘’]+[[:space:]]*//; $s/[[:space:]]*["'\''`“”‘’]+[[:space:]]*$//')
+          # Drop code fences if present
+          CLEAN=$(printf '%s\n' "$CLEAN" | sed '/^```.*$/d')
+          # Remove first line if it starts with a markdown heading marker
+          CLEAN=$(printf '%s\n' "$CLEAN" | awk 'NR==1 && $1 ~ /^#/{next} {print}')
+          SUMMARY="$CLEAN"
           if [ "$SUMMARY" = "null" ] || [ -z "$SUMMARY" ]; then
             SUMMARY="AI summary unavailable; here are the changed files:\n\n$FILES"
           fi
