@@ -61,14 +61,35 @@ jobs:
           echo "$RESPONSE"
           # Extract the summary text
           SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
-          # Sanitize summary: strip wrapping quotes/backticks and any leading markdown H1/H2
-          CLEAN="$SUMMARY"
-          CLEAN=$(printf '%s\n' "$CLEAN" | sed -E '1s/^[[:space:]]*["'\''`“”‘’]+[[:space:]]*//; $s/[[:space:]]*["'\''`“”‘’]+[[:space:]]*$//')
-          # Drop code fences if present
-          CLEAN=$(printf '%s\n' "$CLEAN" | sed '/^```.*$/d')
-          # Remove first line if it starts with a markdown heading marker
-          CLEAN=$(printf '%s\n' "$CLEAN" | awk 'NR==1 && $1 ~ /^#/{next} {print}')
-          SUMMARY="$CLEAN"
+          # Sanitize summary robustly with Python
+          SANITIZED=$(SUMMARY="$SUMMARY" python3 - <<'PY'
+          import os, re, sys
+          s = os.environ.get("SUMMARY","")
+          s = s.replace("\r\n","\n")
+          # Drop leading/trailing blank lines
+          s = "\n".join([ln for ln in s.splitlines() if ln is not None])
+          s = s.strip()
+          # Remove surrounding code fences if present
+          if s.startswith("```") and s.endswith("```"):
+              s = s.strip("`").strip()
+          # Remove wrapping quotes/backticks if both ends match
+          pairs = {'"':'"', '“':'”', "'":"'", '‘':'’', '`':'`'}
+          if s and s[0] in pairs and s.rstrip().endswith(pairs[s[0]]):
+              s = s[1:-1].strip()
+          # Remove first line if it's a markdown heading
+          lines = s.splitlines()
+          while lines and not lines[0].strip():
+              lines.pop(0)
+          if lines and re.match(r'^\s{0,3}#{1,6}\s', lines[0]):
+              lines.pop(0)
+          s = "\n".join(lines).strip()
+          # One more pass for stray wrapping quotes after trimming
+          if s and s[0] in pairs and s.endswith(pairs[s[0]]):
+              s = s[1:-1].strip()
+          print(s)
+          PY
+          )
+          SUMMARY="$SANITIZED"
           if [ "$SUMMARY" = "null" ] || [ -z "$SUMMARY" ]; then
             SUMMARY="AI summary unavailable; here are the changed files:\n\n$FILES"
           fi
@@ -83,6 +104,7 @@ jobs:
           RAW_ESCAPED=${RAW_MESSAGE#\"}
           RAW_ESCAPED=${RAW_ESCAPED%\"}
           MESSAGE=$(printf '%b' "$RAW_ESCAPED")
+          MESSAGE=$(printf '%s' "$MESSAGE" | sed -E '1s/^[[:space:]]*["“]+//; $s/["”]+[[:space:]]*$//')
           # Truncate message to fit Discord embed limits
           MESSAGE=$(echo "$MESSAGE" | head -c 2000)
           # Build JSON payload with full description
