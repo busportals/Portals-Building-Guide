@@ -17,4 +17,4 @@ icon: laptop-code
 5. Choose your Template
 6. Name your space
 7. Click Create New Space
-8. You will automatically be loaded into your space.\
+8. You will automatically be loaded into your space.<br>
