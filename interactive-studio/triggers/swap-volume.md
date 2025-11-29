@@ -1,5 +1,5 @@
 ---
-description: Trigger based on a users timer ending.
+description: Trigger based on a users token trading volume.
 ---
 
 # 🔊 Swap Volume
