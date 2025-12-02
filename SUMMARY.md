@@ -129,3 +129,7 @@
 
 * [Create a basic token trading space](how-to/create-a-basic-token-trading-space.md)
 * [Setup Side Scroller Camera](how-to/setup-side-scroller-camera.md)
+
+## Building Competitions
+
+* [December 2025 - Christmas Building Competition](building-competitions/december-2025-christmas-building-competition.md)
