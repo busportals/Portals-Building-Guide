@@ -1,5 +1,7 @@
 ---
 icon: snowflake
+cover: ../.gitbook/assets/christmasbanner.png
+coverY: 0
 ---
 
 # December 2025 - Christmas Building Competition
