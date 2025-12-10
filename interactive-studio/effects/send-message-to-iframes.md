@@ -6,7 +6,7 @@ description: 'Effect: Sends a text string from Portals into an iframe.'
 
 ## Overview
 
-The "Send Message to Iframes" feature enables one-way communication from Portals (via Unity) to embedded iframes. This allows Portals to send custom text strings to the iframe, which can then process or react to these messages. This complements the existing iframe-to-Portals messaging (using <mark style="color:orange;">PortalsSdk.sendMessageToUnity</mark>), providing bidirectional communication capabilities for more interactive experiences.
+The "Send Message to Iframes" feature enables one-way communication from Portals to embedded iframes. This allows Portals to send custom text strings to the iframe, which can then process or react to these messages. This complements the existing iframe-to-Portals messaging (using <mark style="color:orange;">PortalsSdk.sendMessageToUnity</mark>), providing bidirectional communication capabilities for more interactive experiences.
 
 Use cases include:
 
