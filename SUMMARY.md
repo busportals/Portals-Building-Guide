@@ -106,6 +106,7 @@
   * [🔴 Reset All Tasks](interactive-studio/effects/reset-all-tasks.md)
   * [🥇 Reset Leaderboard](interactive-studio/effects/reset-leaderboard.md)
   * [🔁 Run Trigger From Effector](interactive-studio/effects/run-trigger-from-effector.md)
+  * [🛜 Send Message to Iframes](interactive-studio/effects/send-message-to-iframes.md)
   * [🐵 Show Object](interactive-studio/effects/show-object.md)
   * [🔄 Show Token Swap](interactive-studio/effects/show-token-swap.md)
   * [🏃‍♂️ Start Auto Run](interactive-studio/effects/start-auto-run.md)
