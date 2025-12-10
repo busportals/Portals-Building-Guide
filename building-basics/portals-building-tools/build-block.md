@@ -17,8 +17,12 @@ The Build Block is a resizable cube used for constructing environments or decor.
   * Drag & Drop – Upload a custom image for use as a texture.
   * Browse Files – Select and upload a texture file from your device.
   * Choose From Gallery – Pick from predefined textures
+* AI Texture Block
+  * Type in the texture you would like and it will be generated with AI
+  * Cost: 5 Credits&#x20;
+  * **Note:** _Results may very_
 * Color Select Cube:
-  * Choose the color select cube icon <img src="../../.gitbook/assets/image.png" alt="" data-size="line">
+  * Choose the color select cube icon <img src="../../.gitbook/assets/image (2).png" alt="" data-size="line">
 
 ### Placement Settings
 

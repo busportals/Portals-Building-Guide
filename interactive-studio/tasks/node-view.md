@@ -11,7 +11,7 @@ Node View Key
 * Purple icons represent Tasks
 * Yellow icons represent Effects
 
-<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
 You can also use the node view to directly add Tasks, Triggers, and Effects. Simply select the type of component you would like to add.
 
