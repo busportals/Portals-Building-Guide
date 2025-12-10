@@ -118,6 +118,6 @@ You can place the following url as an iframe into your space to test the Send Me
 https://portalsterminal.replit.app/?noBlur=true&height=300&left=10&top=10&width=600
 ```
 
-<figure><img src="../../.gitbook/assets/image (16).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (17).png" alt=""><figcaption></figcaption></figure>
 
 This will post the message sent in green along with a timestamp of when the message was received.&#x20;
