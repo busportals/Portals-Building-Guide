@@ -50,7 +50,7 @@ To qualify for the wearable, your submission must:
 
 1. Build your game on Portals during the competition window (December 2–23).
 2. Publish your game on Portals.
-3. Submit your entry using the official submission link/form (details will be provided at a later date).
+3. Submit your entry using the official submission link: [https://forms.gle/hQtrESG82RDwvvjh7](https://forms.gle/hQtrESG82RDwvvjh7)
 
 Late submissions or edits after the deadline may not be considered.
 
