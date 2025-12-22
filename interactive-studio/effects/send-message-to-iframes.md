@@ -16,6 +16,30 @@ Use cases include:
 
 **Note:** This feature requires the Portals SDK to be loaded in the iframe. Messages are sent as plain text strings from Portals to the iframe.
 
+### Message Variables
+
+The Message field supports variable placeholders using pipe syntax. Any text wrapped in | characters will be replaced with its current value at the moment the effect fires, and the final result is sent to the iframe as a plain text string.
+
+#### Syntax
+
+* Format: |variableName|
+* Example: Hello |username|
+
+#### Built-in Variable
+
+* |username|: Sends the player’s identifier as a quoted string.
+  * If the player has a Portals ID set, that value is used.
+  * Otherwise, the player’s name is used.
+  * Example value: "bus"
+
+#### Examples
+
+| Send to Message input                             | Sent to iframe                  |
+| ------------------------------------------------- | ------------------------------- |
+| Hello \|username\|                                | Hello "bus"                     |
+| user=\|username\| level=\|level\| coins=\|coins\| | user="bus" level=3 coins=125    |
+| {"score":\|score\| , "username":\|username\|}     | {"score":10 , "username":"bus"} |
+
 ## SDK Integration
 
 To receive messages in your iframe, include the Portals SDK script in your HTML file. This loads the <mark style="color:orange;">PortalsSdk</mark> object globally.

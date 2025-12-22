@@ -22,6 +22,17 @@ World text allows builders to easily display text in their space.
 
     <figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
+### Using Values in World Text
+
+The Text Content field supports variable placeholders using pipe syntax. Any text wrapped in | characters will be replaced with its current value.
+
+#### Syntax
+
+* Format: |variableName|
+* Example: Hello |username|
+
+<figure><img src="../../.gitbook/assets/image (18).png" alt=""><figcaption></figcaption></figure>
+
 ### Common Use Cases
 
 * Giving players instructions
