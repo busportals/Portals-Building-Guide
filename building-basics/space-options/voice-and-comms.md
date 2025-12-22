@@ -1,3 +1,7 @@
+---
+hidden: true
+---
+
 # Voice & Comms
 
 ## Global Speaking

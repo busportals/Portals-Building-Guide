@@ -1,3 +1,7 @@
+---
+hidden: true
+---
+
 # Avatar
 
 ## Enable Custom Avatars

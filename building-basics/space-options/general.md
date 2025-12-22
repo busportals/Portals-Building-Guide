@@ -1,3 +1,7 @@
+---
+hidden: true
+---
+
 # General
 
 ## Add Welcome Greeting

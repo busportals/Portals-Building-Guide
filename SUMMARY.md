@@ -45,6 +45,7 @@
   * [Weapons](building-basics/space-options/weapons.md)
   * [User Privileges](building-basics/space-options/user-privileges.md)
   * [Competition](building-basics/space-options/competition.md)
+  * [Variable Manager](building-basics/space-options/variable-manager.md)
 
 ## Interactive Studio
 

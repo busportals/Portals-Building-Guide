@@ -1,3 +1,7 @@
+---
+hidden: true
+---
+
 # Building
 
 ## All Can Build
