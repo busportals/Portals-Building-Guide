@@ -8,7 +8,7 @@ In order for the Debug Panel to operate the task system must be turned on. This 
 
 You can access the Task Debug Panel by going to Space Options > Task Debug Panel
 
-<figure><img src="../../.gitbook/assets/image (13).png" alt="" width="144"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/debugpanel.png" alt="" width="144"><figcaption></figcaption></figure>
 
 The task debug panel allows you to effortlessly switch between the states of tasks. The colored circles correspond to each state.
 

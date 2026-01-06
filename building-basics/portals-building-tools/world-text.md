@@ -17,10 +17,10 @@ World text allows builders to easily display text in their space.
 
 *   You can highlight the text in the settings menu and use the RTF settings to change the text's color, bold, italics, and underline.
 
-    <figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+    <figure><img src="../../.gitbook/assets/rtfuse.png" alt=""><figcaption></figcaption></figure>
 *   If you place a single character in brackets (e.g. \[E]) the character will be displayed as a button indicator.&#x20;
 
-    <figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+    <figure><img src="../../.gitbook/assets/buttontext.png" alt=""><figcaption></figcaption></figure>
 
 ### Using Values in World Text
 
@@ -31,7 +31,7 @@ The Text Content field supports variable placeholders using pipe syntax. Any tex
 * Format: |variableName|
 * Example: Hello |username|
 
-<figure><img src="../../.gitbook/assets/image (18).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/worldtextgenerator2.png" alt=""><figcaption></figcaption></figure>
 
 ### Common Use Cases
 

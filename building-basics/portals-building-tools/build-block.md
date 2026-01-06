@@ -22,7 +22,7 @@ The Build Block is a resizable cube used for constructing environments or decor.
   * Cost: 5 Credits&#x20;
   * **Note:** _Results may very_
 * Color Select Cube:
-  * Choose the color select cube icon <img src="../../.gitbook/assets/image (2).png" alt="" data-size="line">
+  * Choose the color select cube icon <img src="../../.gitbook/assets/colorcube.png" alt="" data-size="line">
 
 ### Placement Settings
 
