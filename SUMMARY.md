@@ -136,6 +136,16 @@
     * [🫣 Hide NPC](interactive-studio/effects/npc-specific-effects/hide-npc.md)
 * [🖼️ Using Iframes in Portals](interactive-studio/using-iframes-in-portals.md)
 
+## Advanced Tooling
+
+* [Function Effect](advanced-tooling/function-effect/README.md)
+  * [Overview](advanced-tooling/function-effect/overview.md)
+  * [Portals Specific Functions](advanced-tooling/function-effect/portals-specific-functions.md)
+  * [Expressions (the basics)](advanced-tooling/function-effect/expressions-the-basics.md)
+  * [Operators](advanced-tooling/function-effect/operators.md)
+  * [Conditions (if / ifs)](advanced-tooling/function-effect/conditions-if-ifs.md)
+  * [Functions](advanced-tooling/function-effect/functions.md)
+
 ## How To
 
 * [Create a basic token trading space](how-to/create-a-basic-token-trading-space.md)
