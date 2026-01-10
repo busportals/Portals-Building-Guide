@@ -64,6 +64,6 @@ We do not accept spam, off-topic content, or changes that alter the guide's core
 - Be respectful in comments and follow the [Code of Conduct](https://docs.github.com/en/site-policy/github-terms/github-community-code-of-conduct) (add one if needed).
 
 ## Questions?
-Open an issue on the repo or reach out via Portals community channels (add your Discord or forum link).
+Open an issue on the repo or reach out via Portals [Discord](https://discord.com/invite/portals).
 
 Thanks for helping improve the guide!
