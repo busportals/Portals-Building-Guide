@@ -1,8 +1,9 @@
 ---
+icon: clone
 description: 'Effect: Duplicates an object.'
 ---
 
-# 👯‍♀️ Duplicate Item
+# Duplicate Item
 
 ## Use Cases
 

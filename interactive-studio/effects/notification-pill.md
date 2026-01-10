@@ -1,8 +1,9 @@
 ---
+icon: message
 description: 'Effect: Displays a notification pill on the users screen.'
 ---
 
-# 💬 Notification Pill
+# Notification Pill
 
 ## Use Cases
 

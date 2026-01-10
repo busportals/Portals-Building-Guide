@@ -1,8 +1,9 @@
 ---
+icon: input-numeric
 description: 'Effect: Displays a particular labeled value.'
 ---
 
-# 🔢 Display Value
+# Display Value
 
 ## Use Cases
 

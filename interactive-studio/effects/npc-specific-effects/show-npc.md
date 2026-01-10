@@ -1,8 +1,9 @@
 ---
+icon: eye
 description: 'Effect: Shows a hidden NPC,'
 ---
 
-# 👁️ Show NPC
+# Show NPC
 
 ## Use Cases
 

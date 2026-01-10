@@ -1,8 +1,9 @@
 ---
+icon: arrow-pointer
 description: 'Effect: Turns the users mic off and on.'
 ---
 
-# 🐭 Toggle Cursor Lock
+# Toggle Cursor Lock
 
 ## Use Cases
 

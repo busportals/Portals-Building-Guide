@@ -1,8 +1,9 @@
 ---
+icon: burst
 description: Trigger based on a user's avatar colliding with a specific item.
 ---
 
-# 🤯 Collision
+# Collision
 
 ## Configuration
 

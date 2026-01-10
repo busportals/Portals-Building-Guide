@@ -1,8 +1,9 @@
 ---
+icon: border-none
 description: 'Effect: Hides the outline of an object'
 ---
 
-# 🙈 Hide Outline
+# Hide Outline
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: lock
 description: 'Effect: Locks the camera unto a specific object.'
 ---
 
-# 🔒 Lock Camera
+# Lock Camera
 
 ## Use Cases
 

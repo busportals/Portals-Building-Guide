@@ -1,8 +1,9 @@
 ---
+icon: comments
 description: 'Effect: Create dialogue for your NPCs'
 ---
 
-# 👄 Dialogue Effector Display
+# Dialogue Effector Display
 
 ## Use Cases
 

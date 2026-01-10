@@ -1,8 +1,9 @@
 ---
+icon: user-pen
 description: 'Effect: Changes the users avatar.'
 ---
 
-# 🚹 Change Avatar
+# Change Avatar
 
 ## Use Cases
 

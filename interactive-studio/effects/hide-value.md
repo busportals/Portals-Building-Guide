@@ -1,8 +1,9 @@
 ---
+icon: square-minus
 description: 'Effect: Hides a particular labeled value.'
 ---
 
-# 🟦 Hide Value
+# Hide Value
 
 ## Use Cases
 

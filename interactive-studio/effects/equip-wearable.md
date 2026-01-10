@@ -1,8 +1,9 @@
 ---
+icon: hat-wizard
 description: 'Effect: Dress up your users.'
 ---
 
-# 🎩 Equip Wearable
+# Equip Wearable
 
 ## Use Cases
 

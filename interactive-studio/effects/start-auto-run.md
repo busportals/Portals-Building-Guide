@@ -1,8 +1,9 @@
 ---
+icon: person-running-fast
 description: 'Effect: Make the users auto run.'
 ---
 
-# 🏃‍♂️ Start Auto Run
+# Start Auto Run
 
 ## Use Cases
 

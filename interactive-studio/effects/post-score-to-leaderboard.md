@@ -1,8 +1,9 @@
 ---
+icon: trophy
 description: 'Effect: Posts the users score to a leaderboard.'
 ---
 
-# 🏆 Post Score to Leaderboard
+# Post Score to Leaderboard
 
 ## Use Cases
 

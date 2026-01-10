@@ -1,8 +1,9 @@
 ---
+icon: shirt
 description: Trigger based on un-equipping a specific wearable.
 ---
 
-# 🎽 Wearable Off
+# Wearable Off
 
 ## Configuration
 

@@ -1,8 +1,9 @@
 ---
+icon: timer-off
 description: 'Effect: Cancels the current timer and invalidates the current time.'
 ---
 
-# ⏲️ Cancel Timer
+# Cancel Timer
 
 ## Use Cases
 

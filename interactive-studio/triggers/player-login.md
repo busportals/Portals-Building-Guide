@@ -1,8 +1,9 @@
 ---
+icon: user-check
 description: Trigger based on a user being logged in to a Portals account.
 ---
 
-# 🪵 Player Login
+# Player Login
 
 ## Configuration
 

@@ -1,8 +1,9 @@
 ---
+icon: film
 description: 'Effect: Create a key-frame animation for an object in-game.'
 ---
 
-# 💃 Portals Animation
+# Portals Animation
 
 ## Use Cases
 

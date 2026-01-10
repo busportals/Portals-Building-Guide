@@ -1,8 +1,9 @@
 ---
+icon: signal-stream
 description: 'Effect: Sends a text string from Portals into an iframe.'
 ---
 
-# 🛜 Send Message to Iframes
+# Send Message to Iframes
 
 ## Overview
 

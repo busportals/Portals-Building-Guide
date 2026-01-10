@@ -1,8 +1,9 @@
 ---
+icon: heart
 description: 'Effect: Damage and heal players health.'
 ---
 
-# ❤️ Change Player Health
+# Change Player Health
 
 ## Use Cases
 

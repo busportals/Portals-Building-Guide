@@ -1,8 +1,9 @@
 ---
+icon: microphone
 description: 'Effect: Changes the voice group (channel) that the users speak in.'
 ---
 
-# 🎤 Change Voice Group
+# Change Voice Group
 
 ## Use Cases
 

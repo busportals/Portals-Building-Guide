@@ -1,8 +1,9 @@
 ---
+icon: location-arrow
 description: 'Effect: Teleports a user to a specified spawn point.'
 ---
 
-# 🌀 Teleport
+# Teleport
 
 ## Use Cases
 

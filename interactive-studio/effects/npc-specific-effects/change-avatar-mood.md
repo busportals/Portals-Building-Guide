@@ -1,10 +1,11 @@
 ---
+icon: masks-theater
 description: >-
   Effect: Default Portals Avatar based NPCs will change their facial
   expressions.
 ---
 
-# 🎭 Change Avatar Mood
+# Change Avatar Mood
 
 ## Use Cases
 

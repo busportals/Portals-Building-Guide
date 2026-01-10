@@ -1,8 +1,9 @@
 ---
+icon: camera-viewfinder
 description: 'Effect: Allows non-admins to enter free camera mode.'
 ---
 
-# 🐦‍⬛ Toggle Free Camera
+# Toggle Free Camera
 
 ## Use Cases
 

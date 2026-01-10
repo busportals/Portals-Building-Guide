@@ -1,8 +1,9 @@
 ---
+icon: wallet
 description: 'Effect: Hides the token swap UI.'
 ---
 
-# 👛 Hide Token Swap
+# Hide Token Swap
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: arrow-right-from-bracket
 description: Trigger based on a user's avatar exiting a trigger cube.
 ---
 
-# 👈 User Exit Trigger Range
+# User Exit Trigger Range
 
 ## Configuration
 

@@ -1,8 +1,9 @@
 ---
+icon: plus-minus
 description: 'Effect: Updates a users score value.'
 ---
 
-# 💯 Update Value
+# Update Value
 
 ## Use Cases
 

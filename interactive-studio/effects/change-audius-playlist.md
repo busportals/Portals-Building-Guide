@@ -1,8 +1,9 @@
 ---
+icon: music
 description: 'Effect: Changes the rooms playlist.'
 ---
 
-# 🎵 Change Audius Playlist
+# Change Audius Playlist
 
 ## Use Cases
 

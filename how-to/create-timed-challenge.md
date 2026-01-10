@@ -59,7 +59,7 @@ Add **Key Pressed** trigger (Space) when `raceReady` Active:
 1. Set `raceActive` Active
 2. Set `raceReady` NotActive
 3. **Unlock Movement**
-4. **Display Value**: Start timer display
+4. **Start Timer** (automatically displays on screen)
 
 ### Finish Zone Entry
 

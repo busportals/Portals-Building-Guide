@@ -1,8 +1,9 @@
 ---
+icon: input-numeric
 description: Trigger based on a user achieving a specific score.
 ---
 
-# 🎖️ Value Updated
+# Value Updated
 
 ## Configuration
 

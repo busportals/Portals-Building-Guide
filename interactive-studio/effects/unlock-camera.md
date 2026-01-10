@@ -1,8 +1,9 @@
 ---
+icon: lock-open
 description: 'Effect: Unlocks a previously locked camera.'
 ---
 
-# 🔓 Unlock Camera
+# Unlock Camera
 
 ## Use Cases
 

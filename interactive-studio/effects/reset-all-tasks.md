@@ -1,8 +1,9 @@
 ---
+icon: rotate-left
 description: 'Effect: Changes all tasks to their Not Active state.'
 ---
 
-# 🔴 Reset All Tasks
+# Reset All Tasks
 
 ## Use Cases
 

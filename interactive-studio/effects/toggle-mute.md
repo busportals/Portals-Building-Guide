@@ -1,8 +1,9 @@
 ---
+icon: volume-xmark
 description: 'Effect: Turns the users mic off and on.'
 ---
 
-# 🔇 Toggle Mute
+# Toggle Mute
 
 ## Use Cases
 

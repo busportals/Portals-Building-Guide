@@ -1,8 +1,9 @@
 ---
+icon: person-walking-arrow-right
 description: 'Effect: The NPC will walk to a designated location.'
 ---
 
-# 🚶‍♀️ Walk to Position
+# Walk to Position
 
 ## Use Cases
 

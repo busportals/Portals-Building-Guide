@@ -459,10 +459,9 @@ if(OnChange('collectItem'),
 
 **Setup Pattern:**
 1. Player enters start zone → Teleport to start, reset timer
-2. Press key or collision → Set `raceActive`, start timer
+2. Press key or collision → Set `raceActive`, Start Timer (auto-displays on screen)
 3. Cross checkpoints → Validate path (optional)
 4. Finish line collision → Stop timer, auto-post score
-5. Display time with Display Value
 
 ## Puzzle/Escape Room
 

@@ -1,8 +1,9 @@
 ---
+icon: keyboard
 description: Trigger based on pressing a specific keyboard key or mouse click.
 ---
 
-# 🔡 Key Pressed
+# Key Pressed
 
 ## Configuration
 

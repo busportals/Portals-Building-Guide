@@ -30,7 +30,7 @@ Start Race → Navigate Course → Cross Finish → Post Time → Try to Beat Sc
 ### Timer System
 
 Portals has built-in timer functionality:
-- **Start Timer:** Use Display Value with a timer variable
+- **Start Timer:** Automatically displays on screen when triggered (no separate Display Value needed)
 - **Stop Timer:** Timer Stopped trigger fires when it reaches zero
 - **For counting UP:** Track elapsed time with periodic variable updates
 
@@ -58,7 +58,7 @@ Time-based leaderboards auto-post when timer stops:
 |-----------|---------------------|---------|
 | Start zone | Trigger Cube | Begin the race |
 | Finish zone | Trigger Cube | End the race |
-| Timer display | Display Value effect | Show elapsed/remaining time |
+| Timer display | Start Timer effect | Shows automatically on screen |
 | Leaderboard | Leaderboard tool | Rank player times |
 | Course markers | Visual objects | Guide the path |
 
@@ -108,7 +108,7 @@ Player races from start to finish. Timer runs until they cross the line.
      - Set `raceActive` Active
      - Set `raceReady` NotActive
      - Unlock Movement
-     - Start timer display
+     - Start Timer (automatically displays on screen)
 
 3. **Finish Zone:**
    - Trigger Cube at finish line

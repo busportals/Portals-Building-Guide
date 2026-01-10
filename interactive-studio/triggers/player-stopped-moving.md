@@ -1,8 +1,9 @@
 ---
+icon: person
 description: Trigger based on a user stopping movement.
 ---
 
-# 🧍 Player Stopped Moving
+# Player Stopped Moving
 
 ## Configuration
 

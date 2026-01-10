@@ -1,8 +1,9 @@
 ---
+icon: video
 description: 'Effect: Changes the camera state.'
 ---
 
-# 🎥 Change Camera State
+# Change Camera State
 
 ## Use Cases
 

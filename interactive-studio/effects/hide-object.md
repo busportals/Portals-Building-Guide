@@ -1,8 +1,9 @@
 ---
+icon: eye-slash
 description: 'Effect: Hides an object.'
 ---
 
-# 🙈 Hide Object
+# Hide Object
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: user-gear
 description: 'Effect: Opens the avatar screen.'
 ---
 
-# 👕 Avatar Screen
+# Avatar Screen
 
 ## Use Cases
 

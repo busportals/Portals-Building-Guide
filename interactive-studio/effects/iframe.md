@@ -1,8 +1,9 @@
 ---
+icon: browser
 description: 'Effect: Opens a specified iframe.'
 ---
 
-# 🕸️ Iframe
+# Iframe
 
 ## Use Cases
 

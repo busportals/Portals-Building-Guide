@@ -1,8 +1,9 @@
 ---
+icon: arrow-right-to-bracket
 description: Trigger based on a user's avatar entering a trigger cube.
 ---
 
-# 👉 User Enter Trigger Range
+# User Enter Trigger Range
 
 ## Configuration
 

@@ -1,8 +1,9 @@
 ---
+icon: rocket-launch
 description: 'Effect: Applies directional velocity to a player.'
 ---
 
-# 🛫 Apply Velocity To Player
+# Apply Velocity To Player
 
 ## Use Cases
 

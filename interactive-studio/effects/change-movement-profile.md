@@ -1,8 +1,9 @@
 ---
+icon: person-walking
 description: 'Effect: Switches the players movement profile.'
 ---
 
-# 🚶‍♂️ Change Movement Profile
+# Change Movement Profile
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: repeat
 description: 'Effect: Plays a sound on a loop.'
 ---
 
-# 🎵 Play Sound In A Loop
+# Play Sound In A Loop
 
 ## Use Cases
 

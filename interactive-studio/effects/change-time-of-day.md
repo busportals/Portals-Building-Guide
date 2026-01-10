@@ -1,8 +1,9 @@
 ---
+icon: sun-horizon
 description: 'Effect: Change the rooms fog settings.'
 ---
 
-# 🌅 Change Time of Day
+# Change Time of Day
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: eye-slash
 description: 'Effect: Hides an NPC from view.'
 ---
 
-# 🫣 Hide NPC
+# Hide NPC
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: ranking-star
 description: 'Effect: Posts the users score to a leaderboard.'
 ---
 
-# 🥇 Reset Leaderboard
+# Reset Leaderboard
 
 ## Use Cases
 

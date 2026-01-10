@@ -1,8 +1,9 @@
 ---
+icon: person-running
 description: Trigger based on a user starting to move.
 ---
 
-# 🏃 Player Started Moving
+# Player Started Moving
 
 ## Configuration
 

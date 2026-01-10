@@ -1,8 +1,9 @@
 ---
+icon: user-lock
 description: 'Effect: Prevents users from opening the change avatar screen.'
 ---
 
-# 🎽 Lock Avatar Change
+# Lock Avatar Change
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: person-walking
 description: 'Effect: Unlocks the players previously locked movement.'
 ---
 
-# 🏃‍♂️ Unlock Movement
+# Unlock Movement
 
 ## Use Cases
 

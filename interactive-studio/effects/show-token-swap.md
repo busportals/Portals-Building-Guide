@@ -1,8 +1,9 @@
 ---
+icon: arrows-rotate
 description: 'Effect: Shows a previously hidden object.'
 ---
 
-# 🔄 Show Token Swap
+# Show Token Swap
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: person-running
 description: 'Effect: The NPC will perform the specified emote.'
 ---
 
-# 🕺 Change Animation
+# Change Animation
 
 ## Use Cases
 

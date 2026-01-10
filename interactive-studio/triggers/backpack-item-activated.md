@@ -1,8 +1,9 @@
 ---
+icon: backpack
 description: Trigger based on clicking an item in the backpack.
 ---
 
-# 🎒 Backpack Item Activated
+# Backpack Item Activated
 
 ## Configuration
 

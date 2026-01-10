@@ -1,8 +1,9 @@
 ---
+icon: hand-holding
 description: Trigger based on collecting a specific in-game item.
 ---
 
-# 🪙 Item Collected
+# Item Collected
 
 ## Configuration
 

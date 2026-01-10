@@ -1,8 +1,9 @@
 ---
+icon: route
 description: 'Effect: The NPC will follow a recorded path.'
 ---
 
-# 🛣️ Record NPC Path
+# Record NPC Path
 
 ## Use Cases
 

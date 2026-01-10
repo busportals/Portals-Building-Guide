@@ -1,8 +1,9 @@
 ---
+icon: magnifying-glass-plus
 description: 'Effect: Changes the camera''s zoom.'
 ---
 
-# 📹 Change Camera Zoom
+# Change Camera Zoom
 
 ## Use Cases
 

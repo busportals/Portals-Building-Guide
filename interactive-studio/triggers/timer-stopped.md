@@ -1,8 +1,9 @@
 ---
+icon: stopwatch
 description: Trigger based on a users timer ending.
 ---
 
-# ⏲️ Timer Stopped
+# Timer Stopped
 
 ## Configuration
 

@@ -1,8 +1,9 @@
 ---
+icon: eye
 description: 'Effect: Shows a previously hidden object.'
 ---
 
-# 🐵 Show Object
+# Show Object
 
 ## Use Cases
 

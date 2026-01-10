@@ -1,8 +1,9 @@
 ---
+icon: cloud
 description: 'Effect: Change the rooms fog settings.'
 ---
 
-# 🌁 Change Fog
+# Change Fog
 
 ## Use Cases
 

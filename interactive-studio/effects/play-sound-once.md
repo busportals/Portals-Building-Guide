@@ -1,8 +1,9 @@
 ---
+icon: volume
 description: 'Effect: Plays a sound.'
 ---
 
-# 🎵 Play Sound Once
+# Play Sound Once
 
 ## Use Cases
 

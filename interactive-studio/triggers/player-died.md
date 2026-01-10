@@ -1,8 +1,9 @@
 ---
+icon: skull
 description: Trigger based on a users death.
 ---
 
-# 🪦 Player Died
+# Player Died
 
 ## Configuration
 

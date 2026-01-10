@@ -1,8 +1,9 @@
 ---
+icon: shirt-long-sleeve
 description: Trigger based on equipping a specific wearable.
 ---
 
-# 👕 Wearable On
+# Wearable On
 
 ## Configuration
 

@@ -1,8 +1,9 @@
 ---
+icon: arrows-up-down-left-right
 description: 'Effect: Moves an object to a specified location.'
 ---
 
-# ➡️ Move Item
+# Move Item
 
 ## Use Cases
 

@@ -1,8 +1,9 @@
 ---
+icon: circle-stop
 description: 'Effect: Make the users stop auto running.'
 ---
 
-# 🛑 Stop Auto Run
+# Stop Auto Run
 
 ## Use Cases
 

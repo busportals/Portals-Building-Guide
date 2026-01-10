@@ -1,8 +1,9 @@
 ---
+icon: sparkles
 description: 'Effect: Change the rooms bloom settings.'
 ---
 
-# 🌼 Change Bloom
+# Change Bloom
 
 ## Use Cases
 

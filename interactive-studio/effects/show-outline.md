@@ -1,8 +1,9 @@
 ---
+icon: border-outer
 description: 'Effect: Shows the outline on the object'
 ---
 
-# 🔳 Show Outline
+# Show Outline
 
 ## Use Cases
 

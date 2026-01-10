@@ -1,8 +1,9 @@
 ---
+icon: rotate
 description: 'Effect: Triggers a state change of a specified task.'
 ---
 
-# 🔁 Run Trigger From Effector
+# Run Trigger From Effector
 
 ## Use Cases
 

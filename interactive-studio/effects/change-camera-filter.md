@@ -1,8 +1,9 @@
 ---
+icon: aperture
 description: 'Effect: Changes the filter on the camera.'
 ---
 
-# 📸 Change Camera Filter
+# Change Camera Filter
 
 ## Use Cases
 

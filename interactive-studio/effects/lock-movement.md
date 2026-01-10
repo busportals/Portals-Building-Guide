@@ -1,8 +1,9 @@
 ---
+icon: ban
 description: 'Effect: Locks the players movement.'
 ---
 
-# 🧊 Lock Movement
+# Lock Movement
 
 ## Use Cases
 

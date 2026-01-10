@@ -1,8 +1,9 @@
 ---
+icon: user-unlock
 description: 'Effect: Allows users to open the change avatar screen.'
 ---
 
-# 👗 Unlock Avatar Change
+# Unlock Avatar Change
 
 ## Use Cases
 

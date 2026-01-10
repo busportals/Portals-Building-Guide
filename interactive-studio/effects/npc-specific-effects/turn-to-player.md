@@ -1,8 +1,9 @@
 ---
+icon: rotate-right
 description: 'Effect: NPC rotates towards the current location of the player.'
 ---
 
-# ↪️ Turn To Player
+# Turn To Player
 
 ## Use Cases
 

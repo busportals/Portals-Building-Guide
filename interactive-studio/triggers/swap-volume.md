@@ -1,8 +1,9 @@
 ---
+icon: chart-mixed
 description: Trigger based on a users token trading volume.
 ---
 
-# 🔊 Swap Volume
+# Swap Volume
 
 ## Configuration
 

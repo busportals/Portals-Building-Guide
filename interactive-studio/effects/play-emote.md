@@ -1,8 +1,9 @@
 ---
+icon: face-smile
 description: 'Effect: Force a user to emote.'
 ---
 
-# 🕺 Play Emote
+# Play Emote
 
 ## Use Cases
 

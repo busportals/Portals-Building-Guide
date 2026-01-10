@@ -1,8 +1,9 @@
 ---
+icon: envelope
 description: 'Effect: Sends a message to an AI NPC.'
 ---
 
-# 📨 Message to NPC
+# Message to NPC
 
 ## Use Cases
 

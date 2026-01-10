@@ -1,8 +1,9 @@
 ---
+icon: xmark
 description: 'Effect: Closes a specified iframe.'
 ---
 
-# 🌂 Close Iframe
+# Close Iframe
 
 ## Use Cases
 

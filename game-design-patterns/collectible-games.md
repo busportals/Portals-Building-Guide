@@ -40,7 +40,7 @@ Explore → Find Item → Collect → Score Increases → Unlock Reward
 
 | Component | Portals Tool/Feature | Purpose |
 |-----------|---------------------|---------|
-| Timer | Timer trigger + Display Value | Time limit for collection |
+| Timer | Start Timer effect (auto-displays) | Time limit for collection |
 | Leaderboard | Leaderboard tool + Post Score | Competitive ranking |
 | Unlock gate | Tasks + Show/Hide effects | Progression gating |
 | Sound feedback | Play Sound Once effect | Audio reward on collect |
@@ -132,15 +132,11 @@ Add a countdown timer for urgency.
 2. On **Player Login** → Set `gameReady` Active, show "Press SPACE to start"
 3. On **Key Pressed** (Space) when `gameReady` is Active:
    - Set `gameActive` Active
-   - Start a 60-second timer (Display Value effect)
+   - **Start Timer** (60 seconds) - automatically displays countdown on screen
 4. On **Timer Stopped**:
    - Set `gameOver` Active
    - **Post Score to Leaderboard**
    - Show final score notification
-
-### Timer Display
-
-Use **Display Value** with the timer variable to show countdown on screen.
 
 ---
 
