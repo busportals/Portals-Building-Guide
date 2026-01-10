@@ -1,17 +1,16 @@
-# Conditions (if / ifs)
+# Conditions (if)
 
 Conditions let you make decisions.
 
 They answer questions like:
 
-* “If coins are 10 or more, unlock the door”
-* “If a task is completed, start the next task”
-* “If health is 0, trigger game over”
+* "If coins are 10 or more, unlock the door"
+* "If a task is completed, start the next task"
+* "If health is 0, trigger game over"
 
-The two main tools are:
+The main tool is:
 
-* if(...) for one decision
-* ifs(...) for multiple choices
+* if(...) for decisions (can be nested for multiple choices)
 
 ***
 
@@ -151,26 +150,42 @@ If you don’t need the if, you can write the clean boolean check:
 
 ***
 
-### ifs(cond1, value1, cond2, value2, …, defaultValue)
+### Nested if for Multiple Choices
 
 #### Basic idea
 
-ifs is like a list of options.
+For multiple conditions (like if/else if/else), nest your `if` statements.
+
+The inner `if` goes in the `whenFalse` position of the outer `if`:
+
+```
+if(condition1,
+   value1,
+   if(condition2,
+      value2,
+      defaultValue
+   )
+)
+```
 
 It checks each condition in order:
 
 * If condition 1 is true → it uses value 1
 * Else if condition 2 is true → it uses value 2
-* If none match → it uses the default value at the end
+* If none match → it uses the default value
 
-#### Example: set a “warning level” based on health
+#### Example: set a "warning level" based on health
 
 ```
-ifs(
-  $N{health} <= 0.0, SetVariable('warningLevel', 3.0, 0.0),
-  $N{health} <= 3.0, SetVariable('warningLevel', 2.0, 0.0),
-  $N{health} <= 6.0, SetVariable('warningLevel', 1.0, 0.0),
-                     SetVariable('warningLevel', 0.0, 0.0)
+if($N{health} <= 0.0,
+   SetVariable('warningLevel', 3.0, 0.0),
+   if($N{health} <= 3.0,
+      SetVariable('warningLevel', 2.0, 0.0),
+      if($N{health} <= 6.0,
+         SetVariable('warningLevel', 1.0, 0.0),
+         SetVariable('warningLevel', 0.0, 0.0)
+      )
+   )
 )
 ```
 
@@ -180,6 +195,29 @@ What it does:
 * Else if health is 3 or less → warningLevel = 2
 * Else if health is 6 or less → warningLevel = 1
 * Otherwise → warningLevel = 0
+
+#### Example: NPC dialogue based on quest state
+
+```
+if($T{elderQuest} == 'NotActive',
+   SetTask('dialogueOffer', 'Active', 0.0),
+   if($T{elderQuest} == 'Active',
+      if($N{hasAmulet} == 1.0,
+         SetTask('dialogueTurnIn', 'Active', 0.0),
+         SetTask('dialogueReminder', 'Active', 0.0)
+      ),
+      SetTask('dialogueComplete', 'Active', 0.0)
+   )
+)
+```
+
+What it does:
+
+* If quest not started → show offer dialogue
+* Else if quest is active:
+  * If player has item → show turn-in dialogue
+  * Otherwise → show reminder dialogue
+* Else (quest completed) → show thank you dialogue
 
 ***
 

@@ -359,6 +359,229 @@ Min(Max($N{health}, 0.0), 100.0)   // Clamp health between 0-100
 
 ---
 
+# DEBUGGING GUIDE
+
+## When Function Effects Don't Work
+
+1. **Check decimal notation** - Use `0.0` not `0`
+2. **Verify task/variable names** - Case-sensitive, must match exactly
+3. **Enable "Trigger on Task Change"** - Checkbox must be checked
+4. **Use Task Debug Panel** - Space Options > Tasks Debug to see if triggers fire
+5. **Check parentheses** - Mismatched parentheses cause silent failures
+
+## When Tasks Don't Change State
+
+1. **Verify trigger is firing** - Check Task Debug Panel
+2. **Check dependent task requirements** - Parent must be Completed
+3. **Look for conflicting effects** - Multiple effects on same task
+4. **Check multiplayer vs single-player** - Different state per player type
+
+## When Iframes Don't Work
+
+1. **Remember: Iframe is an Effect** - Not a building tool
+2. **Use JSON.stringify()** - `PortalsSdk.sendMessageToUnity(JSON.stringify({...}))`
+3. **Test in Portals, not browser** - SDK only works in-game
+4. **User gesture required for close** - Wrap in onclick handler
+5. **Check positioning values** - May be off-screen
+
+## Common Error Messages
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "[object Object] is not supported" | Missing JSON.stringify | Use `JSON.stringify()` |
+| "Failed to launch uniwebview" | Testing in browser | Test in Portals app |
+| Type cast error | Integer instead of decimal | Use `10.0` not `10` |
+| Task not found | Name mismatch | Check exact spelling/case |
+
+---
+
+# GAME DESIGN TEMPLATES
+
+## Collectible Game
+
+**Objective:** Collect items, track score, post to leaderboard.
+
+**Components:**
+- Tasks: `gameStart`, `gameActive`, `gameComplete`
+- Variables: `score` (persistent), `itemsCollected`
+- Triggers: Item Collected, Timer Stopped (optional)
+- Effects: Update Value, Display Value, Post Score
+
+**Setup Pattern:**
+1. Player Login → Set `gameActive` to Active, initialize `score` to 0
+2. Item Collected → Update Value: `score + 1`
+3. All items collected OR timer ends → Set `gameComplete`, Post Score
+4. Display Value effect to show score on screen
+
+**Function Effect Example:**
+```
+if(OnChange('collectItem'),
+   SetVariable('score', $N{score} + 1.0, 0.0) +
+   if($N{score} >= 10.0,
+      SetTask('gameComplete', 'Active', 0.0),
+      0.0
+   ),
+   0.0
+)
+```
+
+## Quest/RPG Game
+
+**Objective:** Multi-stage story with NPC interactions.
+
+**Components:**
+- Dependent Tasks: `quest1`, `quest2`, `quest3` (chained)
+- NPCs with dialogue trees
+- Quest visibility enabled for quest log
+- Reward items on completion
+
+**Setup Pattern:**
+1. NPC Click → Set `quest1` Active, show dialogue
+2. Player completes objective → Set `quest1` Completed
+3. `quest1` Completed triggers `quest2` Active (dependency)
+4. Final quest completion → Grant reward, show completion
+
+**Quest Configuration:**
+- Space Options > Tasks > Select quest task
+- Enable Visibility for quest log
+- Set Quest Group for organization
+- Configure rewards (requires Portals team for items)
+
+## Racing/Timed Challenge
+
+**Objective:** Complete course in fastest time, leaderboard ranking.
+
+**Components:**
+- Tasks: `raceReady`, `raceActive`, `raceComplete`
+- Timer trigger and effects
+- Checkpoint trigger cubes
+- Leaderboard with time-based scoring
+
+**Setup Pattern:**
+1. Player enters start zone → Teleport to start, reset timer
+2. Press key or collision → Set `raceActive`, start timer
+3. Cross checkpoints → Validate path (optional)
+4. Finish line collision → Stop timer, auto-post score
+5. Display time with Display Value
+
+## Puzzle/Escape Room
+
+**Objective:** Solve puzzles in sequence to progress.
+
+**Components:**
+- Tasks for each puzzle: `puzzle1`, `puzzle2`, etc.
+- Hidden objects (Show/Hide effects)
+- Lock/key mechanics using variables
+- Sequential dependencies
+
+**Setup Pattern:**
+```
+Puzzle 1 Completed → Show key object
+Key Collected → Set 'hasKey' = 1
+Door Click + hasKey = 1 → Open door, activate Puzzle 2
+```
+
+**Key Pattern:**
+```
+if($N{hasKey} == 1.0 && OnChange('doorClick'),
+   SetTask('door', 'Active', 0.0) +
+   SetTask('puzzle2', 'Active', 0.0),
+   0.0
+)
+```
+
+---
+
+# COMMON EXPRESSION PATTERNS
+
+## Safe Math Operations
+
+```
+// Add with upper bound (cap at 100)
+Min($N{health} + 10.0, 100.0)
+
+// Subtract with lower bound (floor at 0)
+Max($N{health} - 5.0, 0.0)
+
+// Clamp between min and max
+Min(Max($N{value}, 0.0), 100.0)
+```
+
+## State Machine
+
+```
+// Multiple states based on a single variable
+if($N{gameState} == 0.0,
+   SetTask('intro', 'Active', 0.0),
+   if($N{gameState} == 1.0,
+      SetTask('playing', 'Active', 0.0),
+      if($N{gameState} == 2.0,
+         SetTask('gameOver', 'Active', 0.0),
+         0.0
+      )
+   )
+)
+```
+
+## Cooldown/Debounce
+
+```
+// Allow action only if canFire is 1, then disable for 2 seconds
+if($N{canFire} == 1.0,
+   SetVariable('canFire', 0.0, 0.0) +
+   SetVariable('canFire', 1.0, 2.0) +
+   SetTask('fireWeapon', 'Active', 0.0),
+   0.0
+)
+```
+
+## Toggle Pattern
+
+```
+// Toggle a door open/closed
+if($T{door} == 'NotActive',
+   SetTask('door', 'Active', 0.0),
+   SetTask('door', 'NotActive', 0.0)
+)
+```
+
+## Counter with Threshold
+
+```
+// Increment counter and trigger at threshold
+SetVariable('count', $N{count} + 1.0, 0.0) +
+if($N{count} >= 5.0,
+   SetTask('unlock', 'Active', 0.0) +
+   SetVariable('count', 0.0, 0.0),
+   0.0
+)
+```
+
+## Random Selection
+
+```
+// Random outcome (1-4)
+SetVariable('outcome', SelectRandom(1.0, 2.0, 3.0, 4.0), 0.0)
+
+// Random with action
+if(SelectRandom(1.0, 2.0) == 1.0,
+   SetTask('pathA', 'Active', 0.0),
+   SetTask('pathB', 'Active', 0.0)
+)
+```
+
+## Chained Delays
+
+```
+// Sequence of actions with delays
+SetTask('step1', 'Active', 0.0) +
+SetTask('step2', 'Active', 1.0) +
+SetTask('step3', 'Active', 2.0) +
+SetTask('step1', 'NotActive', 3.0)
+```
+
+---
+
 # LEADERBOARDS
 
 ## Post Score to Leaderboard
