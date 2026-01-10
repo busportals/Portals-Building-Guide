@@ -41,3 +41,9 @@ If you’d like to suggest improvements to these docs, the source lives on GitHu
 
 1. Clone the repo.
 2. Open it in GitBook or a markdown viewer of your choice.
+
+---
+
+## Claude Code Skill
+
+This repo includes a skill for [Claude Code](https://claude.ai/claude-code) AI assistant. See [skills/README.md](skills/README.md) for installation instructions.
