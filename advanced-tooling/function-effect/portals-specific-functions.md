@@ -121,15 +121,43 @@ SetVariable('variableName', targetValue, delaySeconds)
 Example:
 
 ```
-SetVariable('coins', 0, 0.0)
+SetVariable('coins', 0.0, 0.0)
 ```
 
 What it does: sets coins to 0 immediately.
 
+#### Number types (important)
+
+Use 0.0 instead of 0 to avoid number type errors.
+
+Rule of thumb:
+
+* Use 0.0 / 1.0 / 10.0 in comparisons, SetVariable, and if(...) branches.
+* Use decimal values for delays (0.0, 2.0).
+* When using SelectRandom for SetVariable, prefer decimal lists (1.0, 2.0, ...) so the result is a Double.
+
+Before (causes cast error):
+
+```
+if($N{Player_Team} == 0,
+   SetVariable('Player_Team', 1, 0.0),
+   0
+)
+```
+
+After (works):
+
+```
+if($N{Player_Team} == 0.0,
+   SetVariable('Player_Team', 1.0, 0.0),
+   0.0
+)
+```
+
 Example:
 
 ```
-SetVariable('coins', $N{coins} + 10, 0.0)
+SetVariable('coins', $N{coins} + 10.0, 0.0)
 ```
 
 What it does: reads the current coins, adds 10, then writes the new number back immediately.
@@ -137,7 +165,7 @@ What it does: reads the current coins, adds 10, then writes the new number back 
 Example:
 
 ```
-SetVariable('health', $N{health} - 1, 0.0)
+SetVariable('health', $N{health} - 1.0, 0.0)
 ```
 
 What it does: subtracts 1 from health immediately.
@@ -163,7 +191,7 @@ What it does: returns one of the provided items at random.
 Example: add a random number (1–10) to coins
 
 ```
-SetVariable('coins', $N{coins} + SelectRandom(1,2,3,4,5,6,7,8,9,10), 0.0)
+SetVariable('coins', $N{coins} + SelectRandom(1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0), 0.0)
 ```
 
 What it does: picks a random number from 1 to 10, adds it to coins, then saves the result.
@@ -179,7 +207,7 @@ What it does: returns true about half the time and false the other half.
 Example: random reward amount
 
 ```
-SetVariable('reward', SelectRandom(5, 10, 25, 50), 0.0)
+SetVariable('reward', SelectRandom(5.0, 10.0, 25.0, 50.0), 0.0)
 ```
 
 What it does: sets reward to one of the provided numbers at random.
@@ -273,8 +301,8 @@ What it does: triggers when speed changes and becomes less than 3.
 
 ```
 if(OnChange('puzzle1', 'Completed'),
-   SetVariable('doorUnlocked', 1, 0.0),
-   0
+   SetVariable('doorUnlocked', 1.0, 0.0),
+   0.0
 )
 ```
 
@@ -288,9 +316,9 @@ What it does:
 #### 2) When coins reach 10+, complete a task
 
 ```
-if(OnChange('coins', >= 10),
+if(OnChange('coins', >= 10.0),
    SetTask('buyDoor', 'Completed', 0.0),
-   0
+   0.0
 )
 ```
 
@@ -329,11 +357,11 @@ This is useful when you want “as soon as both conditions are satisfied, react�
 ```
 if(OnChange('questStep'),
    ifs(
-     $T{questStep} == 'NotActive', SetVariable('hintText', 0, 0.0),
-     $T{questStep} == 'Active',    SetVariable('hintText', 1, 0.0),
-                                   SetVariable('hintText', 2, 0.0)
+     $T{questStep} == 'NotActive', SetVariable('hintText', 0.0, 0.0),
+     $T{questStep} == 'Active',    SetVariable('hintText', 1.0, 0.0),
+                                   SetVariable('hintText', 2.0, 0.0)
    ),
-   0
+   0.0
 )
 ```
 
