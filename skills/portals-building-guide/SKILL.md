@@ -333,11 +333,102 @@ SelectRandom(1, 2, 3, 4, 5)
 SelectRandom('red', 'blue', 'green')
 ```
 
+## Math Functions
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `Min(a, b)` | Returns smaller of two numbers | `Min($N{coins}, 100.0)` → cap at 100 |
+| `Max(a, b)` | Returns larger of two numbers | `Max($N{health}, 0.0)` → prevent negative |
+| `Round(number)` | Rounds to nearest whole | `Round(3.6)` → 4 |
+| `Abs(number)` | Absolute value | `Abs(-5)` → 5 |
+| `Floor(number)` | Rounds down | `Floor(3.9)` → 3 |
+| `Ceiling(number)` | Rounds up | `Ceiling(3.1)` → 4 |
+| `Sqrt(number)` | Square root | `Sqrt(9.0)` → 3 |
+
+**Nesting functions:**
+```
+Min(Max($N{health}, 0.0), 100.0)   // Clamp health between 0-100
+```
+
+## Important Notes
+
+- **Always use decimal notation:** `0.0`, `1.0`, `50.0` (not `0`, `1`, `50`) to avoid type errors
+- **Use nested if(), NOT ifs()** - ifs() may have bugs in some cases
+- **Tasks don't auto-reset** - always add reset function effects
+- **Enable "Trigger on Task Change"** checkbox for Function Effects
+
+---
+
+# LEADERBOARDS
+
+## Post Score to Leaderboard
+
+| Setting | Description |
+|---------|-------------|
+| **Value Label** | Must match the Leaderboard Score Label (e.g., "score", "coins") |
+
+**Compatibility:**
+- Works with: Trigger Cube, Building Cube, Nine Cube, Custom Import
+- Does NOT work with: NPC
+
+**Note:** For time-based leaderboards, the timer auto-posts when it ends.
+
 ---
 
 # USING IFRAMES
 
 Embed external web pages with bidirectional communication.
+
+## Important: Iframe is an Effect, Not a Tool
+
+Iframe is an **effect**, not a building tool. To display an iframe:
+1. Create a task with a trigger (e.g., Player Login)
+2. Add the Iframe effect to that task
+3. The iframe appears when the task activates
+
+## Iframe Effect Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Iframe URL** | URL to the web page |
+| **Layer Order** | Z-index for stacking (higher = on top) |
+| **Left Position (px)** | Distance from left edge |
+| **Right Position (px)** | Distance from right edge |
+| **Top Position (px)** | Distance from top edge |
+| **Bottom Position (px)** | Distance from bottom edge |
+| **Width (px)** | Iframe width in pixels |
+| **Height (px)** | Iframe height in pixels |
+| **NPC will animate** | Toggle mouth animation for NPC dialogues |
+
+## Positioning Tips
+
+**Centering an iframe horizontally:**
+- Calculate: `Left Position = (screen width - iframe width) / 2`
+- Example: 1920px screen, 400px iframe → Left Position = 760
+
+**For HUD elements (scores, timers):**
+- Size iframe to exactly match content (no extra space)
+- Use `Top: 0` for top-of-screen HUDs
+- Typical HUD bar: Width ~400px, Height ~50px
+
+## Creating Transparent HUD Iframes
+
+For HUD overlays where only the content should be visible (no background):
+
+```css
+body {
+  background: transparent;
+}
+
+/* Wrap content in a container with the visible background */
+.hud-container {
+  display: flex;
+  background: rgba(0,0,0,0.9);
+  border-radius: 8px;
+}
+```
+
+**Key principle:** Keep body/html transparent, apply backgrounds only to content containers. Size the iframe to match content exactly.
 
 ## SDK Setup
 
@@ -346,7 +437,7 @@ Add to your HTML:
 <script src="https://portals-labs.github.io/portals-sdk/portals-sdk.js?v=10005456"></script>
 ```
 
-## Sending Messages to Unity
+## Sending Messages to Unity (Iframe → Portals)
 
 ```javascript
 // MUST stringify the JSON object
@@ -366,6 +457,40 @@ PortalsSdk.sendMessageToUnity(JSON.stringify({
 - `SetActiveToNotActive`
 - `SetCompletedToNotActive`
 - `SetNotActiveToCompleted`
+
+## Receiving Messages from Unity (Portals → Iframe)
+
+Use the SDK's message listener to receive commands from Portals:
+
+```javascript
+// Register the listener
+PortalsSdk.setMessageListener(function(message) {
+  console.log('Received:', message);
+
+  // Parse if string
+  let data = message;
+  if (typeof message === 'string') {
+    try {
+      data = JSON.parse(message);
+    } catch (e) {
+      return; // Not JSON
+    }
+  }
+
+  // Handle actions
+  if (data.action === 'updateScore') {
+    updateScore(data.score);
+  }
+});
+```
+
+**Sending from Portals:**
+Use the "Send Message To Iframes" effect with JSON:
+```json
+{"action":"updateScore","score":$N{Score}}
+```
+
+**Tip:** Use `Value Updated` trigger on variables to automatically send iframe updates when values change.
 
 ## Close Iframe
 
