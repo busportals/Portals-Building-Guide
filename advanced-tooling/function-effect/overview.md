@@ -54,8 +54,8 @@ This is a pure “check” (it doesn’t change anything).
 
 ```
 if($T{puzzle1} == 'Completed',
-   SetVariable('doorUnlocked', 1, 0.0),
-   0
+   SetVariable('doorUnlocked', 1.0, 0.0),
+   0.0
 )
 ```
 

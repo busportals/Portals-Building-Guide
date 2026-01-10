@@ -27,7 +27,7 @@ if checks a condition.
 #### Example: return true/false
 
 ```
-if($N{coins} >= 10, true, false)
+if($N{coins} >= 10.0, true, false)
 ```
 
 What it does:
@@ -38,7 +38,7 @@ What it does:
 Most of the time you don’t need this wrapper, because:
 
 ```
-$N{coins} >= 10
+$N{coins} >= 10.0
 ```
 
 already returns true/false by itself.
@@ -50,9 +50,9 @@ already returns true/false by itself.
 #### Example: if coins are 10+, unlock a door
 
 ```
-if($N{coins} >= 10,
-   SetVariable('doorUnlocked', 1, 0.0),
-   0
+if($N{coins} >= 10.0,
+   SetVariable('doorUnlocked', 1.0, 0.0),
+   0.0
 )
 ```
 
@@ -70,7 +70,7 @@ What it does:
 ```
 if($T{puzzle1} == 'Completed',
    SetTask('puzzle2', 'Active', 0.0),
-   0
+   0.0
 )
 ```
 
@@ -90,7 +90,7 @@ What it does:
 ```
 if($T{task1} == 'Active' && $T{task2} == 'Completed',
    SetTask('alarm', 'Active', 0.0),
-   0
+   0.0
 )
 ```
 
@@ -110,8 +110,8 @@ If you only want something to happen at the moment something changes (instead of
 
 ```
 if(OnChange('puzzle1', 'Completed'),
-   SetVariable('doorUnlocked', 1, 0.0),
-   0
+   SetVariable('doorUnlocked', 1.0, 0.0),
+   0.0
 )
 ```
 
@@ -167,10 +167,10 @@ It checks each condition in order:
 
 ```
 ifs(
-  $N{health} <= 0, SetVariable('warningLevel', 3, 0.0),
-  $N{health} <= 3, SetVariable('warningLevel', 2, 0.0),
-  $N{health} <= 6, SetVariable('warningLevel', 1, 0.0),
-                   SetVariable('warningLevel', 0, 0.0)
+  $N{health} <= 0.0, SetVariable('warningLevel', 3.0, 0.0),
+  $N{health} <= 3.0, SetVariable('warningLevel', 2.0, 0.0),
+  $N{health} <= 6.0, SetVariable('warningLevel', 1.0, 0.0),
+                     SetVariable('warningLevel', 0.0, 0.0)
 )
 ```
 
@@ -200,14 +200,14 @@ $T{door} == 'Active'
 instead of:
 
 ```
-$TN{door} == 1
+$TN{door} == 1.0
 ```
 
 #### 3) Use 0.0 for delays
 
 ```
 SetTask('alarm', 'Active', 0.0)
-SetVariable('coins', 10, 0.0)
+SetVariable('coins', 10.0, 0.0)
 ```
 
 ***

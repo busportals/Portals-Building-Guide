@@ -17,8 +17,8 @@ These return a number.
 #### Add and subtract
 
 ```
-$N{coins} + 10
-$N{health} - 1
+$N{coins} + 10.0
+$N{health} - 1.0
 ```
 
 What they do:
@@ -29,8 +29,8 @@ What they do:
 #### Multiply and divide
 
 ```
-$N{score} * 2
-$N{timeLeft} / 2
+$N{score} * 2.0
+$N{timeLeft} / 2.0
 ```
 
 What they do:
@@ -41,20 +41,20 @@ What they do:
 #### Remainder (mod)
 
 ```
-$N{coins} % 2
+$N{coins} % 2.0
 ```
 
 What it does:
 
 * Returns the remainder after dividing by 2
 * Useful for checking “even or odd”
-  * If result is 0, it’s even
-  * If result is 1, it’s odd
+  * If result is 0.0, it’s even
+  * If result is 1.0, it’s odd
 
 #### Exponent (power)
 
 ```
-2 ** 3
+2.0 ** 3.0
 ```
 
 What it does:
@@ -70,7 +70,7 @@ Comparison operators return true or false.
 #### Equal / not equal
 
 ```
-$N{coins} == 10
+$N{coins} == 10.0
 $T{questStep} != 'NotActive'
 ```
 
@@ -88,8 +88,8 @@ $T{alarm} == 'Active'
 #### Greater / less than
 
 ```
-$N{coins} > 10
-$N{health} < 5
+$N{coins} > 10.0
+$N{health} < 5.0
 ```
 
 What they do:
@@ -100,8 +100,8 @@ What they do:
 #### Greater/less than or equal
 
 ```
-$N{coins} >= 10
-$N{health} <= 0
+$N{coins} >= 10.0
+$N{health} <= 0.0
 ```
 
 What they do:
@@ -162,13 +162,13 @@ Parentheses make your logic clear and avoid surprises.
 Example:
 
 ```
-($N{coins} >= 10 && $T{doorTask} == 'Active') || $T{adminOverride} == 'Completed'
+($N{coins} >= 10.0 && $T{doorTask} == 'Active') || $T{adminOverride} == 'Completed'
 ```
 
 What it does:
 
 * True if:
-  * coins >= 10 AND doorTask is Active
+  * coins >= 10.0 AND doorTask is Active
   * OR adminOverride is Completed
 
 ***
@@ -178,7 +178,7 @@ What it does:
 #### Example: can the player buy an item?
 
 ```
-$N{coins} >= 50 && $T{shopOpen} == 'Active'
+$N{coins} >= 50.0 && $T{shopOpen} == 'Active'
 ```
 
 What it does:
@@ -190,7 +190,7 @@ What it does:
 #### Example: low health warning
 
 ```
-$N{health} <= 3
+$N{health} <= 3.0
 ```
 
 What it does:

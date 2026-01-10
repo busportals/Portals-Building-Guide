@@ -43,7 +43,7 @@ Returns the task’s state as a number:
 Example:
 
 ```
-$TN{alarm} == 1
+$TN{alarm} == 1.0
 ```
 
 What it does: checks if the alarm task is Active (because 1 means Active). Returns true or false.
@@ -57,7 +57,7 @@ Returns the current value of a variable.
 Example:
 
 ```
-$N{coins} >= 10
+$N{coins} >= 10.0
 ```
 
 What it does: checks if coins is 10 or more. Returns true or false.
@@ -272,7 +272,7 @@ What it does: becomes true whenever questStep changes state (NotActive → Activ
 Example:
 
 ```
-OnChange('coins', >= 10)
+OnChange('coins', >= 10.0)
 ```
 
 What it does: triggers when coins changes and meets the condition “10 or more”.
@@ -280,7 +280,7 @@ What it does: triggers when coins changes and meets the condition “10 or more�
 Example:
 
 ```
-OnChange('health', == 0)
+OnChange('health', == 0.0)
 ```
 
 What it does: triggers when health changes and becomes exactly 0.
@@ -288,7 +288,7 @@ What it does: triggers when health changes and becomes exactly 0.
 Example:
 
 ```
-OnChange('speed', < 3)
+OnChange('speed', < 3.0)
 ```
 
 What it does: triggers when speed changes and becomes less than 3.

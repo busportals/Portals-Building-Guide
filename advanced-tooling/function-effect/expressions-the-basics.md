@@ -11,14 +11,14 @@ Numbers are used for things like coins, score, health, timers, and calculations.
 Examples:
 
 ```
-10
+10.0
 3.5
 0.0
 ```
 
 What they do:
 
-* 10 is ten
+* 10.0 is ten
 * 3.5 is three and a half
 * 0.0 is zero (we recommend using decimals for delays like 0.0, 1.5, 2.0)
 
@@ -58,13 +58,13 @@ Some expressions return true or false.
 Examples:
 
 ```
-$N{coins} >= 10
+$N{coins} >= 10.0
 $T{task1} == 'Completed'
 ```
 
 What they do:
 
-* $N{coins} >= 10 is true when coins is 10 or more
+* $N{coins} >= 10.0 is true when coins is 10 or more
 * $T{task1} == 'Completed' is true when task1 is completed
 
 ***
@@ -76,12 +76,12 @@ Parentheses control the order things happen in, and make logic easier to read.
 Example:
 
 ```
-($N{coins} >= 10) && ($T{questStep} == 'Active')
+($N{coins} >= 10.0) && ($T{questStep} == 'Active')
 ```
 
 What it does:
 
-* First checks coins >= 10
+* First checks coins >= 10.0
 * Also checks questStep is Active
 * Returns true only if both are true
 
@@ -94,8 +94,8 @@ You’ll often compare numbers or text:
 #### Number comparisons
 
 ```
-$N{coins} > 0
-$N{health} <= 10
+$N{coins} > 0.0
+$N{health} <= 10.0
 ```
 
 What they do:
@@ -142,7 +142,7 @@ What it does: true if either task is completed.
 #### Example: check if the player can open a door
 
 ```
-$N{keys} >= 1 && $T{doorTask} == 'Active'
+$N{keys} >= 1.0 && $T{doorTask} == 'Active'
 ```
 
 What it does:
@@ -154,7 +154,7 @@ What it does:
 #### Example: basic math using a variable
 
 ```
-$N{coins} + 5
+$N{coins} + 5.0
 ```
 
 What it does:

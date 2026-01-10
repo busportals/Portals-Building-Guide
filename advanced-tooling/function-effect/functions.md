@@ -18,7 +18,7 @@ Returns the smaller of two numbers.
 Example:
 
 ```
-Min($N{coins}, 100)
+Min($N{coins}, 100.0)
 ```
 
 What it does:
@@ -37,7 +37,7 @@ Returns the larger of two numbers.
 Example:
 
 ```
-Max($N{health}, 0)
+Max($N{health}, 0.0)
 ```
 
 What it does:
@@ -122,7 +122,7 @@ Square root.
 Example:
 
 ```
-Sqrt(9)
+Sqrt(9.0)
 ```
 
 What it does:
@@ -136,7 +136,7 @@ What it does:
 #### 1) Cap coins at 999
 
 ```
-SetVariable('coins', Min($N{coins}, 999), 0.0)
+SetVariable('coins', Min($N{coins}, 999.0), 0.0)
 ```
 
 What it does:
@@ -147,7 +147,7 @@ What it does:
 #### 2) Prevent health from going below 0
 
 ```
-SetVariable('health', Max($N{health} - 1, 0), 0.0)
+SetVariable('health', Max($N{health} - 1.0, 0.0), 0.0)
 ```
 
 What it does:
@@ -172,9 +172,9 @@ What it does:
 #### Example: if coins are too high, cap them
 
 ```
-if($N{coins} > 999,
-   SetVariable('coins', 999, 0.0),
-   0
+if($N{coins} > 999.0,
+   SetVariable('coins', 999.0, 0.0),
+   0.0
 )
 ```
 
@@ -189,11 +189,11 @@ You can also do this in one line using Min (from above), which is usually cleane
 
 ### Notes
 
-* Functions always use parentheses: Min(1, 2)
+* Functions always use parentheses: Min(1.0, 2.0)
 * You can nest functions (use a function inside another function) if needed:
 
 ```
-Min(Max($N{health}, 0), 100)
+Min(Max($N{health}, 0.0), 100.0)
 ```
 
 * What it does:
