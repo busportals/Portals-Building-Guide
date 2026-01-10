@@ -1,4 +1,8 @@
-# 👯 Multiplayer Tasks
+---
+icon: people
+---
+
+# Multiplayer Tasks
 
 Multiplayer tasks are tasks where every user can see the effects following a state change, regardless of who triggers it.. Take the below example of a door opening, if the task is setup as a multiplayer task after any user clicks on the door, all users can see it open.
 

@@ -1,4 +1,8 @@
-# 🐛 Task Debug Panel
+---
+icon: bug
+---
+
+# Task Debug Panel
 
 The Task Debug Panel is designed to help you test your setup and implementation of interactive studio items.
 

@@ -1,4 +1,8 @@
-# 📓 Overview
+---
+icon: book-open
+---
+
+# Overview
 
 ## The Interactive Studio at a high-level
 

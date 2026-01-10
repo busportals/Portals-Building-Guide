@@ -1,4 +1,8 @@
-# 🗺️ Quests
+---
+icon: code-pull-request-draft
+---
+
+# Quests
 
 You can turn any task into a quest by toggling on the visibility of the task.
 

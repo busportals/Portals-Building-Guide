@@ -1,4 +1,8 @@
-# 🕺 Single Player Tasks
+---
+icon: person
+---
+
+# Single Player Tasks
 
 ## Overview
 

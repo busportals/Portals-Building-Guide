@@ -1,2 +1,6 @@
-# 📋 Tasks
+---
+icon: diagram-cells
+---
+
+# Tasks
 

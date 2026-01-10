@@ -1,4 +1,8 @@
-# 🖼️ Using Iframes in Portals
+---
+icon: frame
+---
+
+# Using Iframes in Portals
 
 Portals supports embedding external web pages via iframes, enabling communication between your content and the Portals interactive studio. This is ideal for interactive overlays, web-based tasks, mini-games, or integrated user flows.
 

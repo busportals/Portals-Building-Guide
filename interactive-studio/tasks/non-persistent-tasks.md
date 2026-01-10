@@ -1,4 +1,8 @@
-# 🛑 Non-Persistent Tasks
+---
+icon: octagon
+---
+
+# Non-Persistent Tasks
 
 By default, all tasks are "persistent". This means that the state of the task will persist in between sessions. So if 'Task 1' is in the completed state and you refresh the room it will still be in the completed state.
 

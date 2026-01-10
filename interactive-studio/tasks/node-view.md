@@ -1,4 +1,8 @@
-# 📈 Node View
+---
+icon: share-nodes
+---
+
+# Node View
 
 ## Usage
 
