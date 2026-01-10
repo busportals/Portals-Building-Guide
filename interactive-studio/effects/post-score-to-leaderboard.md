@@ -10,6 +10,8 @@ description: 'Effect: Posts the users score to a leaderboard.'
 
 * Getting a score to display on a leaderboard.
 
+Tip: This posts the player's current value for the label you choose. Make sure the Value Label matches the Leaderboard Score Label in your space. For time-based leaderboards, you do not need this effect because the time posts when the timer ends. See [Leaderboard](../../building-basics/portals-building-tools/leaderboard.md).
+
 ## Configuration
 
 ***

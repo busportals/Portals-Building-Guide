@@ -11,6 +11,7 @@ description: 'Effect: Updates a users score value.'
 * Adding to someones score.
 * Setting someones score to 0.
 * Subtracting scores for a "death" in a game.
+* Updating the value that a leaderboard reads (see [Leaderboard](../../building-basics/portals-building-tools/leaderboard.md)).
 
 ## Configuration
 
