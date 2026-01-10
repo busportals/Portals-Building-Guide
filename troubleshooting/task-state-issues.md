@@ -7,6 +7,20 @@ description: Fix tasks that won't change state or behave unexpectedly
 
 Tasks have three states: **NotActive**, **Active**, and **Completed**. This guide helps when tasks get stuck or don't transition as expected.
 
+## Understanding Task Persistence
+
+**Important:** All tasks in Portals start in the **NotActive** state. This applies to:
+- New tasks you create
+- All tasks for new players entering your space for the first time
+
+**Tasks persist by default.** Once a task changes state, it stays in that state across sessions unless:
+- You explicitly change it with a trigger/effect
+- You've enabled "Non-Persistent" in the task settings
+
+This means if a player completes a quest and returns later, the task will still be **Completed**. Tasks do not automatically reset to NotActive on their own.
+
+---
+
 ## Quick Checklist
 
 - [ ] **Task exists** - Verify the task name in Space Options > Tasks
@@ -90,19 +104,34 @@ Trigger B → Set task to NotActive
 
 **Symptom:** Task state reverts to NotActive when it shouldn't.
 
+**Remember:** By default, tasks persist across sessions. If a task is resetting, something is explicitly causing it.
+
 ### Common Causes
 
-1. **Non-Persistent Task**
+1. **Non-Persistent Setting Enabled**
    - Check Space Options > Tasks
    - If "Non-Persistent" is enabled, task resets on page reload
    - Disable for tasks that should save progress
+   - **Default is persistent** - you must explicitly enable non-persistent behavior
 
 2. **Reset All Tasks Effect**
    - Search for any "Reset All Tasks" effects in your space
    - These reset ALL tasks to NotActive
    - Consider using targeted task state changes instead
 
-3. **Page Reload Triggered**
+3. **Player Login Trigger Resetting Tasks**
+   - Check if you have a Player Login trigger that sets tasks to NotActive
+   - This would reset returning players' progress
+   - If you want one-time initialization, check the task state first:
+   ```
+   // Only set up if player hasn't started yet
+   if($T{gameStarted} == 'NotActive',
+      SetTask('tutorial', 'Active', 0.0),
+      0.0
+   )
+   ```
+
+4. **Page Reload Triggered**
    - Teleporting between spaces resets non-persistent tasks
    - Check if any portals are inadvertently reloading the space
 

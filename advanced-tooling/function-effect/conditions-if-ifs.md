@@ -14,6 +14,19 @@ The main tool is:
 
 ***
 
+### About Task States
+
+Before working with task conditions, remember:
+
+* All tasks start as **NotActive** for new players
+* **Tasks persist by default** - once changed, they stay in that state across sessions
+* Tasks do NOT automatically reset to NotActive on their own
+* To make a task reset on reload, enable "Non-Persistent" in task settings
+
+This means checking `$T{myTask} == 'NotActive'` is how you detect "hasn't started yet" for both new and returning players (unless the task is non-persistent).
+
+***
+
 ### if(condition, whenTrue, whenFalse)
 
 #### Basic idea
