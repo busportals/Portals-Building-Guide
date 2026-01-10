@@ -402,14 +402,21 @@ Iframe is an **effect**, not a building tool. To display an iframe:
 
 ## Positioning Tips
 
-**Centering an iframe horizontally:**
-- Calculate: `Left Position = (screen width - iframe width) / 2`
-- Example: 1920px screen, 400px iframe → Left Position = 760
+**Important:** Only fill in position/size values you want to change. **Leave other fields blank** - don't enter zeros for fields you don't need.
 
-**For HUD elements (scores, timers):**
-- Size iframe to exactly match content (no extra space)
-- Use `Top: 0` for top-of-screen HUDs
-- Typical HUD bar: Width ~400px, Height ~50px
+**For top-centered HUD:**
+- Set **only** `Top Position: 0`
+- Leave Left, Right, Width, Height **blank**
+- The iframe content will auto-center if CSS uses `justify-content: center`
+
+**For bottom-right popup:**
+- Set only `Bottom Position` and `Right Position`
+- Leave other fields blank
+
+**For fixed-size centered iframe:**
+- Calculate Left: `(screen width - iframe width) / 2`
+- Example: 1920px screen, 400px iframe → Left Position = 760
+- Note: Fixed positioning doesn't adapt to different screen sizes
 
 ## Creating Transparent HUD Iframes
 
