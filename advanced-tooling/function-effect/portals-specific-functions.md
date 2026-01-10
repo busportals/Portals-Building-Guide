@@ -146,6 +146,56 @@ Tip: write delays as 0.0, 1.5, 2.0 (not 0, 2) to avoid number type issues.
 
 ***
 
+### Random selection
+
+#### SelectRandom
+
+SelectRandom picks one item at random from the list you provide.
+
+Syntax
+
+```
+SelectRandom(item1, item2, item3, ...)
+```
+
+What it does: returns one of the provided items at random.
+
+Example: add a random number (1–10) to coins
+
+```
+SetVariable('coins', $N{coins} + SelectRandom(1,2,3,4,5,6,7,8,9,10), 0.0)
+```
+
+What it does: picks a random number from 1 to 10, adds it to coins, then saves the result.
+
+Example: random 50/50 (true or false)
+
+```
+SelectRandom(true, false)
+```
+
+What it does: returns true about half the time and false the other half.
+
+Example: random reward amount
+
+```
+SetVariable('reward', SelectRandom(5, 10, 25, 50), 0.0)
+```
+
+What it does: sets reward to one of the provided numbers at random.
+
+Example: random task state
+
+```
+SetTask('alarm', SelectRandom('NotActive', 'Active', 'Completed'), 0.0)
+```
+
+What it does: sets the alarm task to a random state.
+
+Note: SelectRandom can include numbers, strings, variables, and full expressions. Make sure the result type matches what you’re doing (numbers for SetVariable, task state strings for SetTask).
+
+***
+
 ### OnChange trigger
 
 OnChange is used to react when something changes:
@@ -294,4 +344,3 @@ What it does:
   * If it’s Active → set hintText to 1
   * Otherwise (Completed) → set hintText to 2
 * If questStep didn’t change, nothing happens.
-
