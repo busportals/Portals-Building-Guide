@@ -1361,6 +1361,467 @@ Remove this before publishing!
 
 ---
 
+# IFRAME BEST PRACTICES
+
+## The Golden Rules of Portals Iframes
+
+### Rule 1: Different Syntax for Each Direction
+
+This is the #1 source of iframe bugs. The syntax is DIFFERENT depending on direction:
+
+**Portals → Iframe (Send Message To Iframes effect):**
+```
+score_|Red_Score|_|Blue_Score|
+```
+- Use pipe syntax `|variableName|` for variables
+- Do NOT use `$N{variableName}` - that's for Function Effects only
+- Do NOT use JSON with colons - it breaks the parser
+
+**Iframe → Portals (JavaScript):**
+```javascript
+PortalsSdk.sendMessageToUnity(JSON.stringify({
+  TaskName: 'myTask',
+  TaskTargetState: 'SetNotActiveToActive'
+}));
+```
+- MUST use JSON.stringify()
+- MUST use exact TaskTargetState values
+- Raw objects cause "[object Object] is not supported" error
+
+### Rule 2: Iframes Load Asynchronously
+
+**The Problem:** When you activate an iframe AND send a message in the same task, the message arrives BEFORE the iframe finishes loading. The iframe never receives it.
+
+**Console log showing this bug:**
+```
+[12:00:01] Sending message to iframes: scores_50_32
+[12:00:01] Activating Iframe Event https://example.com/game-over.html
+[12:00:02] [Iframe] Initialized - waiting for messages  ← Too late!
+```
+
+**The Solution: Ready Handshake Pattern**
+
+1. Pass static data in URL parameters (always available)
+2. Iframe sends "ready" signal when loaded
+3. Portals sends dynamic data AFTER ready signal
+
+```
+Task activates iframe with ?winner=red in URL
+         ↓
+Iframe loads, reads winner from URL
+         ↓
+Iframe sends: gameover_ready → Completed
+         ↓
+Portals function triggers on gameover_ready Completed
+         ↓
+Portals sends: scores_50_32
+         ↓
+Iframe receives scores message, displays result
+```
+
+### Rule 3: Always Bust the Cache
+
+GitHub Pages and browsers cache aggressively. Your changes won't appear without cache busting.
+
+**Add version parameter to ALL iframe URLs:**
+```
+https://example.github.io/my-hud/index.html?v=1
+```
+
+**Every time you update the iframe:**
+1. Push to GitHub
+2. Wait 1-2 minutes for GitHub Pages to update
+3. Increment version: `?v=2`, `?v=3`, etc.
+4. Update the URL in Portals
+
+**Pro tip:** Use a high random number during development (`?v=99847`) so you don't have to track versions.
+
+### Rule 4: Handle Message Parsing Defensively
+
+Messages from Portals can arrive in different formats. Your parsing code must handle all cases:
+
+```javascript
+PortalsSdk.setMessageListener(function(message) {
+  console.log('[Iframe] Raw message:', message, typeof message);
+
+  let msg = message;
+
+  // Step 1: If it's a string, try to parse as JSON
+  if (typeof message === 'string') {
+    try {
+      msg = JSON.parse(message);
+    } catch (e) {
+      // Not JSON - that's OK, keep as string
+      // DO NOT RETURN HERE - underscore format won't be JSON
+      msg = message;
+    }
+  }
+
+  // Step 2: Convert to string for pattern matching
+  const msgStr = typeof msg === 'string' ? msg : JSON.stringify(msg);
+
+  // Step 3: Handle your message patterns
+  if (msgStr.startsWith('score_')) {
+    const value = parseFloat(msgStr.substring(6));
+    if (!isNaN(value)) {
+      updateScore(value);
+    }
+  } else if (msgStr.startsWith('time_')) {
+    const value = parseFloat(msgStr.substring(5));
+    if (!isNaN(value)) {
+      updateTimer(value);
+    }
+  }
+  // Add more patterns as needed
+});
+```
+
+**Critical mistakes to avoid:**
+- Don't `return` after JSON.parse fails - underscore format isn't JSON
+- Don't assume message type - always check
+- Don't forget `!isNaN()` check after parseFloat
+
+### Rule 5: Design for Late Joiners
+
+In multiplayer, players can join mid-game. Your iframe needs to handle this:
+
+**Problem:** Player joins when score is 25-18 and timer is at 5:32. Their iframe shows 0-0 and 10:00.
+
+**Solution: Sync on Load**
+
+Option A: Request current state
+```javascript
+// Iframe requests sync when loaded
+PortalsSdk.sendMessageToUnity(JSON.stringify({
+  TaskName: 'request_sync',
+  TaskTargetState: 'SetNotActiveToActive'
+}));
+
+// Portals responds with full state: sync_332_25_18
+```
+
+Option B: Continuous updates
+```javascript
+// Portals sends updates every second via Value Updated triggers
+// Late joiner receives next update within 1 second
+```
+
+### Rule 6: Keep Iframes Stateless When Possible
+
+Iframes can be closed and reopened. They can refresh. Don't rely on iframe state.
+
+**Bad:** Iframe tracks score internally, only receives increments
+```javascript
+let score = 0;
+// If iframe refreshes, score resets to 0 but game score is 25
+```
+
+**Good:** Iframe receives absolute values, displays what it's told
+```javascript
+// Portals always sends current total: score_25
+// Iframe just displays 25, no internal tracking needed
+```
+
+### Rule 7: Transparent Backgrounds for HUDs
+
+For HUD overlays, you want only your UI visible, not a white/colored background:
+
+```css
+html, body {
+  background: transparent;  /* Critical! */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.hud-container {
+  /* Apply visible background only to your content */
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  padding: 10px;
+}
+```
+
+**The key:** Keep html/body transparent, apply backgrounds only to content containers.
+
+### Rule 8: Size Iframes Correctly
+
+**For HUDs:** Size to match your content exactly
+- If your HUD bar is 600x80px, set iframe to 600x80
+- Extra space will be transparent but may block clicks
+
+**For Popups/Modals:** Size to fit with padding
+- Leave room for close button if visible
+- Consider different screen sizes
+
+**Position fields:** Only fill in what you need, leave others BLANK (not 0)
+- Top-centered: Only set `Top Position: 0`
+- Bottom-right: Only set `Bottom Position` and `Right Position`
+
+---
+
+# INTERPRETING PORTALS CONSOLE LOGS
+
+## How to Read the Console
+
+Access: Open browser developer tools (F12) → Console tab while in Portals
+
+The console shows everything happening in your space. Learning to read it is essential for debugging.
+
+## Log Types and What They Mean
+
+### Task State Changes
+
+```
+[TaskSystem] Task 'JoinRed' state changed: NotActive → Active
+[TaskSystem] Trigger: User Enter Trigger on TriggerCube_RedZone
+```
+
+**What this tells you:**
+- Which task changed
+- What state it changed to
+- What trigger caused it
+
+**Debugging use:** Verify triggers are firing and tasks are changing state.
+
+---
+
+### Effect Execution
+
+```
+[EffectSystem] Executing effects for 'JoinRed' on Active
+[EffectSystem] → Teleport to 'RedSpawn1'
+[EffectSystem] → Notification: "Joined Red Team"
+[EffectSystem] → Function Effect executed
+```
+
+**What this tells you:**
+- Which effects ran
+- In what order
+- Whether they completed
+
+**Debugging use:** Verify effects are attached to the right state and running.
+
+---
+
+### Function Effect Details
+
+```
+[FunctionEffect] Evaluating: if($N{Player_Team} == 0.0, SetVariable('Player_Team', 1.0, 0.0), 0.0)
+[FunctionEffect] $N{Player_Team} = 0
+[FunctionEffect] Condition true, executing: SetVariable('Player_Team', 1.0, 0.0)
+[FunctionEffect] Result: Variable 'Player_Team' set to 1
+```
+
+**What this tells you:**
+- The exact expression being evaluated
+- Current variable values
+- Which branch executed
+- The result
+
+**Debugging use:** See why conditions pass or fail, verify variable values.
+
+---
+
+### Variable Updates
+
+```
+[VariableManager] Variable 'Red_Score' updated: 24 → 25
+[VariableManager] Source: Function Effect in task 'KillHandler'
+```
+
+**What this tells you:**
+- Which variable changed
+- Old and new values
+- What caused the change
+
+**Debugging use:** Track variable changes, find unexpected modifications.
+
+---
+
+### Iframe Messages
+
+```
+[IframeManager] Sending message to iframes: score_25
+[IframeManager] Activating Iframe: https://example.com/hud.html?v=5
+[IframeManager] Received from iframe: {"TaskName":"gameover_ready","TaskTargetState":"SetNotActiveToCompleted"}
+```
+
+**What this tells you:**
+- Messages being sent to iframes
+- When iframes are activated/deactivated
+- Messages received from iframes
+
+**Debugging use:** Verify message flow, check timing issues.
+
+---
+
+### Error Messages
+
+```
+[ERROR] NCalc parse error in Function Effect: Unexpected token ':' at position 15
+[ERROR] Task 'InvalidTask' not found
+[ERROR] Spawn point 'RedSpawn1' not found (check case sensitivity)
+[ERROR] Variable 'score' is undefined
+```
+
+**What this tells you:**
+- Syntax errors in expressions
+- Missing references
+- Typos in names
+
+**Debugging use:** Direct pointer to what's broken.
+
+---
+
+## Common Log Patterns and What They Mean
+
+### Pattern: Message Sent Before Iframe Activated
+
+```
+[12:00:01.100] Sending message to iframes: gameover_red_50_32
+[12:00:01.150] Activating Iframe: game-over.html
+```
+
+**Problem:** Message sent 50ms BEFORE iframe activated. Iframe won't receive it.
+
+**Fix:** Use ready handshake pattern. Iframe signals when loaded, then receives message.
+
+---
+
+### Pattern: Rapid Task State Cycling
+
+```
+[12:00:01.000] Task 'GameTimer' state: NotActive → Active
+[12:00:01.010] Task 'GameTimer' state: Active → NotActive
+[12:00:01.020] Task 'GameTimer' state: NotActive → Active
+[12:00:01.030] Task 'GameTimer' state: Active → NotActive
+... (hundreds more)
+```
+
+**Problem:** Task is looping too fast, probably missing delay or wrong timing.
+
+**Fix:** Check your reset and loop delays. Should be:
+```
+SetTask('GameTimer', 'NotActive', 0.9)  // Reset
+SetTask('GameTimer', 'Active', 1.0)    // Loop (must be > reset delay)
+```
+
+---
+
+### Pattern: Variable Shows NaN or Undefined
+
+```
+[FunctionEffect] $N{Red_Score} = NaN
+[FunctionEffect] Evaluating: $N{Red_Score} + 1.0
+[FunctionEffect] Result: NaN
+```
+
+**Problem:** Variable was never initialized or was set to non-numeric value.
+
+**Fix:** Initialize variables on Player Login:
+```
+SetVariable('Red_Score', 0.0, 0.0)
+```
+
+---
+
+### Pattern: Multiple Players Claiming Host
+
+```
+[Player1] Setting I_Am_Host = 1
+[Player2] Setting I_Am_Host = 1
+[Player1] Setting Timer_Host_Exists = 1
+[Player2] Setting Timer_Host_Exists = 1
+```
+
+**Problem:** Both players checked `Host_Exists` before either set it (race condition).
+
+**Fix:** Increase delay before checking:
+```
+SetTask('BecomeHost', 'Active', 3.0)  // Wait 3 seconds for sync
+```
+
+---
+
+### Pattern: Effect Runs for All Players
+
+```
+[Player1] KillHandler Active - awarding point to Blue
+[Player2] KillHandler Active - awarding point to Blue
+[Player3] KillHandler Active - awarding point to Blue
+```
+
+**Problem:** Multiplayer task running effects for everyone when only one player died.
+
+**Fix:** KillHandler should be Single Player task, not Multiplayer.
+
+---
+
+### Pattern: Condition Always False
+
+```
+[FunctionEffect] Evaluating: if($N{Player_Team} == 1, ...)
+[FunctionEffect] $N{Player_Team} = 1.0
+[FunctionEffect] Condition false
+```
+
+**Problem:** Comparing `1.0` to `1` (different types in some cases).
+
+**Fix:** Always use decimal notation:
+```
+if($N{Player_Team} == 1.0, ...)
+```
+
+---
+
+## Debug Logging Strategy
+
+### Add Strategic Console Logs
+
+When debugging, add console.log() at key decision points:
+
+```javascript
+PortalsSdk.setMessageListener(function(message) {
+  console.log('[RECV] Raw:', message);
+  console.log('[RECV] Type:', typeof message);
+
+  // ... parsing ...
+
+  console.log('[RECV] Parsed:', parsedValue);
+  console.log('[RECV] Action:', whatWeWillDo);
+});
+```
+
+### Use Descriptive Prefixes
+
+Make logs easy to filter:
+- `[HUD]` - HUD iframe logs
+- `[GameOver]` - Game over screen logs
+- `[Timer]` - Timer-related logs
+- `[RECV]` - Received messages
+- `[SEND]` - Sent messages
+- `[ERROR]` - Error conditions
+
+### Log State Changes
+
+```javascript
+function updateScore(team, newScore) {
+  console.log(`[HUD] Score update: ${team} = ${newScore}`);
+  // ... update display ...
+  console.log(`[HUD] Display updated`);
+}
+```
+
+### Remove Debug Logs for Production
+
+Before publishing:
+1. Remove or comment out console.log statements
+2. Remove visible debug displays
+3. Test one more time to make sure nothing broke
+
+---
+
 # QUESTS
 
 Turn any task into a trackable quest:
