@@ -149,94 +149,708 @@ Visual graph interface for analyzing game logic.
 - Click any node to edit its configuration
 - See which triggers fire which tasks
 
-## Triggers (17 Types)
+## Triggers (17 Types) - Detailed Guide
 
-| Trigger | Description |
-|---------|-------------|
-| **Backpack Item Activated** | Player uses backpack item |
-| **Click** | Object is clicked |
-| **Collision** | Physical collision with trigger volume |
-| **Item Collected** | Collectible gathered |
-| **Key Pressed** | Keyboard input detected |
-| **Key Released** | Keyboard key is released |
-| **Player Died** | Health reaches zero |
-| **Player Login** | Player enters space |
-| **Player Started Moving** | Player begins movement |
-| **Player Stopped Moving** | Player stops moving |
-| **Swap Volume** | Audio changes |
-| **Timer Stopped** | Countdown completes |
-| **User Enter Trigger** | Player enters zone |
-| **User Exit Trigger** | Player leaves zone |
-| **Value Updated** | Variable changes |
-| **Wearable Off** | Item unequipped |
-| **Wearable On** | Item equipped |
+Triggers are events that cause tasks to change state. Understanding when each trigger fires is critical for building reliable game logic.
 
-## Effects (60+ Types)
+### Backpack Item Activated
+**What it does:** Fires when a player uses an item from their backpack/inventory.
 
-**Movement/Camera:**
-- Apply Velocity To Player
-- Change Camera Filter/State/Zoom
-- Lock/Unlock Camera
-- Lock/Unlock Movement
-- Teleport
-- Toggle Free Camera
-- Toggle Cursor Lock
-- Start/Stop Auto Run
+**Use cases:**
+- Consumable items (health potions, power-ups)
+- Tools that players can activate on demand
+- Special abilities tied to inventory items
 
-**Visual/Environment:**
-- Change Bloom
-- Change Fog
-- Change Time of Day
-- Hide/Show Object
-- Hide/Show Outline
+**Example:** Player clicks "Health Potion" in backpack → trigger fires → effect heals player
 
-**Player:**
-- Change Avatar
-- Lock/Unlock Avatar Change
-- Change Player Health
-- Change Movement Profile
-- Play Emote
-- Equip Wearable
-- Avatar Screen
+---
 
-**Audio:**
-- Play Sound Once
-- Play Sound In Loop
-- Toggle Mute
-- Change Audius Playlist
-- Change Voice Group
+### Click
+**What it does:** Fires when a player clicks on the object this trigger is attached to.
 
-**UI/Display:**
-- Notification Pill
-- Display Value
-- Hide Value
-- Dialogue Effector Display
-- Show/Hide Token Swap
-- Iframe
-- Close Iframe
-- Send Message to Iframes
+**Use cases:**
+- Interactive buttons and switches
+- Doors that open when clicked
+- NPCs that respond to clicks
+- Any "press to interact" mechanic
 
-**Game Logic:**
-- Update Value
-- Post Score to Leaderboard
-- Reset Leaderboard
-- Reset All Tasks
-- Run Trigger From Effector
-- Cancel Timer
+**Important:** The click must be on the specific object. For area-based interactions, use User Enter Trigger instead.
 
-**Objects:**
-- Move Item
-- Duplicate Item
-- Portals Animation
+**Example:** Player clicks a lever → trigger fires → door opens
 
-**NPC Effects:**
-- Turn To Player
-- Walk to Position
-- Record NPC Path
-- Change Animation
-- Change Mood
-- Show/Hide NPC
-- Message to NPC
+---
+
+### Collision
+**What it does:** Fires when the player's physics collider touches a trigger volume. This is for physics-based interactions.
+
+**Use cases:**
+- Detecting when player hits an obstacle
+- Projectile impacts
+- Physics puzzle elements
+
+**Important:** For simply detecting when a player walks into an area, use "User Enter Trigger" instead. Collision is for physics interactions.
+
+---
+
+### Item Collected
+**What it does:** Fires when a player picks up a Collectible GLB object.
+
+**Use cases:**
+- Coin/gem collection games
+- Scavenger hunts
+- Key items for puzzles
+- Tracking collection progress
+
+**Common pattern:** Item Collected → Update Value (+1) → check if all items collected
+
+---
+
+### Key Pressed
+**What it does:** Fires when player presses a specific keyboard key.
+
+**Configuration:** Select which key to listen for (E, F, numbers, etc.)
+
+**Use cases:**
+- Custom interaction keys beyond the default X
+- Ability hotkeys (press 1 for sword, 2 for shield)
+- Debug/admin commands
+- Quick actions without clicking
+
+**Important:** Only works when the Portals window has focus. If player clicks outside, key triggers won't fire.
+
+---
+
+### Key Released
+**What it does:** Fires when player releases a keyboard key they were holding.
+
+**Use cases:**
+- Charged abilities (hold to charge, release to fire)
+- Sprint mechanics (hold to run, release to walk)
+- Any hold-and-release interaction
+
+---
+
+### Player Died
+**What it does:** Fires when the player's health reaches zero.
+
+**Use cases:**
+- Respawn systems
+- Death counters
+- Game over screens
+- Score penalties on death
+- Team deathmatch kill tracking
+
+**Critical for games:** This is how you detect kills. When Player A kills Player B, Player B's "Player Died" trigger fires. The killer is determined by which team the dead player was on (enemy team gets the point).
+
+**Example pattern:**
+```
+Player Died →
+  Check which team player was on →
+  Award point to opposite team →
+  Respawn player after delay
+```
+
+---
+
+### Player Login
+**What it does:** Fires once when a player enters/loads into the space.
+
+**Use cases:**
+- Initialize player variables (set team to 0, health to 100)
+- Show welcome messages or tutorials
+- Spawn HUD iframes
+- Assign player to default state
+- Start background music
+- Check if player should become game host
+
+**Critical:** This is your "on game start" trigger for each player. Use it to set up everything the player needs.
+
+**Common pattern:**
+```
+Player Login →
+  Set Player_Team = 0
+  Set Player_Health = 100
+  Show HUD iframe
+  Check if host exists (with delay)
+```
+
+---
+
+### Player Started Moving
+**What it does:** Fires when a stationary player begins moving (WASD or joystick).
+
+**Use cases:**
+- Tutorial prompts ("Great, you're moving!")
+- Stealth games (movement breaks stealth)
+- Idle detection systems
+- Triggering ambient sounds when player moves
+
+---
+
+### Player Stopped Moving
+**What it does:** Fires when a moving player comes to a stop.
+
+**Use cases:**
+- Idle animations or effects
+- "Stand still to interact" mechanics
+- AFK detection
+- Meditation/rest mechanics
+
+---
+
+### Swap Volume
+**What it does:** Fires when audio volume or track changes.
+
+**Use cases:**
+- Sync visual effects to music
+- Trigger events on song changes
+- Audio-reactive environments
+
+---
+
+### Timer Stopped
+**What it does:** Fires when a countdown timer reaches zero.
+
+**Use cases:**
+- Race finish detection
+- Time-limited challenges
+- Round timers
+- Bomb defusal countdown
+
+**Note:** This is for the built-in Portals timer, not custom iframe timers.
+
+---
+
+### User Enter Trigger
+**What it does:** Fires when a player walks into a Trigger Cube's volume.
+
+**This is one of the most important triggers.** Use it for:
+- Zone detection (player entered red base, blue base, danger zone)
+- Automatic doors
+- Checkpoint systems
+- Team selection areas
+- Teleport zones
+- Any "walk here to do something" mechanic
+
+**Configuration:**
+- Attach to a Trigger Cube object
+- Size the cube to cover the detection area
+- Optional: "Press X to Activate" for manual activation instead of auto
+
+**Example:** Player walks into red team zone → User Enter Trigger fires → Set Player_Team = 1
+
+---
+
+### User Exit Trigger
+**What it does:** Fires when a player leaves a Trigger Cube's volume.
+
+**Use cases:**
+- Close doors after player leaves
+- Remove buffs when leaving an area
+- Stop area-specific music
+- Hide contextual UI
+- Boundary warnings ("You're leaving the play area!")
+
+**Common pattern:** Enter shows something, Exit hides it
+```
+User Enter → Show Token Swap UI
+User Exit → Hide Token Swap UI
+```
+
+---
+
+### Value Updated
+**What it does:** Fires whenever a specific variable changes value.
+
+**Configuration:** Select which variable to watch
+
+**Use cases:**
+- React to score changes (update HUD when Red_Score changes)
+- Threshold detection (when health drops below 20, show warning)
+- Sync iframes with game state
+- Chain reactions (when X changes, update Y)
+
+**Critical for iframes:** Use this to automatically send updated values to iframes whenever variables change.
+
+**Example pattern:**
+```
+Value Updated (Red_Score) →
+  Send Message To Iframes: red_|Red_Score|
+```
+
+---
+
+### Wearable Off
+**What it does:** Fires when player unequips/removes a wearable item.
+
+**Use cases:**
+- Remove buffs when armor is removed
+- Track equipment state
+- Costume change effects
+
+---
+
+### Wearable On
+**What it does:** Fires when player equips a wearable item.
+
+**Use cases:**
+- Apply buffs when equipping items
+- Unlock abilities with equipment
+- Costume-specific permissions
+- Achievement tracking
+
+## Effects (60+ Types) - Detailed Guide
+
+Effects are actions that happen when a task changes state. They're the "do this" part of your game logic.
+
+---
+
+### MOVEMENT & CAMERA EFFECTS
+
+#### Teleport
+**What it does:** Instantly moves the player to a named spawn point.
+
+**Configuration:** Enter the exact spawn point name (case-sensitive)
+
+**Use cases:**
+- Respawn systems (teleport to RedSpawn1 after death)
+- Fast travel between areas
+- Team base assignment
+- Returning players to lobby after game ends
+- Checkpoint systems
+
+**Critical:** Spawn point names are CASE-SENSITIVE. "RedSpawn1" is different from "redspawn1".
+
+**Example:** After player joins red team → Teleport to "RedSpawn1"
+
+---
+
+#### Apply Velocity To Player
+**What it does:** Pushes the player in a direction with force.
+
+**Use cases:**
+- Jump pads (launch player upward)
+- Knockback effects
+- Wind zones
+- Boost pads
+
+---
+
+#### Change Camera Filter/State/Zoom
+**What it does:** Modifies how the player's camera behaves or looks.
+
+**Use cases:**
+- Cinematic moments (zoom in on important object)
+- Drunk/dizzy effects (apply filter)
+- Scope/aim mode (zoom in)
+- Dramatic reveals
+
+---
+
+#### Lock/Unlock Camera
+**What it does:** Prevents or allows player from rotating their camera view.
+
+**Use cases:**
+- Cutscenes (force player to look at something)
+- Dialogue sequences
+- Tutorial moments
+
+---
+
+#### Lock/Unlock Movement
+**What it does:** Prevents or allows player from moving (WASD/joystick).
+
+**Use cases:**
+- Cutscenes
+- Dialogue with NPCs
+- Puzzle moments where player must stay still
+- Pre-game countdown ("Game starts in 3... 2... 1...")
+
+**Warning:** Always make sure to unlock movement eventually, or player gets stuck!
+
+---
+
+#### Toggle Free Camera
+**What it does:** Switches between normal third-person and free-flying camera.
+
+**Use cases:**
+- Spectator mode
+- Photo mode
+- Building/editing mode
+
+---
+
+### VISUAL & ENVIRONMENT EFFECTS
+
+#### Hide/Show Object
+**What it does:** Makes an object invisible or visible.
+
+**Configuration:** Select which object to hide/show
+
+**Use cases:**
+- Doors that disappear when opened
+- Hidden passages revealed
+- Removing obstacles after puzzle solved
+- Showing/hiding visual indicators
+
+**Example:** Player collects all keys → Show Object (exit door)
+
+---
+
+#### Change Fog
+**What it does:** Adjusts the fog density/color in the scene.
+
+**Use cases:**
+- Spooky atmosphere
+- Weather changes
+- Zone-specific ambiance
+- Revealing hidden areas (clear the fog)
+
+---
+
+#### Change Time of Day
+**What it does:** Changes lighting to simulate different times.
+
+**Use cases:**
+- Day/night cycles
+- Dramatic mood shifts
+- Puzzle mechanics (things only visible at night)
+
+---
+
+#### Change Bloom
+**What it does:** Adjusts the glow/bloom post-processing effect.
+
+**Use cases:**
+- Dreamy/magical areas
+- Power-up visual feedback
+- Environmental storytelling
+
+---
+
+### PLAYER EFFECTS
+
+#### Change Player Health
+**What it does:** Sets or modifies the player's health value.
+
+**Configuration:**
+- **Set:** Sets health to exact value (e.g., Set to 100)
+- **Add:** Adds to current health (e.g., Add 25 for healing)
+- **Subtract:** Removes health (e.g., Subtract 10 for damage)
+
+**Use cases:**
+- Healing items/zones
+- Damage zones (lava, spikes)
+- Respawn (Set to 100 after death)
+- Poison/DOT effects
+
+**Critical for combat games:** Use "Set → 100" after respawning to fully heal the player.
+
+**Example pattern:**
+```
+RespawnRed task (on Active):
+  1. Teleport → RedSpawn1
+  2. Change Player Health → Set → 100
+  3. Reset task
+```
+
+---
+
+#### Change Avatar
+**What it does:** Changes the player's 3D avatar/character model.
+
+**Use cases:**
+- Team uniforms (red team gets red armor)
+- Power-ups that transform player
+- Costume unlocks
+
+---
+
+#### Lock/Unlock Avatar Change
+**What it does:** Prevents or allows player from changing their avatar.
+
+**Use cases:**
+- Enforce team uniforms during gameplay
+- Lock cosmetics during competitive matches
+
+---
+
+#### Change Movement Profile
+**What it does:** Modifies player movement speed, jump height, etc.
+
+**Use cases:**
+- Speed boost power-ups
+- Slow zones (mud, water)
+- Character classes with different mobility
+
+---
+
+#### Play Emote
+**What it does:** Makes the player's avatar perform an animation.
+
+**Use cases:**
+- Celebration after winning
+- Dance floors
+- Social interactions
+
+---
+
+### AUDIO EFFECTS
+
+#### Play Sound Once
+**What it does:** Plays an audio file one time.
+
+**Use cases:**
+- Door opening sounds
+- Pickup sounds
+- Victory/defeat fanfares
+- Button click feedback
+- Death sounds
+
+---
+
+#### Play Sound In Loop
+**What it does:** Continuously plays audio until stopped.
+
+**Use cases:**
+- Background music
+- Ambient sounds (rain, wind)
+- Alarm sounds
+
+---
+
+#### Toggle Mute
+**What it does:** Mutes or unmutes audio.
+
+**Use cases:**
+- Audio settings
+- Cutscene audio control
+
+---
+
+### UI & DISPLAY EFFECTS
+
+#### Notification Pill
+**What it does:** Shows a brief popup message to the player.
+
+**Configuration:** Enter the message text
+
+**Use cases:**
+- "Joined Red Team!"
+- "RED TEAM WINS!"
+- "+10 Points"
+- Tutorial hints
+- Achievement unlocked messages
+
+**Best practice:** Keep messages short and clear. Players only see them briefly.
+
+---
+
+#### Display Value
+**What it does:** Shows a variable's value on screen.
+
+**Configuration:** Select which variable to display
+
+**Use cases:**
+- Score displays
+- Health bars
+- Coin counters
+- Timer displays
+
+**Note:** For more control over display, use iframes instead.
+
+---
+
+#### Hide Value
+**What it does:** Removes a displayed variable from screen.
+
+---
+
+#### Iframe
+**What it does:** Opens an external webpage inside the Portals window.
+
+**This is extremely powerful.** Iframes let you:
+- Create custom HUDs with HTML/CSS/JavaScript
+- Build complex UI that Portals can't do natively
+- Display external content (leaderboards, guides)
+- Create interactive menus
+
+**See the IFRAMES section for complete documentation.**
+
+---
+
+#### Close Iframe
+**What it does:** Closes an open iframe.
+
+**Use cases:**
+- Dismiss popups
+- Clean up HUDs on game end
+
+---
+
+#### Send Message To Iframes
+**What it does:** Sends data from Portals to all open iframes.
+
+**Configuration:** Enter the message string. Use `|variableName|` to include variable values.
+
+**CRITICAL:** Do NOT use JSON with colons. Colons break the parser. Use underscore format instead.
+
+**Correct:** `score_|Red_Score|` → sends "score_25"
+**Wrong:** `{"score": |Red_Score|}` → BREAKS
+
+**Use cases:**
+- Update HUD with current scores
+- Send timer values
+- Sync game state to iframe displays
+
+---
+
+### GAME LOGIC EFFECTS
+
+#### Update Value
+**What it does:** Creates or modifies a variable.
+
+**Configuration:**
+- Variable name
+- Operation (Set, Add, Subtract, Multiply, Divide)
+- Value
+
+**Use cases:**
+- Score tracking (Add 1 to Red_Score)
+- Health management
+- Progress counters
+- Any numeric game state
+
+**Note:** For complex logic, use Function Effect instead.
+
+---
+
+#### Function Effect
+**What it does:** Executes NCalc expressions for advanced logic.
+
+**This is the most powerful effect.** It lets you:
+- Read task states and variables
+- Conditional logic (if/else)
+- Set multiple values
+- Complex calculations
+- Delayed actions
+
+**See the FUNCTION EFFECT section for complete documentation.**
+
+---
+
+#### Post Score to Leaderboard
+**What it does:** Submits a player's score to a leaderboard.
+
+**Configuration:** Value Label must match the leaderboard's score label exactly.
+
+**Use cases:**
+- High score submission
+- Race time recording
+- Competition rankings
+
+---
+
+#### Reset All Tasks
+**What it does:** Sets all tasks back to NotActive.
+
+**Use cases:**
+- Full game reset
+- New round starting
+- Debug/testing
+
+**Warning:** This resets EVERYTHING. Use carefully.
+
+---
+
+#### Run Trigger From Effector
+**What it does:** Manually fires another trigger.
+
+**Use cases:**
+- Chain reactions
+- Reusing trigger logic from multiple places
+
+---
+
+### OBJECT EFFECTS
+
+#### Move Item
+**What it does:** Moves an object to a new position.
+
+**Use cases:**
+- Sliding doors
+- Moving platforms
+- Puzzle pieces
+
+---
+
+#### Duplicate Item
+**What it does:** Creates a copy of an object.
+
+**Use cases:**
+- Spawning collectibles
+- Particle effects
+- Dynamic content generation
+
+---
+
+#### Portals Animation
+**What it does:** Plays a built-in Portals animation on an object.
+
+---
+
+### NPC EFFECTS
+
+These effects only work on NPC objects, not regular 3D models.
+
+#### Turn To Player
+**What it does:** Rotates the NPC to face the player.
+
+**Use cases:**
+- NPCs that acknowledge player presence
+- Shopkeepers looking at customers
+- Guards tracking player movement
+
+---
+
+#### Walk to Position
+**What it does:** Makes NPC walk to a specified location.
+
+**Use cases:**
+- NPC patrols
+- Characters moving during cutscenes
+- Quest givers walking to quest locations
+
+---
+
+#### Change Animation
+**What it does:** Changes which animation the NPC is playing.
+
+**Configuration:** Animation name (must match GLB file exactly, case-sensitive)
+
+**Use cases:**
+- NPC reactions (wave, point, scared)
+- State changes (idle → talking)
+- Combat animations
+
+---
+
+#### Show/Hide NPC
+**What it does:** Makes NPC visible or invisible.
+
+**Use cases:**
+- NPCs appearing for quests
+- Characters leaving after conversation
+- Dramatic reveals
+
+---
+
+#### Message to NPC
+**What it does:** Sends a command to an NPC's AI system.
+
+**Use cases:**
+- AI conversation prompts
+- Behavior changes
 
 ---
 
