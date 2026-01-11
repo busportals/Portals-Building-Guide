@@ -854,6 +854,513 @@ These effects only work on NPC objects, not regular 3D models.
 
 ---
 
+# GAME BUILDING METHODOLOGY
+
+## How to Approach Building Any Game
+
+Before writing a single task or effect, spend 10-15 minutes planning. This prevents 90% of debugging headaches.
+
+### Step 1: Define Your Core Loop
+
+Every game has a core loop. Write it in plain English first:
+
+**Example - Team Deathmatch:**
+```
+1. Player joins a team (Red or Blue)
+2. Player spawns at team base
+3. Player kills enemy players
+4. Team scores points for kills
+5. First to 50 points OR time runs out → winner declared
+6. Everyone returns to lobby
+```
+
+**Example - Collectible Hunt:**
+```
+1. Player enters the game area
+2. Player finds and collects hidden items
+3. Each item adds to their score
+4. When all items collected → show victory
+```
+
+### Step 2: Identify Your Variables
+
+List every piece of data your game needs to track:
+
+| Variable | Multiplayer? | Persistent? | Purpose |
+|----------|--------------|-------------|---------|
+| `Player_Team` | No | No | Which team this player is on (0=none, 1=red, 2=blue) |
+| `Red_Score` | Yes | No | Red team's total points |
+| `Blue_Score` | Yes | No | Blue team's total points |
+| `Elapsed_Seconds` | Yes | No | Game timer |
+
+**Key questions:**
+- Does everyone need to see the same value? → Multiplayer = Yes
+- Should it survive page refresh? → Persistent = Yes
+- Is it per-player or global? → Per-player = Multiplayer No
+
+### Step 3: Identify Your Tasks
+
+Tasks are your game's state machine. List the major "events" or "states":
+
+| Task | Type | What triggers it? | What does it do? |
+|------|------|-------------------|------------------|
+| `JoinRed` | Single Player | Player enters red zone | Set team=1, teleport to red spawn |
+| `JoinBlue` | Single Player | Player enters blue zone | Set team=2, teleport to blue spawn |
+| `KillHandler` | Single Player | Player dies | Award point to enemy team, respawn |
+| `RedWins` | Multiplayer | Red reaches 50 OR time runs out | Show victory, reset game |
+| `BlueWins` | Multiplayer | Blue reaches 50 OR time runs out | Show victory, reset game |
+
+**Key insight:** Single Player tasks = actions that affect only one player. Multiplayer tasks = state changes everyone sees.
+
+### Step 4: Build in Order
+
+Always build in this order:
+
+1. **Variables first** - Create all variables in Variable Manager
+2. **Spawn points** - Place all teleport destinations
+3. **Core triggers** - The main "what starts things" (Player Login, User Enter Trigger)
+4. **Core tasks** - One at a time, test each before moving on
+5. **Win conditions** - What ends the game
+6. **Polish** - HUDs, sounds, effects
+
+### Step 5: Test Each Piece Individually
+
+**DO NOT** build everything then test. Build ONE task, test it works, then move to the next.
+
+**Testing checklist for each task:**
+1. Open Task Debug Panel
+2. Manually set the task to each state
+3. Verify effects fire correctly
+4. Verify task resets properly
+5. Check Variable Manager for correct values
+
+---
+
+## Complete Game Example: Team Deathmatch
+
+Here's the complete implementation of a TDM game, step by step.
+
+### Phase 1: Setup Variables
+
+Create these in Variable Manager:
+
+| Variable | Multiplayer | Persistent | Initial |
+|----------|-------------|------------|---------|
+| `Player_Team` | No | No | 0 |
+| `Red_Score` | Yes | No | 0 |
+| `Blue_Score` | Yes | No | 0 |
+| `Elapsed_Seconds` | Yes | No | 0 |
+| `Timer_Host_Exists` | Yes | No | 0 |
+| `I_Am_Host` | No | No | 0 |
+
+### Phase 2: Create Spawn Points
+
+Place and name these spawn points:
+- `LobbySpawn` - Where players start
+- `RedSpawn1`, `RedSpawn2`, `RedSpawn3` - Red team spawns
+- `BlueSpawn1`, `BlueSpawn2`, `BlueSpawn3` - Blue team spawns
+
+### Phase 3: Team Selection
+
+**Task: JoinRed**
+- Type: Single Player
+- Trigger: User Enter Trigger (red zone cube)
+
+Effects (on Active):
+```
+1. Function Effect - Set team (only if not already on a team):
+   if($N{Player_Team} == 0.0,
+      SetVariable('Player_Team', 1.0, 0.0),
+      0.0
+   )
+
+2. Teleport → RedSpawn1
+
+3. Notification Pill → "Joined Red Team"
+
+4. Function Effect - Reset task:
+   SetTask('JoinRed', 'NotActive', 0.1)
+```
+
+**Task: JoinBlue** - Same pattern with Player_Team = 2.0 and BlueSpawn1
+
+**Test:** Walk into red zone. Check:
+- Variable Manager shows Player_Team = 1
+- You teleported to RedSpawn1
+- Notification appeared
+- Task reset to NotActive
+
+### Phase 4: Kill Handler
+
+**Task: KillHandler**
+- Type: Single Player
+- Trigger: Player Died
+
+Effects (on Active):
+```
+1. Function Effect - Award point to enemy team:
+   if($N{Player_Team} == 1.0,
+      SetVariable('Blue_Score', $N{Blue_Score} + 1.0, 0.0),
+      if($N{Player_Team} == 2.0,
+         SetVariable('Red_Score', $N{Red_Score} + 1.0, 0.0),
+         0.0
+      )
+   )
+
+2. Function Effect - Respawn after 3 seconds:
+   if($N{Player_Team} == 1.0,
+      SetTask('RespawnRed', 'Active', 3.0),
+      if($N{Player_Team} == 2.0,
+         SetTask('RespawnBlue', 'Active', 3.0),
+         0.0
+      )
+   )
+
+3. Function Effect - Check for winner:
+   SetTask('CheckWinner', 'Active', 0.1)
+
+4. Function Effect - Reset:
+   SetTask('KillHandler', 'NotActive', 0.1)
+```
+
+**Task: RespawnRed**
+- Type: Single Player
+- Trigger: None (activated by KillHandler)
+
+Effects (on Active):
+```
+1. Teleport → RedSpawn1
+2. Change Player Health → Set → 100
+3. Function Effect - Reset:
+   SetTask('RespawnRed', 'NotActive', 0.1)
+```
+
+### Phase 5: Win Condition
+
+**Task: CheckWinner**
+- Type: Multiplayer
+- Trigger: None (activated by KillHandler)
+
+Effects (on Active):
+```
+1. Function Effect - Check scores:
+   if($N{Red_Score} >= 50.0,
+      SetTask('RedWins', 'Active', 0.0),
+      if($N{Blue_Score} >= 50.0,
+         SetTask('BlueWins', 'Active', 0.0),
+         0.0
+      )
+   )
+
+2. Function Effect - Reset:
+   SetTask('CheckWinner', 'NotActive', 0.1)
+```
+
+**Task: RedWins**
+- Type: Multiplayer
+- Trigger: None
+
+Effects (on Active):
+```
+1. Notification Pill → "RED TEAM WINS!"
+
+2. Function Effect - Reset scores (2 sec delay):
+   SetVariable('Red_Score', 0.0, 2.0)
+   SetVariable('Blue_Score', 0.0, 2.0)
+
+3. Function Effect - Reset player teams:
+   SetVariable('Player_Team', 0.0, 2.0)
+
+4. Function Effect - Return to lobby:
+   SetTask('ReturnToLobby', 'Active', 2.0)
+
+5. Function Effect - Reset self:
+   SetTask('RedWins', 'NotActive', 3.0)
+```
+
+---
+
+## Complete Game Example: Collectible Hunt
+
+### Variables
+| Variable | Multiplayer | Purpose |
+|----------|-------------|---------|
+| `Items_Collected` | No | How many items this player found |
+| `Total_Items` | No | Total items to find (set on login) |
+
+### Task: InitGame
+- Trigger: Player Login
+
+Effects:
+```
+1. SetVariable('Items_Collected', 0.0, 0.0)
+2. SetVariable('Total_Items', 10.0, 0.0)
+3. Notification Pill → "Find all 10 items!"
+```
+
+### Task: ItemCollected
+- Trigger: Item Collected (on each collectible)
+
+Effects:
+```
+1. Function Effect:
+   SetVariable('Items_Collected', $N{Items_Collected} + 1.0, 0.0)
+
+2. Notification Pill → "+1 Item Found!"
+
+3. Function Effect - Check if all found:
+   if($N{Items_Collected} >= $N{Total_Items},
+      SetTask('Victory', 'Active', 0.0),
+      0.0
+   )
+```
+
+---
+
+# DEBUGGING GUIDE
+
+## Systematic Debugging Approach
+
+When something doesn't work, follow this exact process:
+
+### Step 1: Identify the Symptom
+
+Be precise about what's wrong:
+- ❌ "It doesn't work"
+- ✅ "The door doesn't open when I click it"
+- ✅ "The score updates but the HUD doesn't show it"
+- ✅ "Red team gets points when red players die (should be blue)"
+
+### Step 2: Trace the Flow
+
+Write out what SHOULD happen:
+```
+1. Player clicks door → Click trigger fires
+2. Click trigger → DoorOpen task becomes Active
+3. DoorOpen Active → Hide Object effect runs
+4. Door becomes invisible
+```
+
+Then identify WHERE it breaks:
+- Does the trigger fire? (Check Task Debug Panel)
+- Does the task change state? (Check Task Debug Panel)
+- Does the effect run? (Check if object changes)
+
+### Step 3: Use Task Debug Panel
+
+**This is your most important debugging tool.**
+
+Access: Space Options > Task Debug Panel
+
+**What to check:**
+1. Is the task in the expected state?
+2. Does clicking the trigger change the state?
+3. Look at the history log - what events fired?
+
+**Pro tip:** Keep Task Debug Panel open while testing. Watch task states change in real-time.
+
+### Step 4: Check Common Causes
+
+| Symptom | Likely Cause |
+|---------|--------------|
+| Trigger doesn't fire | Wrong trigger type, object not selected, trigger cube too small |
+| Task changes but no effect | Effect not added, wrong "on state" setting |
+| Effect runs for wrong player | Task is Multiplayer when it should be Single Player |
+| Variable not updating | Wrong variable name (case-sensitive), using wrong syntax |
+| Function Effect does nothing | Missing "Trigger on Task Change" checkbox |
+| Numbers look weird | Not using decimal notation (use 1.0 not 1) |
+
+### Step 5: Isolate and Test
+
+If you can't find the bug:
+1. Create a NEW simple task that does just one thing
+2. Test if that works
+3. Add complexity one step at a time
+4. Find exactly which addition breaks it
+
+---
+
+## Common Bugs and Fixes
+
+### Bug: "Task fires but effects don't run"
+
+**Causes:**
+1. Effects attached to wrong state (e.g., effects on "Completed" but task goes to "Active")
+2. Missing "Trigger on Task Change" checkbox for Function Effects
+3. Condition in Function Effect always evaluates false
+
+**Fix:** Check which state triggers your effects. Open the task, look at "On Active", "On Completed", etc.
+
+---
+
+### Bug: "Variable shows wrong value"
+
+**Causes:**
+1. Case mismatch (`Red_Score` vs `red_score`)
+2. Using $T instead of $N (task state vs variable)
+3. Not using decimal notation
+4. Multiple places updating the same variable
+
+**Fix:**
+1. Check exact spelling in Variable Manager
+2. Use $N{variableName} for variables
+3. Use 1.0 not 1
+
+---
+
+### Bug: "Multiplayer task runs effects for all players"
+
+**Cause:** That's what Multiplayer tasks do! When the task state changes, ALL players run the effects.
+
+**Fix:** If only one player should be affected, use Single Player task instead.
+
+---
+
+### Bug: "Timer speeds up when second player joins"
+
+**Cause:** Each player is running their own timer loop, all incrementing the same variable.
+
+**Fix:** Use the Host System pattern:
+1. Only ONE player (the host) runs the timer
+2. Use Single Player task for the timer loop
+3. Check `I_Am_Host == 1.0` before incrementing
+
+---
+
+### Bug: "Iframe not receiving messages"
+
+**Causes:**
+1. JSON with colons (`:`) breaks the parser
+2. Wrong variable syntax (using $N instead of |pipes|)
+3. Iframe not loaded yet when message sent
+
+**Fix:**
+1. Use underscore format: `score_|Red_Score|` not `{"score": |Red_Score|}`
+2. Use pipe syntax in Send Message To Iframes
+3. Use ready handshake pattern for timing
+
+---
+
+### Bug: "Player can join both teams"
+
+**Cause:** No check to prevent re-joining if already on a team.
+
+**Fix:** Add condition before setting team:
+```
+if($N{Player_Team} == 0.0,
+   SetVariable('Player_Team', 1.0, 0.0),
+   0.0
+)
+```
+
+---
+
+### Bug: "Task doesn't reset, only fires once"
+
+**Cause:** Tasks don't auto-reset. Once they reach a state, they stay there.
+
+**Fix:** Always add a reset effect:
+```
+SetTask('MyTask', 'NotActive', 0.1)
+```
+
+---
+
+### Bug: "Function Effect condition never true"
+
+**Causes:**
+1. Comparing wrong types (string vs number)
+2. Not using decimal notation
+3. Logic error in condition
+
+**Debug approach:**
+1. Simplify to just `SetVariable('debug', 1.0, 0.0)` - does it run at all?
+2. Add debug variables to see what values actually are
+3. Check if condition should use == or >= or !=
+
+---
+
+### Bug: "Effects fire in wrong order"
+
+**Cause:** Effects on the same task run in order, but there's no guarantee of timing between different tasks.
+
+**Fix:** Use delays to enforce order:
+```
+SetTask('Step1', 'Active', 0.0)
+SetTask('Step2', 'Active', 0.5)  // Runs 0.5 sec after Step1
+SetTask('Step3', 'Active', 1.0)  // Runs 1 sec after Step1
+```
+
+---
+
+### Bug: "Multiplayer variables not syncing"
+
+**Cause:** Multiplayer variables take 2-3 seconds to sync across all players.
+
+**Fix:** Add delays before checking multiplayer variables:
+```
+// On Player Login, wait 3 seconds before checking Host_Exists
+SetTask('DelayedCheck', 'Active', 3.0)
+```
+
+---
+
+## Debugging Iframes
+
+### Enable Browser Console
+
+When testing iframes:
+1. Open browser developer tools (F12)
+2. Go to Console tab
+3. Look for errors and your console.log() messages
+
+### Add Debug Logging
+
+Add console.log() statements to track what's happening:
+```javascript
+PortalsSdk.setMessageListener(function(message) {
+  console.log('[Iframe] Received:', message);  // See what Portals sends
+
+  // Your parsing code...
+
+  console.log('[Iframe] Parsed value:', parsedValue);  // See what you extracted
+});
+```
+
+### Test Iframe Standalone
+
+Open your iframe URL directly in a browser to test:
+1. Does the page load without errors?
+2. Are there any console errors?
+3. Does the UI render correctly?
+
+Then test the Portals integration separately.
+
+### Debug Display
+
+Add a visible debug element to your iframe:
+```html
+<div id="debug" style="position:fixed;bottom:10px;left:10px;background:black;color:lime;padding:5px;font-family:monospace;font-size:12px;z-index:9999;">
+  Waiting for messages...
+</div>
+
+<script>
+function debug(msg) {
+  document.getElementById('debug').textContent = msg;
+  console.log('[Debug]', msg);
+}
+
+PortalsSdk.setMessageListener(function(message) {
+  debug('Received: ' + JSON.stringify(message).substring(0, 50));
+  // ... rest of handler
+});
+</script>
+```
+
+Remove this before publishing!
+
+---
+
 # QUESTS
 
 Turn any task into a trackable quest:
