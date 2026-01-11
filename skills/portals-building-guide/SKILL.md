@@ -115,7 +115,41 @@ Tasks can transition between states in any order via triggers.
 - Non-Persistent Tasks (reset on reload)
 - Quests (visible in quest log)
 
-## Triggers (14 Types)
+## Task Debug Panel
+
+Access via **Space Options > Task Debug Panel**
+
+**Important:** Task system must be turned on BEFORE opening debug panel.
+
+**State Indicators:**
+- Red circle = NotActive
+- Yellow circle = Active
+- Green circle = Completed
+
+**Features:**
+- Change state of any task (single or multiplayer)
+- View complete history log of all state changes
+- Essential for testing effects and triggers
+
+## Node View
+
+Visual graph interface for analyzing game logic.
+
+**Access:** Space Options > Tasks > Click 'Graph' button
+
+**Node Colors:**
+- Grey = Objects
+- Green = Triggers
+- Purple = Tasks
+- Yellow = Effects
+
+**Features:**
+- View task dependencies (arrows show relationships)
+- Create Tasks, Triggers, Effects directly in the graph
+- Click any node to edit its configuration
+- See which triggers fire which tasks
+
+## Triggers (17 Types)
 
 | Trigger | Description |
 |---------|-------------|
@@ -124,8 +158,11 @@ Tasks can transition between states in any order via triggers.
 | **Collision** | Physical collision with trigger volume |
 | **Item Collected** | Collectible gathered |
 | **Key Pressed** | Keyboard input detected |
+| **Key Released** | Keyboard key is released |
 | **Player Died** | Health reaches zero |
 | **Player Login** | Player enters space |
+| **Player Started Moving** | Player begins movement |
+| **Player Stopped Moving** | Player stops moving |
 | **Swap Volume** | Audio changes |
 | **Timer Stopped** | Countdown completes |
 | **User Enter Trigger** | Player enters zone |
@@ -143,6 +180,7 @@ Tasks can transition between states in any order via triggers.
 - Lock/Unlock Movement
 - Teleport
 - Toggle Free Camera
+- Toggle Cursor Lock
 - Start/Stop Auto Run
 
 **Visual/Environment:**
@@ -154,6 +192,7 @@ Tasks can transition between states in any order via triggers.
 
 **Player:**
 - Change Avatar
+- Lock/Unlock Avatar Change
 - Change Player Health
 - Change Movement Profile
 - Play Emote
@@ -165,14 +204,17 @@ Tasks can transition between states in any order via triggers.
 - Play Sound In Loop
 - Toggle Mute
 - Change Audius Playlist
+- Change Voice Group
 
 **UI/Display:**
 - Notification Pill
 - Display Value
+- Hide Value
 - Dialogue Effector Display
 - Show/Hide Token Swap
 - Iframe
 - Close Iframe
+- Send Message to Iframes
 
 **Game Logic:**
 - Update Value
@@ -194,6 +236,7 @@ Tasks can transition between states in any order via triggers.
 - Change Animation
 - Change Mood
 - Show/Hide NPC
+- Message to NPC
 
 ---
 
@@ -318,19 +361,55 @@ OnChange('taskName')                   // Any state change
 OnChange('variableName', '>= 10')     // Variable condition
 ```
 
-**Example:**
+**Task completion triggers variable:**
 ```
 if(OnChange('puzzle1', 'Completed'),
-   SetVariable('doorUnlocked', 1, 0.0),
-   0)
+   SetVariable('doorUnlocked', 1.0, 0.0),
+   0.0)
+```
+
+**Variable threshold completes task:**
+```
+if(OnChange('coins', >= 10.0),
+   SetTask('buyDoor', 'Completed', 0.0),
+   0.0)
+```
+
+**Multiple conditions with current state check:**
+```
+(OnChange('task1', 'Active') || OnChange('task2', 'Completed'))
+&& $T{task1} == 'Active'
+&& $T{task2} == 'Completed'
+```
+
+**State change with conditional actions:**
+```
+if(OnChange('questStep'),
+   ifs($T{questStep} == 'NotActive', SetVariable('hintText', 0.0, 0.0),
+       $T{questStep} == 'Active', SetVariable('hintText', 1.0, 0.0),
+       SetVariable('hintText', 2.0, 0.0)),
+   0.0)
 ```
 
 ## SelectRandom
 
 ```
 SelectRandom(item1, item2, item3, ...)
-SelectRandom(1, 2, 3, 4, 5)
-SelectRandom('red', 'blue', 'green')
+```
+
+**Random number reward:**
+```
+SetVariable('coins', $N{coins} + SelectRandom(1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0), 0.0)
+```
+
+**50/50 chance:**
+```
+SelectRandom(true, false)
+```
+
+**Random task state:**
+```
+SetTask('alarm', SelectRandom('NotActive', 'Active', 'Completed'), 0.0)
 ```
 
 ## Math Functions
@@ -356,6 +435,87 @@ Min(Max($N{health}, 0.0), 100.0)   // Clamp health between 0-100
 - **Use nested if(), NOT ifs()** - ifs() may have bugs in some cases
 - **Tasks don't auto-reset** - always add reset function effects
 - **Enable "Trigger on Task Change"** checkbox for Function Effects
+
+---
+
+# MULTIPLAYER CONSIDERATIONS
+
+## Single Player vs Multiplayer Tasks
+
+| Task Type | Behavior |
+|-----------|----------|
+| **Single Player** | Effects run only for the player who triggered it |
+| **Multiplayer** | When task state changes, effects run for ALL players |
+
+**Critical:** For looping tasks (timers, game loops), use **Single Player** tasks. Multiplayer tasks will cause all players to run the loop, causing acceleration/duplication bugs.
+
+## Multiplayer Variable Sync Delay
+
+Multiplayer variables take **2-3 seconds** to sync across all players. This causes race conditions when:
+- Checking if another player already set a value
+- Preventing duplicate actions (like multiple hosts)
+
+**Solution:** Add delays before checking multiplayer variables:
+```
+// On Player Login, delay 3 seconds before checking
+SetTask('CheckHostStatus', 'Active', 3.0)
+```
+
+## Host System Pattern
+
+When only ONE player should control shared state (timers, game loops), use a host system:
+
+**Variables needed:**
+| Variable | Multiplayer? | Purpose |
+|----------|--------------|---------|
+| `Host_Exists` | Yes | Tracks if any player is host |
+| `I_Am_Host` | No | Each player knows if they're host |
+
+**BecomeHost Task (Single Player):**
+```
+// Effect 1: Claim host if none exists
+if($N{Host_Exists} == 0.0,
+   SetVariable('I_Am_Host', 1.0, 0.0),
+   0.0
+)
+
+// Effect 2: Set global flag if we're host
+if($N{I_Am_Host} == 1.0,
+   SetVariable('Host_Exists', 1.0, 0.0),
+   0.0
+)
+
+// Effect 3: Start game loop if host
+if($N{I_Am_Host} == 1.0,
+   SetTask('GameLoop', 'Active', 0.5),
+   0.0
+)
+```
+
+**Trigger:** Player Login → 3-second delay → BecomeHost
+
+## Self-Looping Task Pattern
+
+For timers or continuous updates:
+
+```
+// GameTimer task (Single Player, on Active):
+
+// Effect 1: Increment (host only)
+if($N{I_Am_Host} == 1.0,
+   SetVariable('Elapsed', $N{Elapsed} + 1.0, 0.0),
+   0.0
+)
+
+// Effect 2: Send to iframe
+time_|Elapsed|
+
+// Effect 3: Reset for next loop
+SetTask('GameTimer', 'NotActive', 0.9)
+
+// Effect 4: Loop
+SetTask('GameTimer', 'Active', 1.0)
+```
 
 ---
 
@@ -474,28 +634,42 @@ Use the SDK's message listener to receive commands from Portals:
 PortalsSdk.setMessageListener(function(message) {
   console.log('Received:', message);
 
-  // Parse if string
   let data = message;
+
+  // Parse if string - but DON'T return on failure (might be underscore format)
   if (typeof message === 'string') {
     try {
       data = JSON.parse(message);
     } catch (e) {
-      return; // Not JSON
+      // Not JSON - keep as string for underscore format parsing
+      data = message;
     }
   }
 
-  // Handle actions
-  if (data.action === 'updateScore') {
-    updateScore(data.score);
+  const msg = typeof data === 'string' ? data : JSON.stringify(data);
+
+  // Handle underscore format (recommended)
+  if (msg.startsWith('score_')) {
+    const score = parseFloat(msg.substring(6));
+    if (!isNaN(score)) updateScore(score);
+  } else if (msg.startsWith('time_')) {
+    const elapsed = parseFloat(msg.substring(5));
+    if (!isNaN(elapsed)) updateTimer(elapsed);
   }
 });
 ```
 
 **Sending from Portals:**
-Use the "Send Message To Iframes" effect with JSON:
-```json
-{"action":"updateScore","score":$N{Score}}
-```
+
+**CRITICAL:** JSON with colons (`:`) breaks Portals' NCalc parser. Use underscore format instead:
+
+| Data | Message Format | Effect Setting |
+|------|----------------|----------------|
+| Score | `score_25` | `score_\|Score\|` |
+| Time | `time_120` | `time_\|Elapsed_Seconds\|` |
+| Team scores | `sync_120_25_30` | `sync_\|Time\|_\|Red\|_\|Blue\|` |
+
+**Note:** In "Send Message To Iframes" effect, use `|variableName|` (pipe syntax), NOT `$N{variableName}`.
 
 **Tip:** Use `Value Updated` trigger on variables to automatically send iframe updates when values change.
 
@@ -523,9 +697,16 @@ https://example.com/page.html?noCloseBtn=true&maximized=true
 
 ## Troubleshooting
 
-- **"[object Object] is not supported"** → Use `JSON.stringify()`
-- **"Failed to launch uniwebview"** → Test in Unity WebView, not browser
-- **"User gesture required"** → Wrap in onclick handler
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| "[object Object] is not supported" | Sending raw object | Use `JSON.stringify()` |
+| "Failed to launch uniwebview" | Testing in browser | Test in Unity WebView |
+| "User gesture required" | closeIframe outside click | Wrap in onclick handler |
+| Iframe not receiving messages | JSON with colons | Use underscore format: `score_\|Score\|` |
+| Timer not updating display | Early return in JS | Don't `return` after JSON.parse failure |
+| Timer accelerates with 2+ players | All players incrementing | Use host system, Single Player task |
+| Variables not syncing | Race condition | Add 3-second delay before checking |
+| Multiple players claim host | Sync delay | Increase delay in DelayedHostCheck |
 
 ---
 
@@ -579,8 +760,79 @@ NotActive → Active → Completed
 
 ---
 
+# GAME DESIGN PATTERNS
+
+## Core Loop
+All games follow: **Player Action → Feedback → Reward → Repeat**
+
+Spend 10-15 minutes designing before building to prevent confusion and edge cases.
+
+## Pattern Types
+
+| Pattern | Best For | Complexity |
+|---------|----------|------------|
+| **Collectible** | Treasure hunts, coin collection, exploration | Beginner |
+| **Puzzle** | Escape rooms, logic challenges, hidden objects | Intermediate |
+| **Quest/RPG** | Story-driven, NPC interactions, progression | Intermediate |
+| **Racing** | Time trials, obstacle courses, leaderboards | Beginner |
+
+---
+
+# COMMON GOTCHAS
+
+## Function Effects
+- **Decimal notation required:** Use `10.0` not `10`
+- **Case-sensitive task names:** `$T{Open Door}` works, `$T{open door}` doesn't
+- **Single quotes for strings:** Use `'Active'` not `"Active"`
+- **Enable "Trigger on Task Change":** Effects won't execute without this checkbox
+- **Avoid ifs():** Use nested `if()` instead due to known bugs
+
+## Tasks
+- **No auto-reset:** Manually reset completed tasks if you want repeatable actions
+- **Non-persistent tasks reset:** Check Space Options if progress vanishes after refresh
+- **Multiplayer tasks are shared:** All players see same state; use single-player for individual progress
+- **Dependent tasks:** Parent must reach "Completed" state, not just "Active"
+
+## Triggers
+- **Collision vs User Enter:** Collision handles physics; use "User Enter Trigger" for zone entry
+- **Trigger cubes invisible during play:** Use build mode to verify placement
+- **Key triggers need focus:** Won't work if Portals window loses focus
+
+## NPCs
+- **Rigged GLB avatars required:** Standard 3D models won't animate
+- **NPC-specific effects:** "Turn To Player" and "Walk to Position" only work on NPC objects
+- **Case-sensitive animations:** Names must match exactly what's in the GLB file
+
+## Leaderboards
+- **Value Label must match:** Effect label must correspond to Leaderboard label
+- **Timer auto-posts:** Racing timer leaderboards post automatically when stopped
+- **NPCs can't post scores:** Use Trigger Cubes instead
+
+## Variables
+- **Created on first use:** No pre-declaration needed
+- **Check persistence settings:** Verify persistent and multiplayer settings in Variable Manager
+- **Unset variables are undefined:** Initialize variables when players enter
+
+## Portals/Teleportation
+- **Spawn Name is case-sensitive:** Leave blank for default spawn
+- **Auto Teleport:** ON = immediate on contact; OFF = requires X key
+- **Cross-space teleports reset data:** Non-persistent tasks and variables reset when switching spaces
+
+## Quick Debug Checklist
+1. Open Task Debug Panel to verify triggers fire
+2. Check exact names (case and space-sensitive)
+3. Verify effect configuration settings
+4. Use decimal notation (0.0, not 0)
+5. Enable required checkboxes
+6. Test simple cases first
+7. Review Variable Manager values
+8. Check browser console for iframe errors
+
+---
+
 # RESOURCES
 
 - **Official Docs:** https://prtls.gitbook.io/portals-building-guide
 - **Video Tutorials:** Available in Building Basics section
 - **Portals SDK:** https://portals-labs.github.io/portals-sdk/portals-sdk.js
+- **Discord:** Community help and discussions
