@@ -53,3 +53,14 @@ Two possible configuration menus depending on selection:
 * Building walls, platforms, and architectural structures
 * Creating decorative props and themed environments
 * Defining invisible collision areas or walkable terrain for NPCs
+
+### Tip: Organizing Triggers with Build Blocks
+
+Triggers can be placed on most objects, not just dedicated trigger cubes. A common organization tactic is to:
+
+1. Place related triggers on **Build Blocks** using the color selector
+2. Give the block a distinct color to visually categorize the logic type
+3. Add an **On Hover Text Display** effect to the block
+4. Label it with a name describing the logic it contains (e.g., "Lobby Controller", "Round Timer", "Win Conditions")
+
+This allows builders to color-code and label their trigger logic for easier navigation and debugging.

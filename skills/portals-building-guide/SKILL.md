@@ -75,6 +75,10 @@ Invisible zone that activates events when players enter.
 - **Events**: Add actions (open doors, play sounds, teleport, etc.)
 - **Custom Title**: Label for organization
 
+**Important:** Trigger cubes only activate when a player **enters** the cube (crosses the boundary from outside). If a player spawns or loads into the game already inside a trigger cube, the trigger will NOT fire.
+
+**Organization Tip:** Place related triggers on Build Blocks (which have a color selector), give them distinct colors, and add On Hover Text Display labels to organize your game logic.
+
 ## NPC (Non-Player Character)
 
 Interactive characters with dialogue trees and AI.
@@ -261,7 +265,6 @@ Player Died →
 - Spawn HUD iframes
 - Assign player to default state
 - Start background music
-- Check if player should become game host
 
 **Critical:** This is your "on game start" trigger for each player. Use it to set up everything the player needs.
 
@@ -271,7 +274,6 @@ Player Login →
   Set Player_Team = 0
   Set Player_Health = 100
   Show HUD iframe
-  Check if host exists (with delay)
 ```
 
 ---
@@ -319,6 +321,8 @@ Player Login →
 
 **Note:** This is for the built-in Portals timer, not custom iframe timers.
 
+**Timer Limitation:** Portals does not currently have a native shared timer system that can be synchronized across players and pulled into an iframe. For multiplayer timer displays, use local JavaScript timing in iframes triggered by game state changes. Timer values shown will be approximate and client-side.
+
 ---
 
 ### User Enter Trigger
@@ -336,6 +340,8 @@ Player Login →
 - Attach to a Trigger Cube object
 - Size the cube to cover the detection area
 - Optional: "Press X to Activate" for manual activation instead of auto
+
+**Important:** Trigger cubes only activate when a player **enters** the cube (crosses the boundary from outside). If a player spawns or loads into the game already inside a trigger cube, the trigger will NOT fire. Plan spawn point placement accordingly, or use Player Login trigger for logic that must run when players join.
 
 **Example:** Player walks into red team zone → User Enter Trigger fires → Set Player_Team = 1
 
@@ -949,9 +955,6 @@ Create these in Variable Manager:
 | `Player_Team` | No | No | 0 |
 | `Red_Score` | Yes | No | 0 |
 | `Blue_Score` | Yes | No | 0 |
-| `Elapsed_Seconds` | Yes | No | 0 |
-| `Timer_Host_Exists` | Yes | No | 0 |
-| `I_Am_Host` | No | No | 0 |
 
 ### Phase 2: Create Spawn Points
 
@@ -1220,10 +1223,9 @@ If you can't find the bug:
 
 **Cause:** Each player is running their own timer loop, all incrementing the same variable.
 
-**Fix:** Use the Host System pattern:
-1. Only ONE player (the host) runs the timer
-2. Use Single Player task for the timer loop
-3. Check `I_Am_Host == 1.0` before incrementing
+**Fix:** Use Single Player tasks for timer loops. Multiplayer tasks cause all players to run the loop simultaneously.
+
+**Note:** Portals does not have a native shared timer system. For multiplayer timer displays, use local JavaScript timing in iframes triggered by game state changes.
 
 ---
 
@@ -1299,7 +1301,7 @@ SetTask('Step3', 'Active', 1.0)  // Runs 1 sec after Step1
 
 **Fix:** Add delays before checking multiplayer variables:
 ```
-// On Player Login, wait 3 seconds before checking Host_Exists
+// On Player Login, wait 3 seconds before checking shared state
 SetTask('DelayedCheck', 'Active', 3.0)
 ```
 
@@ -1726,24 +1728,6 @@ SetVariable('Red_Score', 0.0, 0.0)
 
 ---
 
-### Pattern: Multiple Players Claiming Host
-
-```
-[Player1] Setting I_Am_Host = 1
-[Player2] Setting I_Am_Host = 1
-[Player1] Setting Timer_Host_Exists = 1
-[Player2] Setting Timer_Host_Exists = 1
-```
-
-**Problem:** Both players checked `Host_Exists` before either set it (race condition).
-
-**Fix:** Increase delay before checking:
-```
-SetTask('BecomeHost', 'Active', 3.0)  // Wait 3 seconds for sync
-```
-
----
-
 ### Pattern: Effect Runs for All Players
 
 ```
@@ -1852,6 +1836,12 @@ Manage all variables created with Update Value effect.
 - **Multiplayer**: All players share the same value
 
 **Defaults:** Non-persistent, single-player
+
+**Initializing Variables:** Variables do not have a built-in "default value" setting. To initialize variables, use a Player Login trigger with SetVariable effects:
+```
+SetVariable('Player_Score', 0.0, 0.0)
+SetVariable('Player_Team', 0.0, 0.0)
+```
 
 ---
 
@@ -2041,69 +2031,32 @@ Min(Max($N{health}, 0.0), 100.0)   // Clamp health between 0-100
 
 Multiplayer variables take **2-3 seconds** to sync across all players. This causes race conditions when:
 - Checking if another player already set a value
-- Preventing duplicate actions (like multiple hosts)
+- Coordinating actions between players
 
 **Solution:** Add delays before checking multiplayer variables:
 ```
-// On Player Login, delay 3 seconds before checking
-SetTask('CheckHostStatus', 'Active', 3.0)
+// On Player Login, delay 3 seconds before checking shared state
+SetTask('DelayedCheck', 'Active', 3.0)
 ```
-
-## Host System Pattern
-
-When only ONE player should control shared state (timers, game loops), use a host system:
-
-**Variables needed:**
-| Variable | Multiplayer? | Purpose |
-|----------|--------------|---------|
-| `Host_Exists` | Yes | Tracks if any player is host |
-| `I_Am_Host` | No | Each player knows if they're host |
-
-**BecomeHost Task (Single Player):**
-```
-// Effect 1: Claim host if none exists
-if($N{Host_Exists} == 0.0,
-   SetVariable('I_Am_Host', 1.0, 0.0),
-   0.0
-)
-
-// Effect 2: Set global flag if we're host
-if($N{I_Am_Host} == 1.0,
-   SetVariable('Host_Exists', 1.0, 0.0),
-   0.0
-)
-
-// Effect 3: Start game loop if host
-if($N{I_Am_Host} == 1.0,
-   SetTask('GameLoop', 'Active', 0.5),
-   0.0
-)
-```
-
-**Trigger:** Player Login → 3-second delay → BecomeHost
 
 ## Self-Looping Task Pattern
 
-For timers or continuous updates:
+For continuous updates (use Single Player tasks to prevent acceleration):
 
 ```
-// GameTimer task (Single Player, on Active):
+// GameLoop task (Single Player, on Active):
 
-// Effect 1: Increment (host only)
-if($N{I_Am_Host} == 1.0,
-   SetVariable('Elapsed', $N{Elapsed} + 1.0, 0.0),
-   0.0
-)
+// Effect 1: Your game logic here
+SetVariable('SomeValue', $N{SomeValue} + 1.0, 0.0)
 
-// Effect 2: Send to iframe
-time_|Elapsed|
+// Effect 2: Reset for next loop
+SetTask('GameLoop', 'NotActive', 0.9)
 
-// Effect 3: Reset for next loop
-SetTask('GameTimer', 'NotActive', 0.9)
-
-// Effect 4: Loop
-SetTask('GameTimer', 'Active', 1.0)
+// Effect 3: Loop
+SetTask('GameLoop', 'Active', 1.0)
 ```
+
+**Note on Timers:** Portals does not have a native shared timer system that syncs across players. For multiplayer timer displays, use local JavaScript timing in iframes triggered by game state changes.
 
 ---
 
@@ -2342,9 +2295,8 @@ https://example.com/page.html?noCloseBtn=true&maximized=true
 | "User gesture required" | closeIframe outside click | Wrap in onclick handler |
 | Iframe not receiving messages | JSON with colons | Use underscore format: `score_\|Score\|` |
 | Timer not updating display | Early return in JS | Don't `return` after JSON.parse failure |
-| Timer accelerates with 2+ players | All players incrementing | Use host system, Single Player task |
+| Timer accelerates with 2+ players | All players incrementing | Use Single Player task for loops |
 | Variables not syncing | Race condition | Add 3-second delay before checking |
-| Multiple players claim host | Sync delay | Increase delay in DelayedHostCheck |
 | Iframe misses initial message | Message sent before load | Use ready handshake pattern (see Game Over Pattern) |
 | URL params show literal \|Var\| | Portals doesn't interpolate URL params | Pass static values in URL, dynamic via message |
 

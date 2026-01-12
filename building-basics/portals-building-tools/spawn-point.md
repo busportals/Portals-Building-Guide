@@ -17,6 +17,8 @@ The Spawn Point tool defines where players appear when entering a space or when 
 * Default Spawn – Toggle to make this the default spawn point for the space
 * Spawn Name – Optional label for use with Portals. This name is case-sensitive and must match exactly when referenced in a Portal
 
+> **Note**: When "Default Spawn Point" is enabled, the "Spawn Name" field is hidden. Default spawn points don't require a name since players automatically spawn there when joining. Only non-default spawn points need names so they can be referenced by Spawn effects or Portals.
+
 ### Common Use Cases
 
 * Define player entry points for different levels or zones

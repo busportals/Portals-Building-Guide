@@ -11,6 +11,10 @@ description: Trigger based on a user's avatar entering a trigger cube.
 
 No additional configuration beyond the base configuration parameters.
 
+## Important Behavior
+
+> **Spawn/Load Limitation**: This trigger only activates when a player **enters** the trigger cube (crosses the boundary from outside). If a player spawns or loads into the game already inside a trigger cube, the trigger will NOT fire. Plan spawn point placement accordingly, or use alternative triggers (like Player Login) for logic that must run immediately when players join.
+
 ## Compatibility
 
 ***
