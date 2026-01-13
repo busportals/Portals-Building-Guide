@@ -4,7 +4,7 @@ This page covers the Portals-specific features added on top of NCalc.
 
 These additions let you:
 
-* Read task states and values from Portals
+* Read task states, values, and timer values from Portals
 * React when a task or value changes
 * Set task states and values (with an optional delay)
 
@@ -61,6 +61,55 @@ $N{coins} >= 10.0
 ```
 
 What it does: checks if coins is 10 or more. Returns true or false.
+
+***
+
+#### $N{TimerName} (timer value as number)
+
+Returns the current elapsed time of a running timer as a number (in seconds).
+
+Example:
+
+```
+$N{RaceTimer} >= 60.0
+```
+
+What it does: checks if the timer named RaceTimer has been running for 60 seconds or more. Returns true or false.
+
+You can use timer values in calculations and store the results in variables:
+
+Example:
+
+```
+SetVariable('HalfTime', $N{RaceTimer} / 2.0, 0.0)
+```
+
+What it does: takes the current timer value, divides it by 2, and stores the result in the HalfTime variable immediately.
+
+Example:
+
+```
+SetVariable('BonusTime', $N{RaceTimer} + 30.0, 0.0)
+```
+
+What it does: takes the current timer value, adds 30 seconds, and stores the result in the BonusTime variable.
+
+Example:
+
+```
+SetVariable('TimeRemaining', 120.0 - $N{CountdownTimer}, 0.0)
+```
+
+What it does: calculates how much time is left from a 2-minute limit by subtracting the elapsed time.
+
+Timer variables are useful for:
+
+* Creating time-based scoring (faster = more points)
+* Setting up time bonuses or penalties
+* Storing checkpoint times
+* Calculating elapsed time between events
+
+Note: The timer must be started (using the Start Timer effect) before reading its value. Reading an unstarted timer returns 0.
 
 ***
 

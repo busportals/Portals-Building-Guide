@@ -6,6 +6,7 @@ Function Effector lets you write a short expression that can:
 
 * Read task states (like Not Active / Active / Completed)
 * Read values/variables (like coins, score, health)
+* Read timer values (elapsed time from running timers)
 * Do math and logic (like +, >, and, or)
 * Make decisions with if statements
 * Optionally set a task state or variable (immediately or after a delay)

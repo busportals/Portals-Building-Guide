@@ -1856,8 +1856,11 @@ Scripting system based on NCalc expression language.
 | `$T{taskName}` | Task state as text | `$T{door}` → 'Active' |
 | `$TN{taskName}` | Task state as number | `$TN{door}` → 1 |
 | `$N{variableName}` | Variable value | `$N{coins}` → 50 |
+| `$N{timerName}` | Timer elapsed time (seconds) | `$N{RaceTimer}` → 45.5 |
 
 **Task State Numbers:** 0=NotActive, 1=Active, 2=Completed
+
+**Timer Values:** You can read any running timer's elapsed time using `$N{timerName}`. The timer must be started first using the Start Timer effect.
 
 ## Setting Values
 
@@ -2006,6 +2009,43 @@ SetTask('alarm', SelectRandom('NotActive', 'Active', 'Completed'), 0.0)
 ```
 Min(Max($N{health}, 0.0), 100.0)   // Clamp health between 0-100
 ```
+
+## Timer Variables
+
+You can read timer values as variables and manipulate them in calculations.
+
+**Reading timer values:**
+```
+$N{RaceTimer}              // Returns elapsed seconds (e.g., 45.5)
+$N{RaceTimer} >= 60.0      // Check if timer is 60+ seconds
+```
+
+**Manipulating timer values:**
+```
+SetVariable('HalfTime', $N{RaceTimer} / 2.0, 0.0)           // Divide time by 2
+SetVariable('BonusTime', $N{RaceTimer} + 30.0, 0.0)         // Add 30 seconds
+SetVariable('TimeRemaining', 120.0 - $N{RaceTimer}, 0.0)    // Calculate remaining time
+SetVariable('TimeScore', 1000.0 - ($N{RaceTimer} * 10.0), 0.0)  // Time-based scoring
+```
+
+**Common patterns:**
+
+Checkpoint time storage:
+```
+SetVariable('Checkpoint1Time', $N{RaceTimer}, 0.0)
+```
+
+Time-based scoring (faster = more points):
+```
+SetVariable('Score', Max(1000.0 - ($N{RaceTimer} * 5.0), 0.0), 0.0)
+```
+
+Time penalty on death:
+```
+SetVariable('PenaltyTime', $N{GameTimer} + 10.0, 0.0)
+```
+
+**Note:** Timer must be started (Start Timer effect) before reading. Unstarted timers return 0.
 
 ## Important Notes
 
