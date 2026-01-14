@@ -45,7 +45,7 @@ Portals is a platform for creating interactive 3D virtual spaces. This guide cov
 | **Light Source** | Static lighting |
 | **Blink Light** | Animated/flashing lights |
 | **Spotlight** | Directional lighting |
-| **Spawn Point** | Player entry locations |
+| **Spawn Point** | Player entry locations (case-sensitive naming) |
 | **NPC** | Non-player characters with dialogue/AI |
 | **Billboard** | Text/image display surfaces |
 | **Jump Pad** | Launch players into air |
@@ -75,9 +75,26 @@ Invisible zone that activates events when players enter.
 - **Events**: Add actions (open doors, play sounds, teleport, etc.)
 - **Custom Title**: Label for organization
 
-**Important:** Trigger cubes only activate when a player **enters** the cube (crosses the boundary from outside). If a player spawns or loads into the game already inside a trigger cube, the trigger will NOT fire.
+**CRITICAL LIMITATION:** User Enter Trigger will **NOT fire** if a player spawns inside the trigger cube. The trigger only detects when a player crosses the boundary from outside to inside.
 
-**Organization Tip:** Place related triggers on Build Blocks (which have a color selector), give them distinct colors, and add On Hover Text Display labels to organize your game logic.
+**Workaround for spawn-based triggers:**
+- Place trigger cubes adjacent to spawn points, not covering them
+- Use Player Login trigger for actions that should happen on spawn
+- If you need zone detection at spawn, teleport player slightly outside the zone first, then they walk in
+
+## Spawn Point
+
+Defines where players appear when entering the space or after teleportation.
+
+**Configuration:**
+- **Spawn Name**: Unique identifier (case-sensitive!) used by Teleport effects and Portal destinations
+- **Default Spawn**: Leave name blank or use "default" for the main entry point
+
+**Best Practices:**
+- Use descriptive names: `RedSpawn1`, `BlueSpawn2`, `LobbySpawn`
+- Create multiple spawns per team to avoid spawn camping
+- Place away from trigger cube boundaries (see Trigger Cube limitation above)
+- Test teleports with exact case matching: "RedSpawn1" ≠ "redspawn1"
 
 ## NPC (Non-Player Character)
 
@@ -249,9 +266,9 @@ Triggers are events that cause tasks to change state. Understanding when each tr
 **Example pattern:**
 ```
 Player Died →
-  Check which team player was on →
-  Award point to opposite team →
-  Respawn player after delay
+Check which team player was on →
+Award point to opposite team →
+Respawn player after delay
 ```
 
 ---
@@ -265,15 +282,17 @@ Player Died →
 - Spawn HUD iframes
 - Assign player to default state
 - Start background music
+- Check if player should become game host
 
 **Critical:** This is your "on game start" trigger for each player. Use it to set up everything the player needs.
 
 **Common pattern:**
 ```
 Player Login →
-  Set Player_Team = 0
-  Set Player_Health = 100
-  Show HUD iframe
+Set Player_Team = 0
+Set Player_Health = 100
+Show HUD iframe
+Check if host exists (with delay)
 ```
 
 ---
@@ -321,8 +340,6 @@ Player Login →
 
 **Note:** This is for the built-in Portals timer, not custom iframe timers.
 
-**Timer Limitation:** Portals does not currently have a native shared timer system that can be synchronized across players and pulled into an iframe. For multiplayer timer displays, use local JavaScript timing in iframes triggered by game state changes. Timer values shown will be approximate and client-side.
-
 ---
 
 ### User Enter Trigger
@@ -340,8 +357,6 @@ Player Login →
 - Attach to a Trigger Cube object
 - Size the cube to cover the detection area
 - Optional: "Press X to Activate" for manual activation instead of auto
-
-**Important:** Trigger cubes only activate when a player **enters** the cube (crosses the boundary from outside). If a player spawns or loads into the game already inside a trigger cube, the trigger will NOT fire. Plan spawn point placement accordingly, or use Player Login trigger for logic that must run when players join.
 
 **Example:** Player walks into red team zone → User Enter Trigger fires → Set Player_Team = 1
 
@@ -381,7 +396,7 @@ User Exit → Hide Token Swap UI
 **Example pattern:**
 ```
 Value Updated (Red_Score) →
-  Send Message To Iframes: red_|Red_Score|
+Send Message To Iframes: red_|Red_Score|
 ```
 
 ---
@@ -555,9 +570,9 @@ Effects are actions that happen when a task changes state. They're the "do this"
 **Example pattern:**
 ```
 RespawnRed task (on Active):
-  1. Teleport → RedSpawn1
-  2. Change Player Health → Set → 100
-  3. Reset task
+. Teleport → RedSpawn1
+. Change Player Health → Set → 100
+. Reset task
 ```
 
 ---
@@ -699,9 +714,16 @@ RespawnRed task (on Active):
 
 **Configuration:** Enter the message string. Use `|variableName|` to include variable values.
 
-**CRITICAL:** Do NOT use JSON with colons. Colons break the parser. Use underscore format instead.
+**CRITICAL SYNTAX DIFFERENCE:**
+- **Send Message To Iframes:** Use `|variableName|` (pipe syntax)
+- **Function Effects:** Use `$N{variableName}` (dollar-N-curly syntax)
+
+These are NOT interchangeable. Using the wrong syntax will send literal text instead of values.
+
+**ALSO CRITICAL:** Do NOT use JSON with colons. Colons break the parser. Use underscore format instead.
 
 **Correct:** `score_|Red_Score|` → sends "score_25"
+**Wrong:** `score_$N{Red_Score}` → sends literal "score_$N{Red_Score}"
 **Wrong:** `{"score": |Red_Score|}` → BREAKS
 
 **Use cases:**
@@ -955,6 +977,9 @@ Create these in Variable Manager:
 | `Player_Team` | No | No | 0 |
 | `Red_Score` | Yes | No | 0 |
 | `Blue_Score` | Yes | No | 0 |
+| `Elapsed_Seconds` | Yes | No | 0 |
+| `Timer_Host_Exists` | Yes | No | 0 |
+| `I_Am_Host` | No | No | 0 |
 
 ### Phase 2: Create Spawn Points
 
@@ -972,17 +997,17 @@ Place and name these spawn points:
 Effects (on Active):
 ```
 1. Function Effect - Set team (only if not already on a team):
-   if($N{Player_Team} == 0.0,
-      SetVariable('Player_Team', 1.0, 0.0),
-      0.0
-   )
+if($N{Player_Team} == 0.0,
+SetVariable('Player_Team', 1.0, 0.0),
+0.0
+)
 
 2. Teleport → RedSpawn1
 
 3. Notification Pill → "Joined Red Team"
 
 4. Function Effect - Reset task:
-   SetTask('JoinRed', 'NotActive', 0.1)
+SetTask('JoinRed', 'NotActive', 0.1)
 ```
 
 **Task: JoinBlue** - Same pattern with Player_Team = 2.0 and BlueSpawn1
@@ -1002,28 +1027,28 @@ Effects (on Active):
 Effects (on Active):
 ```
 1. Function Effect - Award point to enemy team:
-   if($N{Player_Team} == 1.0,
-      SetVariable('Blue_Score', $N{Blue_Score} + 1.0, 0.0),
-      if($N{Player_Team} == 2.0,
-         SetVariable('Red_Score', $N{Red_Score} + 1.0, 0.0),
-         0.0
-      )
-   )
+if($N{Player_Team} == 1.0,
+SetVariable('Blue_Score', $N{Blue_Score} + 1.0, 0.0),
+if($N{Player_Team} == 2.0,
+SetVariable('Red_Score', $N{Red_Score} + 1.0, 0.0),
+0.0
+)
+)
 
 2. Function Effect - Respawn after 3 seconds:
-   if($N{Player_Team} == 1.0,
-      SetTask('RespawnRed', 'Active', 3.0),
-      if($N{Player_Team} == 2.0,
-         SetTask('RespawnBlue', 'Active', 3.0),
-         0.0
-      )
-   )
+if($N{Player_Team} == 1.0,
+SetTask('RespawnRed', 'Active', 3.0),
+if($N{Player_Team} == 2.0,
+SetTask('RespawnBlue', 'Active', 3.0),
+0.0
+)
+)
 
 3. Function Effect - Check for winner:
-   SetTask('CheckWinner', 'Active', 0.1)
+SetTask('CheckWinner', 'Active', 0.1)
 
 4. Function Effect - Reset:
-   SetTask('KillHandler', 'NotActive', 0.1)
+SetTask('KillHandler', 'NotActive', 0.1)
 ```
 
 **Task: RespawnRed**
@@ -1035,7 +1060,7 @@ Effects (on Active):
 1. Teleport → RedSpawn1
 2. Change Player Health → Set → 100
 3. Function Effect - Reset:
-   SetTask('RespawnRed', 'NotActive', 0.1)
+SetTask('RespawnRed', 'NotActive', 0.1)
 ```
 
 ### Phase 5: Win Condition
@@ -1047,16 +1072,16 @@ Effects (on Active):
 Effects (on Active):
 ```
 1. Function Effect - Check scores:
-   if($N{Red_Score} >= 50.0,
-      SetTask('RedWins', 'Active', 0.0),
-      if($N{Blue_Score} >= 50.0,
-         SetTask('BlueWins', 'Active', 0.0),
-         0.0
-      )
-   )
+if($N{Red_Score} >= 50.0,
+SetTask('RedWins', 'Active', 0.0),
+if($N{Blue_Score} >= 50.0,
+SetTask('BlueWins', 'Active', 0.0),
+0.0
+)
+)
 
 2. Function Effect - Reset:
-   SetTask('CheckWinner', 'NotActive', 0.1)
+SetTask('CheckWinner', 'NotActive', 0.1)
 ```
 
 **Task: RedWins**
@@ -1068,17 +1093,17 @@ Effects (on Active):
 1. Notification Pill → "RED TEAM WINS!"
 
 2. Function Effect - Reset scores (2 sec delay):
-   SetVariable('Red_Score', 0.0, 2.0)
-   SetVariable('Blue_Score', 0.0, 2.0)
+SetVariable('Red_Score', 0.0, 2.0)
+SetVariable('Blue_Score', 0.0, 2.0)
 
 3. Function Effect - Reset player teams:
-   SetVariable('Player_Team', 0.0, 2.0)
+SetVariable('Player_Team', 0.0, 2.0)
 
 4. Function Effect - Return to lobby:
-   SetTask('ReturnToLobby', 'Active', 2.0)
+SetTask('ReturnToLobby', 'Active', 2.0)
 
 5. Function Effect - Reset self:
-   SetTask('RedWins', 'NotActive', 3.0)
+SetTask('RedWins', 'NotActive', 3.0)
 ```
 
 ---
@@ -1106,16 +1131,16 @@ Effects:
 
 Effects:
 ```
-1. Function Effect:
-   SetVariable('Items_Collected', $N{Items_Collected} + 1.0, 0.0)
+. Function Effect:
+SetVariable('Items_Collected', $N{Items_Collected} + 1.0, 0.0)
 
-2. Notification Pill → "+1 Item Found!"
+. Notification Pill → "+1 Item Found!"
 
-3. Function Effect - Check if all found:
-   if($N{Items_Collected} >= $N{Total_Items},
-      SetTask('Victory', 'Active', 0.0),
-      0.0
-   )
+. Function Effect - Check if all found:
+if($N{Items_Collected} >= $N{Total_Items},
+SetTask('Victory', 'Active', 0.0),
+.0
+)
 ```
 
 ---
@@ -1138,10 +1163,10 @@ Be precise about what's wrong:
 
 Write out what SHOULD happen:
 ```
-1. Player clicks door → Click trigger fires
-2. Click trigger → DoorOpen task becomes Active
-3. DoorOpen Active → Hide Object effect runs
-4. Door becomes invisible
+. Player clicks door → Click trigger fires
+. Click trigger → DoorOpen task becomes Active
+. DoorOpen Active → Hide Object effect runs
+. Door becomes invisible
 ```
 
 Then identify WHERE it breaks:
@@ -1223,23 +1248,53 @@ If you can't find the bug:
 
 **Cause:** Each player is running their own timer loop, all incrementing the same variable.
 
-**Fix:** Use Single Player tasks for timer loops. Multiplayer tasks cause all players to run the loop simultaneously.
-
-**Note:** Portals does not have a native shared timer system. For multiplayer timer displays, use local JavaScript timing in iframes triggered by game state changes.
+**Fix:** Use the Host System pattern:
+. Only ONE player (the host) runs the timer
+. Use Single Player task for the timer loop
+. Check `I_Am_Host == 1.0` before incrementing
 
 ---
 
 ### Bug: "Iframe not receiving messages"
 
 **Causes:**
-1. JSON with colons (`:`) breaks the parser
-2. Wrong variable syntax (using $N instead of |pipes|)
-3. Iframe not loaded yet when message sent
+. JSON with colons (`:`) breaks the parser
+. Wrong variable syntax (using $N instead of |pipes|)
+. Iframe not loaded yet when message sent
 
 **Fix:**
-1. Use underscore format: `score_|Red_Score|` not `{"score": |Red_Score|}`
-2. Use pipe syntax in Send Message To Iframes
-3. Use ready handshake pattern for timing
+. Use underscore format: `score_|Red_Score|` not `{"score": |Red_Score|}`
+. Use pipe syntax in Send Message To Iframes
+. Use ready handshake pattern for timing
+
+---
+
+### Bug: "Score shows 51 on third game" (or similar stale data issues)
+
+**Cause:** During game loop resets, Portals sends stale variable values to iframes before the reset completes. For example, if game 2 ended with score 50, the iframe might receive `red_51` before `Red_Score` resets to 0.
+
+**Fix:** Use a `gameStartedClean` flag to filter stale data:
+
+```javascript
+let gameStartedClean = false;  // Reset on each new game
+
+function updateScore(team, newScore) {
+// Reject high scores before game started clean
+if (!gameStartedClean && newScore >= 20) {
+console.log('REJECTED stale score:', newScore);
+return;
+}
+
+// Once we see a low score (1-10), game is clean
+if (newScore <= 10 && newScore >= 1) {
+gameStartedClean = true;
+}
+
+// ... apply score update
+}
+```
+
+**Why it works:** Stale high scores (51) are rejected until the first legitimate low score (1) is received, which proves the game has started fresh.
 
 ---
 
@@ -1250,8 +1305,8 @@ If you can't find the bug:
 **Fix:** Add condition before setting team:
 ```
 if($N{Player_Team} == 0.0,
-   SetVariable('Player_Team', 1.0, 0.0),
-   0.0
+SetVariable('Player_Team', 1.0, 0.0),
+.0
 )
 ```
 
@@ -1282,6 +1337,28 @@ SetTask('MyTask', 'NotActive', 0.1)
 
 ---
 
+### Bug: "Task stuck in Active state, won't respond to new triggers"
+
+**Cause:** If the SetTask reset is the LAST effect and an earlier effect fails or errors, the reset never executes. The task stays Active and ignores new trigger messages.
+
+**Example of broken order:**
+```
+Effect 1: SetVariable (conditional logic)
+Effect 2: Send Message To Iframes
+Effect 3: SetTask('myTask', 'NotActive', 0.1)  // NEVER RUNS if Effect 1/2 fail
+```
+
+**Fix:** Make SetTask reset the FIRST effect:
+```
+Effect 1: SetTask('myTask', 'NotActive', 0.1)  // ALWAYS runs first
+Effect 2: SetVariable (conditional logic)
+Effect 3: Send Message To Iframes
+```
+
+**Why it works:** The reset fires immediately before any potentially-failing effects, ensuring the task returns to NotActive and can receive new triggers.
+
+---
+
 ### Bug: "Effects fire in wrong order"
 
 **Cause:** Effects on the same task run in order, but there's no guarantee of timing between different tasks.
@@ -1301,7 +1378,7 @@ SetTask('Step3', 'Active', 1.0)  // Runs 1 sec after Step1
 
 **Fix:** Add delays before checking multiplayer variables:
 ```
-// On Player Login, wait 3 seconds before checking shared state
+// On Player Login, wait 3 seconds before checking Host_Exists
 SetTask('DelayedCheck', 'Active', 3.0)
 ```
 
@@ -1312,29 +1389,29 @@ SetTask('DelayedCheck', 'Active', 3.0)
 ### Enable Browser Console
 
 When testing iframes:
-1. Open browser developer tools (F12)
-2. Go to Console tab
-3. Look for errors and your console.log() messages
+. Open browser developer tools (F12)
+. Go to Console tab
+. Look for errors and your console.log() messages
 
 ### Add Debug Logging
 
 Add console.log() statements to track what's happening:
 ```javascript
 PortalsSdk.setMessageListener(function(message) {
-  console.log('[Iframe] Received:', message);  // See what Portals sends
+console.log('[Iframe] Received:', message);  // See what Portals sends
 
-  // Your parsing code...
+// Your parsing code...
 
-  console.log('[Iframe] Parsed value:', parsedValue);  // See what you extracted
+console.log('[Iframe] Parsed value:', parsedValue);  // See what you extracted
 });
 ```
 
 ### Test Iframe Standalone
 
 Open your iframe URL directly in a browser to test:
-1. Does the page load without errors?
-2. Are there any console errors?
-3. Does the UI render correctly?
+. Does the page load without errors?
+. Are there any console errors?
+. Does the UI render correctly?
 
 Then test the Portals integration separately.
 
@@ -1343,18 +1420,18 @@ Then test the Portals integration separately.
 Add a visible debug element to your iframe:
 ```html
 <div id="debug" style="position:fixed;bottom:10px;left:10px;background:black;color:lime;padding:5px;font-family:monospace;font-size:12px;z-index:9999;">
-  Waiting for messages...
+Waiting for messages...
 </div>
 
 <script>
 function debug(msg) {
-  document.getElementById('debug').textContent = msg;
-  console.log('[Debug]', msg);
+document.getElementById('debug').textContent = msg;
+console.log('[Debug]', msg);
 }
 
 PortalsSdk.setMessageListener(function(message) {
-  debug('Received: ' + JSON.stringify(message).substring(0, 50));
-  // ... rest of handler
+debug('Received: ' + JSON.stringify(message).substring(0, 50));
+// ... rest of handler
 });
 </script>
 ```
@@ -1382,8 +1459,8 @@ score_|Red_Score|_|Blue_Score|
 **Iframe → Portals (JavaScript):**
 ```javascript
 PortalsSdk.sendMessageToUnity(JSON.stringify({
-  TaskName: 'myTask',
-  TaskTargetState: 'SetNotActiveToActive'
+TaskName: 'myTask',
+TaskTargetState: 'SetNotActiveToActive'
 }));
 ```
 - MUST use JSON.stringify()
@@ -1403,21 +1480,21 @@ PortalsSdk.sendMessageToUnity(JSON.stringify({
 
 **The Solution: Ready Handshake Pattern**
 
-1. Pass static data in URL parameters (always available)
-2. Iframe sends "ready" signal when loaded
-3. Portals sends dynamic data AFTER ready signal
+. Pass static data in URL parameters (always available)
+. Iframe sends "ready" signal when loaded
+. Portals sends dynamic data AFTER ready signal
 
 ```
 Task activates iframe with ?winner=red in URL
-         ↓
+↓
 Iframe loads, reads winner from URL
-         ↓
+↓
 Iframe sends: gameover_ready → Completed
-         ↓
+↓
 Portals function triggers on gameover_ready Completed
-         ↓
+↓
 Portals sends: scores_50_32
-         ↓
+↓
 Iframe receives scores message, displays result
 ```
 
@@ -1431,10 +1508,10 @@ https://example.github.io/my-hud/index.html?v=1
 ```
 
 **Every time you update the iframe:**
-1. Push to GitHub
-2. Wait 1-2 minutes for GitHub Pages to update
-3. Increment version: `?v=2`, `?v=3`, etc.
-4. Update the URL in Portals
+. Push to GitHub
+. Wait 1-2 minutes for GitHub Pages to update
+. Increment version: `?v=2`, `?v=3`, etc.
+. Update the URL in Portals
 
 **Pro tip:** Use a high random number during development (`?v=99847`) so you don't have to track versions.
 
@@ -1444,37 +1521,37 @@ Messages from Portals can arrive in different formats. Your parsing code must ha
 
 ```javascript
 PortalsSdk.setMessageListener(function(message) {
-  console.log('[Iframe] Raw message:', message, typeof message);
+console.log('[Iframe] Raw message:', message, typeof message);
 
-  let msg = message;
+let msg = message;
 
-  // Step 1: If it's a string, try to parse as JSON
-  if (typeof message === 'string') {
-    try {
-      msg = JSON.parse(message);
-    } catch (e) {
-      // Not JSON - that's OK, keep as string
-      // DO NOT RETURN HERE - underscore format won't be JSON
-      msg = message;
-    }
-  }
+// Step 1: If it's a string, try to parse as JSON
+if (typeof message === 'string') {
+try {
+msg = JSON.parse(message);
+} catch (e) {
+// Not JSON - that's OK, keep as string
+// DO NOT RETURN HERE - underscore format won't be JSON
+msg = message;
+}
+}
 
-  // Step 2: Convert to string for pattern matching
-  const msgStr = typeof msg === 'string' ? msg : JSON.stringify(msg);
+// Step 2: Convert to string for pattern matching
+const msgStr = typeof msg === 'string' ? msg : JSON.stringify(msg);
 
-  // Step 3: Handle your message patterns
-  if (msgStr.startsWith('score_')) {
-    const value = parseFloat(msgStr.substring(6));
-    if (!isNaN(value)) {
-      updateScore(value);
-    }
-  } else if (msgStr.startsWith('time_')) {
-    const value = parseFloat(msgStr.substring(5));
-    if (!isNaN(value)) {
-      updateTimer(value);
-    }
-  }
-  // Add more patterns as needed
+// Step 3: Handle your message patterns
+if (msgStr.startsWith('score_')) {
+const value = parseFloat(msgStr.substring(6));
+if (!isNaN(value)) {
+updateScore(value);
+}
+} else if (msgStr.startsWith('time_')) {
+const value = parseFloat(msgStr.substring(5));
+if (!isNaN(value)) {
+updateTimer(value);
+}
+}
+// Add more patterns as needed
 });
 ```
 
@@ -1495,8 +1572,8 @@ Option A: Request current state
 ```javascript
 // Iframe requests sync when loaded
 PortalsSdk.sendMessageToUnity(JSON.stringify({
-  TaskName: 'request_sync',
-  TaskTargetState: 'SetNotActiveToActive'
+TaskName: 'request_sync',
+TaskTargetState: 'SetNotActiveToActive'
 }));
 
 // Portals responds with full state: sync_332_25_18
@@ -1524,23 +1601,56 @@ let score = 0;
 // Iframe just displays 25, no internal tracking needed
 ```
 
-### Rule 7: Transparent Backgrounds for HUDs
+### Rule 7: Filter Stale Data in Game Loops
+
+When running multiple game cycles (game → game over → new game), Portals may send stale variable values before resets complete.
+
+**Pattern: `gameStartedClean` Flag**
+
+```javascript
+let gameStartedClean = false;
+
+function updateScore(team, newScore) {
+// Reject high scores until we've seen a legitimate low score
+if (!gameStartedClean && newScore >= 20) {
+console.log('Rejected stale score:', newScore);
+return;
+}
+
+if (newScore >= 1 && newScore <= 10) {
+gameStartedClean = true;  // First real score confirms clean start
+}
+
+// ... update display
+}
+
+// Reset flag when new game detected
+function onGameRestart() {
+gameStartedClean = false;
+}
+```
+
+**Why:** Stale score of 51 (from previous game) gets rejected. First legitimate score of 1 sets the flag, then all subsequent scores work normally.
+
+---
+
+### Rule 8: Transparent Backgrounds for HUDs
 
 For HUD overlays, you want only your UI visible, not a white/colored background:
 
 ```css
 html, body {
-  background: transparent;  /* Critical! */
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+background: transparent;  /* Critical! */
+margin: 0;
+padding: 0;
+overflow: hidden;
 }
 
 .hud-container {
-  /* Apply visible background only to your content */
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 8px;
-  padding: 10px;
+/* Apply visible background only to your content */
+background: rgba(0, 0, 0, 0.8);
+border-radius: 8px;
+padding: 10px;
 }
 ```
 
@@ -1728,6 +1838,24 @@ SetVariable('Red_Score', 0.0, 0.0)
 
 ---
 
+### Pattern: Multiple Players Claiming Host
+
+```
+[Player1] Setting I_Am_Host = 1
+[Player2] Setting I_Am_Host = 1
+[Player1] Setting Timer_Host_Exists = 1
+[Player2] Setting Timer_Host_Exists = 1
+```
+
+**Problem:** Both players checked `Host_Exists` before either set it (race condition).
+
+**Fix:** Increase delay before checking:
+```
+SetTask('BecomeHost', 'Active', 3.0)  // Wait 3 seconds for sync
+```
+
+---
+
 ### Pattern: Effect Runs for All Players
 
 ```
@@ -1767,13 +1895,13 @@ When debugging, add console.log() at key decision points:
 
 ```javascript
 PortalsSdk.setMessageListener(function(message) {
-  console.log('[RECV] Raw:', message);
-  console.log('[RECV] Type:', typeof message);
+console.log('[RECV] Raw:', message);
+console.log('[RECV] Type:', typeof message);
 
-  // ... parsing ...
+// ... parsing ...
 
-  console.log('[RECV] Parsed:', parsedValue);
-  console.log('[RECV] Action:', whatWeWillDo);
+console.log('[RECV] Parsed:', parsedValue);
+console.log('[RECV] Action:', whatWeWillDo);
 });
 ```
 
@@ -1791,9 +1919,9 @@ Make logs easy to filter:
 
 ```javascript
 function updateScore(team, newScore) {
-  console.log(`[HUD] Score update: ${team} = ${newScore}`);
-  // ... update display ...
-  console.log(`[HUD] Display updated`);
+console.log(`[HUD] Score update: ${team} = ${newScore}`);
+// ... update display ...
+console.log(`[HUD] Display updated`);
 }
 ```
 
@@ -1837,11 +1965,35 @@ Manage all variables created with Update Value effect.
 
 **Defaults:** Non-persistent, single-player
 
-**Initializing Variables:** Variables do not have a built-in "default value" setting. To initialize variables, use a Player Login trigger with SetVariable effects:
+## Variable Initialization Requirements
+
+**CRITICAL:** Variables must be initialized before use, or they return `undefined`/`NaN`.
+
+**Best Practice:** Initialize all variables on Player Login trigger:
+
 ```
-SetVariable('Player_Score', 0.0, 0.0)
+// Task: InitPlayer
+// Trigger: Player Login
+// Effects:
 SetVariable('Player_Team', 0.0, 0.0)
+SetVariable('Player_Health', 100.0, 0.0)
+SetVariable('My_Slot', 0.0, 0.0)
 ```
+
+**For Multiplayer Variables:**
+Only initialize if not already set (to avoid resetting for late joiners):
+```
+if($N{Game_Started} == 0.0,
+  SetVariable('Red_Score', 0.0, 0.0),
+  0.0
+)
+```
+
+**Common Bug:** Variable shows `NaN` in console:
+```
+[FunctionEffect] $N{Red_Score} = NaN
+```
+**Fix:** Add initialization on Player Login for that variable.
 
 ---
 
@@ -1856,11 +2008,8 @@ Scripting system based on NCalc expression language.
 | `$T{taskName}` | Task state as text | `$T{door}` → 'Active' |
 | `$TN{taskName}` | Task state as number | `$TN{door}` → 1 |
 | `$N{variableName}` | Variable value | `$N{coins}` → 50 |
-| `$N{timerName}` | Timer elapsed time (seconds) | `$N{RaceTimer}` → 45.5 |
 
 **Task State Numbers:** 0=NotActive, 1=Active, 2=Completed
-
-**Timer Values:** You can read any running timer's elapsed time using `$N{timerName}`. The timer must be started first using the Start Timer effect.
 
 ## Setting Values
 
@@ -1919,18 +2068,18 @@ SetVariable('coins', $N{coins} + 10, 0.0)
 if(condition, whenTrue, whenFalse)
 
 if($N{coins} >= 10,
-   SetVariable('doorUnlocked', 1, 0.0),
-   0
+SetVariable('doorUnlocked', 1, 0.0),
+
 )
 ```
 
 **ifs() - Multiple conditions (first match wins):**
 ```
 ifs(
-  $N{health} <= 0, SetVariable('warning', 3, 0.0),
-  $N{health} <= 3, SetVariable('warning', 2, 0.0),
-  $N{health} <= 6, SetVariable('warning', 1, 0.0),
-                   SetVariable('warning', 0, 0.0)
+$N{health} <= 0, SetVariable('warning', 3, 0.0),
+$N{health} <= 3, SetVariable('warning', 2, 0.0),
+$N{health} <= 6, SetVariable('warning', 1, 0.0),
+SetVariable('warning', 0, 0.0)
 )
 ```
 
@@ -1945,15 +2094,15 @@ OnChange('variableName', '>= 10')     // Variable condition
 **Task completion triggers variable:**
 ```
 if(OnChange('puzzle1', 'Completed'),
-   SetVariable('doorUnlocked', 1.0, 0.0),
-   0.0)
+SetVariable('doorUnlocked', 1.0, 0.0),
+.0)
 ```
 
 **Variable threshold completes task:**
 ```
 if(OnChange('coins', >= 10.0),
-   SetTask('buyDoor', 'Completed', 0.0),
-   0.0)
+SetTask('buyDoor', 'Completed', 0.0),
+.0)
 ```
 
 **Multiple conditions with current state check:**
@@ -1966,10 +2115,10 @@ if(OnChange('coins', >= 10.0),
 **State change with conditional actions:**
 ```
 if(OnChange('questStep'),
-   ifs($T{questStep} == 'NotActive', SetVariable('hintText', 0.0, 0.0),
-       $T{questStep} == 'Active', SetVariable('hintText', 1.0, 0.0),
-       SetVariable('hintText', 2.0, 0.0)),
-   0.0)
+ifs($T{questStep} == 'NotActive', SetVariable('hintText', 0.0, 0.0),
+$T{questStep} == 'Active', SetVariable('hintText', 1.0, 0.0),
+SetVariable('hintText', 2.0, 0.0)),
+.0)
 ```
 
 ## SelectRandom
@@ -2010,49 +2159,43 @@ SetTask('alarm', SelectRandom('NotActive', 'Active', 'Completed'), 0.0)
 Min(Max($N{health}, 0.0), 100.0)   // Clamp health between 0-100
 ```
 
-## Timer Variables
-
-You can read timer values as variables and manipulate them in calculations.
-
-**Reading timer values:**
-```
-$N{RaceTimer}              // Returns elapsed seconds (e.g., 45.5)
-$N{RaceTimer} >= 60.0      // Check if timer is 60+ seconds
-```
-
-**Manipulating timer values:**
-```
-SetVariable('HalfTime', $N{RaceTimer} / 2.0, 0.0)           // Divide time by 2
-SetVariable('BonusTime', $N{RaceTimer} + 30.0, 0.0)         // Add 30 seconds
-SetVariable('TimeRemaining', 120.0 - $N{RaceTimer}, 0.0)    // Calculate remaining time
-SetVariable('TimeScore', 1000.0 - ($N{RaceTimer} * 10.0), 0.0)  // Time-based scoring
-```
-
-**Common patterns:**
-
-Checkpoint time storage:
-```
-SetVariable('Checkpoint1Time', $N{RaceTimer}, 0.0)
-```
-
-Time-based scoring (faster = more points):
-```
-SetVariable('Score', Max(1000.0 - ($N{RaceTimer} * 5.0), 0.0), 0.0)
-```
-
-Time penalty on death:
-```
-SetVariable('PenaltyTime', $N{GameTimer} + 10.0, 0.0)
-```
-
-**Note:** Timer must be started (Start Timer effect) before reading. Unstarted timers return 0.
-
 ## Important Notes
 
 - **Always use decimal notation:** `0.0`, `1.0`, `50.0` (not `0`, `1`, `50`) to avoid type errors
 - **Use nested if(), NOT ifs()** - ifs() may have bugs in some cases
 - **Tasks don't auto-reset** - always add reset function effects
 - **Enable "Trigger on Task Change"** checkbox for Function Effects
+- **SetTask reset should be FIRST effect** - if later effects fail/error, the task gets stuck in Active state and won't respond to new triggers. Always put `SetTask('taskName', 'NotActive', 0.1)` as the first effect.
+- **Use guards on tasks** - prevent unwanted execution with conditions like `if($N{My_Slot} > 0.0, ..., 0.0)` to ensure tasks only run when prerequisites are met
+- **Combine SetVariables with + operator** - for atomic execution of multiple variable changes: `SetVariable('Var1', 1.0, 0.0) + SetVariable('Var2', 2.0, 0.0)`
+
+## CRITICAL: Variable Syntax in Function Effects
+
+**CORRECT syntax for reading variables:**
+- `$N{variableName}` - Read variable value (curly braces with $N prefix)
+- `$T{taskName}` - Read task state as text
+- `$TN{taskName}` - Read task state as number
+
+**CORRECT syntax for setting variables:**
+- `SetVariable('variableName', value, delay)`
+
+**WRONG - DO NOT USE:**
+- `[variableName]` - Square brackets do NOT work
+- `[variableName] = value` - This assignment syntax does NOT work
+
+**Examples:**
+
+CORRECT:
+```
+if($N{My_Slot} == 1, SetVariable('Slot1_Team', 1.0, 0.0), 0)
+```
+
+WRONG:
+```
+if([My_Slot] == 1, [Slot1_Team] = 1.0, 0)
+```
+
+Always use `$N{}` for reading and `SetVariable()` for writing.
 
 ---
 
@@ -2071,32 +2214,69 @@ SetVariable('PenaltyTime', $N{GameTimer} + 10.0, 0.0)
 
 Multiplayer variables take **2-3 seconds** to sync across all players. This causes race conditions when:
 - Checking if another player already set a value
-- Coordinating actions between players
+- Preventing duplicate actions (like multiple hosts)
 
 **Solution:** Add delays before checking multiplayer variables:
 ```
-// On Player Login, delay 3 seconds before checking shared state
-SetTask('DelayedCheck', 'Active', 3.0)
+// On Player Login, delay 3 seconds before checking
+SetTask('CheckHostStatus', 'Active', 3.0)
 ```
+
+## Host System Pattern
+
+When only ONE player should control shared state (timers, game loops), use a host system:
+
+**Variables needed:**
+| Variable | Multiplayer? | Purpose |
+|----------|--------------|---------|
+| `Host_Exists` | Yes | Tracks if any player is host |
+| `I_Am_Host` | No | Each player knows if they're host |
+
+**BecomeHost Task (Single Player):**
+```
+// Effect 1: Claim host if none exists
+if($N{Host_Exists} == 0.0,
+SetVariable('I_Am_Host', 1.0, 0.0),
+.0
+)
+
+// Effect 2: Set global flag if we're host
+if($N{I_Am_Host} == 1.0,
+SetVariable('Host_Exists', 1.0, 0.0),
+.0
+)
+
+// Effect 3: Start game loop if host
+if($N{I_Am_Host} == 1.0,
+SetTask('GameLoop', 'Active', 0.5),
+.0
+)
+```
+
+**Trigger:** Player Login → 3-second delay → BecomeHost
 
 ## Self-Looping Task Pattern
 
-For continuous updates (use Single Player tasks to prevent acceleration):
+For timers or continuous updates:
 
 ```
-// GameLoop task (Single Player, on Active):
+// GameTimer task (Single Player, on Active):
 
-// Effect 1: Your game logic here
-SetVariable('SomeValue', $N{SomeValue} + 1.0, 0.0)
+// Effect 1: Increment (host only)
+if($N{I_Am_Host} == 1.0,
+SetVariable('Elapsed', $N{Elapsed} + 1.0, 0.0),
+.0
+)
 
-// Effect 2: Reset for next loop
-SetTask('GameLoop', 'NotActive', 0.9)
+// Effect 2: Send to iframe
+time_|Elapsed|
 
-// Effect 3: Loop
-SetTask('GameLoop', 'Active', 1.0)
+// Effect 3: Reset for next loop
+SetTask('GameTimer', 'NotActive', 0.9)
+
+// Effect 4: Loop
+SetTask('GameTimer', 'Active', 1.0)
 ```
-
-**Note on Timers:** Portals does not have a native shared timer system that syncs across players. For multiplayer timer displays, use local JavaScript timing in iframes triggered by game state changes.
 
 ---
 
@@ -2123,9 +2303,9 @@ Embed external web pages with bidirectional communication.
 ## Important: Iframe is an Effect, Not a Tool
 
 Iframe is an **effect**, not a building tool. To display an iframe:
-1. Create a task with a trigger (e.g., Player Login)
-2. Add the Iframe effect to that task
-3. The iframe appears when the task activates
+. Create a task with a trigger (e.g., Player Login)
+. Add the Iframe effect to that task
+. The iframe appears when the task activates
 
 ## Iframe Effect Settings
 
@@ -2165,14 +2345,14 @@ For HUD overlays where only the content should be visible (no background):
 
 ```css
 body {
-  background: transparent;
+background: transparent;
 }
 
 /* Wrap content in a container with the visible background */
 .hud-container {
-  display: flex;
-  background: rgba(0,0,0,0.9);
-  border-radius: 8px;
+display: flex;
+background: rgba(0,0,0,0.9);
+border-radius: 8px;
 }
 ```
 
@@ -2190,8 +2370,8 @@ Add to your HTML:
 ```javascript
 // MUST stringify the JSON object
 PortalsSdk.sendMessageToUnity(JSON.stringify({
-  TaskName: "level1_intro",
-  TaskTargetState: "SetNotActiveToActive"
+TaskName: "level1_intro",
+TaskTargetState: "SetNotActiveToActive"
 }));
 ```
 
@@ -2213,30 +2393,30 @@ Use the SDK's message listener to receive commands from Portals:
 ```javascript
 // Register the listener
 PortalsSdk.setMessageListener(function(message) {
-  console.log('Received:', message);
+console.log('Received:', message);
 
-  let data = message;
+let data = message;
 
-  // Parse if string - but DON'T return on failure (might be underscore format)
-  if (typeof message === 'string') {
-    try {
-      data = JSON.parse(message);
-    } catch (e) {
-      // Not JSON - keep as string for underscore format parsing
-      data = message;
-    }
-  }
+// Parse if string - but DON'T return on failure (might be underscore format)
+if (typeof message === 'string') {
+try {
+data = JSON.parse(message);
+} catch (e) {
+// Not JSON - keep as string for underscore format parsing
+data = message;
+}
+}
 
-  const msg = typeof data === 'string' ? data : JSON.stringify(data);
+const msg = typeof data === 'string' ? data : JSON.stringify(data);
 
-  // Handle underscore format (recommended)
-  if (msg.startsWith('score_')) {
-    const score = parseFloat(msg.substring(6));
-    if (!isNaN(score)) updateScore(score);
-  } else if (msg.startsWith('time_')) {
-    const elapsed = parseFloat(msg.substring(5));
-    if (!isNaN(elapsed)) updateTimer(elapsed);
-  }
+// Handle underscore format (recommended)
+if (msg.startsWith('score_')) {
+const score = parseFloat(msg.substring(6));
+if (!isNaN(score)) updateScore(score);
+} else if (msg.startsWith('time_')) {
+const elapsed = parseFloat(msg.substring(5));
+if (!isNaN(elapsed)) updateTimer(elapsed);
+}
 });
 ```
 
@@ -2261,6 +2441,86 @@ PortalsSdk.setMessageListener(function(message) {
 PortalsSdk.closeIframe();
 ```
 
+## First-Load Ready Handshake Pattern
+
+When an iframe needs to receive data from Portals on first load (like lobby screens or HUDs that need initial state), use a ready handshake:
+
+**The Problem:** Iframe opens, but Portals sends data before it finishes loading. The iframe never receives the initial message.
+
+**The Solution:**
+```
+1. Reset the ready task BEFORE opening iframe
+2. Iframe loads → sends ready signal (300ms delay recommended)
+3. Ready task triggers → Portals sends data to iframe
+4. Iframe receives and displays data
+```
+
+**Example: Team Select Lobby**
+
+**Step 1: Reset task before opening iframe**
+- Trigger: Player enters lobby zone
+- Effect 1: `SetTask('team_select_ready', 'NotActive', 0.0)`
+- Effect 2: Open Iframe (team-select.html)
+
+**Step 2: Iframe signals ready after loading**
+```javascript
+window.addEventListener('DOMContentLoaded', function() {
+  // Small delay ensures SDK is fully ready
+  setTimeout(function() {
+    PortalsSdk.sendMessageToUnity(JSON.stringify({
+      TaskName: 'team_select_ready',
+      TaskTargetState: 'SetNotActiveToCompleted'
+    }));
+  }, 300);
+});
+```
+
+**Step 3: Portals responds to ready signal**
+- Trigger: `team_select_ready` status is `Completed`
+- Effect: Send Message To Iframes → `my_slot_|My_Slot|`
+
+**Why reset BEFORE opening:**
+If the task is already Completed from a previous visit, the iframe's ready signal won't trigger anything. Resetting to NotActive ensures the Completed transition fires the trigger.
+
+---
+
+## Game In Progress Detection
+
+For lobby/matchmaking iframes, detect if a game is already running to prevent new players from disrupting active matches:
+
+**Pattern:** Watch for `sync_` messages that indicate active gameplay.
+
+```javascript
+let gameInProgress = false;
+
+PortalsSdk.setMessageListener(function(message) {
+  const msg = typeof message === 'string' ? message : JSON.stringify(message);
+
+  // Sync messages only sent during active games
+  if (msg.startsWith('sync_')) {
+    if (!gameInProgress) {
+      gameInProgress = true;
+      showMatchInProgress(); // Show "MATCH IN PROGRESS" UI
+    }
+    return; // Don't process further
+  }
+
+  // Handle normal lobby messages only if no game in progress
+  if (!gameInProgress) {
+    // ... lobby logic
+  }
+});
+
+function showMatchInProgress() {
+  document.getElementById('matchmaking-ui').style.display = 'none';
+  document.getElementById('match-in-progress').style.display = 'block';
+}
+```
+
+**When game ends:** The game-over screen resets `Game_In_Progress` variable to 0, and new lobby loads will start fresh without seeing sync messages.
+
+---
+
 ## Game Over / Result Screen Pattern
 
 For screens that display results (winner, scores), use a **two-step handshake** to ensure the iframe is loaded before receiving data:
@@ -2268,9 +2528,9 @@ For screens that display results (winner, scores), use a **two-step handshake** 
 **Problem:** Portals sends messages before iframe finishes loading, so data is lost.
 
 **Solution:**
-1. Pass static data (winner) in URL parameters
-2. Have iframe signal "ready" when loaded
-3. Portals sends dynamic data (scores) after ready signal
+. Pass static data (winner) in URL parameters
+. Have iframe signal "ready" when loaded
+. Portals sends dynamic data (scores) after ready signal
 
 **Step 1: Create iframe URLs with winner in params**
 ```
@@ -2283,8 +2543,8 @@ game-over.html?winner=tie&v=1
 ```javascript
 // In iframe, after DOM loaded:
 PortalsSdk.sendMessageToUnity(JSON.stringify({
-  TaskName: 'gameover_ready',
-  TaskTargetState: 'SetNotActiveToCompleted'
+TaskName: 'gameover_ready',
+TaskTargetState: 'SetNotActiveToCompleted'
 }));
 ```
 
@@ -2300,12 +2560,12 @@ const winner = params.get('winner');
 
 // Listen for scores message
 PortalsSdk.setMessageListener(function(msg) {
-  if (msg.startsWith('scores_')) {
-    const parts = msg.split('_');
-    const redScore = parts[1];
-    const blueScore = parts[2];
-    displayGameOver(winner, redScore, blueScore);
-  }
+if (msg.startsWith('scores_')) {
+const parts = msg.split('_');
+const redScore = parts[1];
+const blueScore = parts[2];
+displayGameOver(winner, redScore, blueScore);
+}
 });
 ```
 
@@ -2335,10 +2595,13 @@ https://example.com/page.html?noCloseBtn=true&maximized=true
 | "User gesture required" | closeIframe outside click | Wrap in onclick handler |
 | Iframe not receiving messages | JSON with colons | Use underscore format: `score_\|Score\|` |
 | Timer not updating display | Early return in JS | Don't `return` after JSON.parse failure |
-| Timer accelerates with 2+ players | All players incrementing | Use Single Player task for loops |
+| Timer accelerates with 2+ players | All players incrementing | Use host system, Single Player task |
 | Variables not syncing | Race condition | Add 3-second delay before checking |
+| Multiple players claim host | Sync delay | Increase delay in DelayedHostCheck |
 | Iframe misses initial message | Message sent before load | Use ready handshake pattern (see Game Over Pattern) |
 | URL params show literal \|Var\| | Portals doesn't interpolate URL params | Pass static values in URL, dynamic via message |
+| Score shows 51 on 3rd game | Stale data sent before Portals reset completes | Use `gameStartedClean` flag - reject high scores until first low score seen |
+| Leaderboard shows old scores | Iframe receives stale variable values | Add stale data filter in updateScore() |
 
 ---
 
@@ -2347,20 +2610,20 @@ https://example.com/page.html?noCloseBtn=true&maximized=true
 ## Part 1: Buy/Sell Zones
 
 **Buy Zone Setup:**
-1. Place Trigger Cube
-2. Add User Enter Trigger → Show Token Swap effect
-3. Configure: Buy=On, Sell=Off, Token Address, Wallet Address
-4. Add User Exit Trigger → Hide Token Swap effect
+. Place Trigger Cube
+. Add User Enter Trigger → Show Token Swap effect
+. Configure: Buy=On, Sell=Off, Token Address, Wallet Address
+. Add User Exit Trigger → Hide Token Swap effect
 
 **Sell Zone:** Same setup with Buy=Off, Sell=On
 
 ## Part 2: 3D Candlestick Chart
 
-1. Copy token contract address
-2. Open inventory → Select Chart item
-3. Paste contract address
-4. Click "Spawn Chart"
-5. Position in space
+. Copy token contract address
+. Open inventory → Select Chart item
+. Paste contract address
+. Click "Spawn Chart"
+. Position in space
 
 ---
 
@@ -2370,8 +2633,8 @@ https://example.com/page.html?noCloseBtn=true&maximized=true
 
 ```
 NotActive → Active → Completed
-     ↑         ↓         ↓
-     ←─────────←─────────←
+↑         ↓         ↓
+←─────────←─────────←
 ```
 (Any state can transition to any other)
 
