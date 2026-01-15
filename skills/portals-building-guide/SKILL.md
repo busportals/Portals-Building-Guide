@@ -2010,6 +2010,91 @@ SetTask('alarm', SelectRandom('NotActive', 'Active', 'Completed'), 0.0)
 Min(Max($N{health}, 0.0), 100.0)   // Clamp health between 0-100
 ```
 
+## Multiplayer Functions
+
+Functions for working with multiple players simultaneously. Essential for team games, role assignment, and any logic affecting multiple players.
+
+### Player Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `[Players]` | List | All players currently in the room |
+| `[Player]` | Single | The player who triggered the effect |
+
+**Built-in player properties:**
+- `playerName` - The player's username
+- `health` - The player's health (default: 100, no max limit)
+
+### SelectRandomPlayers([Players], count)
+
+Picks random players from a list. Selection is **deterministic** (all clients get same result) and **persistent** (survives reconnects).
+
+```
+SelectRandomPlayers([Players], 2)   // Pick 2 random players
+```
+
+### SelectPlayersParameters([Players], 'parameterName')
+
+Gets a parameter value from each player in a list.
+
+```
+SelectPlayersParameters([Players], 'health')   // Returns [100, 85, 100, 50]
+SelectPlayersParameters(SelectRandomPlayers([Players], 3), 'playerName')   // Names of 3 random players
+```
+
+### SetPlayersParameters([Players], 'parameterName', value)
+
+Sets a parameter on all players in a list. Changes sync to all clients automatically.
+
+```
+SetPlayersParameters([Players], 'canMove', true)   // Enable movement for everyone
+```
+
+### PrintString(value)
+
+Prints a value to the browser console for debugging.
+
+```
+PrintString(SelectPlayersParameters([Players], 'playerName'))   // Debug: list all player names
+```
+
+### Multiplayer Function Examples
+
+**Impostor Assignment (Among Us style):**
+```
+SetPlayersParameters([Players], 'impostor', false) +
+SetPlayersParameters(SelectRandomPlayers([Players], 2), 'impostor', true)
+```
+Sets everyone to non-impostor, then picks 2 random impostors. Use on game start trigger.
+
+**Team Assignment (Red vs Blue):**
+
+First track player count with a multiplayer variable incremented when players enter a "ready" zone.
+
+```
+SetPlayersParameters([Players], 'team', 'blue') +
+SetPlayersParameters(SelectRandomPlayers([Players], Floor($N{PlayerCount} / 2.0)), 'team', 'red')
+```
+Sets everyone to blue, then switches half to red. Guarantees all players are assigned and teams are balanced.
+
+**One Hunter, Everyone Else Hides:**
+```
+SetPlayersParameters([Players], 'role', 'hider') +
+SetPlayersParameters(SelectRandomPlayers([Players], 1), 'role', 'hunter')
+```
+
+**Damage All Players:**
+```
+SetPlayersParameters([Players], 'health', 50)   // Set everyone's health to 50
+```
+
+### Multiplayer Function Notes
+
+- **One trigger, all clients:** When one player triggers a multiplayer function, the result propagates to everyone
+- **Order matters:** In chained expressions using `+`, later operations can override earlier ones
+- **Custom parameters:** Use any variable name from the Variable system, not just built-in ones
+- **Nesting works:** Use output of one function as input to another
+
 ## Timer Variables
 
 You can read timer values as variables and manipulate them in calculations.
