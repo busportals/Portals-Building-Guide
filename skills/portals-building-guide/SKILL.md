@@ -2019,7 +2019,6 @@ Functions for working with multiple players simultaneously. Essential for team g
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `[Players]` | List | All players currently in the room |
-| `[Player]` | Single | The player who triggered the effect |
 
 **Built-in player properties:**
 - `playerName` - The player's username

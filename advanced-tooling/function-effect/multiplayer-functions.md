@@ -11,7 +11,6 @@ Before diving into functions, you need to know about player parameters:
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `[Players]` | List | All players currently in the room |
-| `[Player]` | Single | The player who triggered the effect |
 
 **Built-in player properties:**
 - `playerName` - The player's username
@@ -257,6 +256,27 @@ What it does:
 
 * Outputs all player usernames to the console
 * Useful for testing before building your actual logic
+
+***
+
+### Example 6: Conditional Role Assignment
+
+```
+if(SelectPlayerParameter('ready') == 'true',
+   SetPlayersParameters([Players], 'imposter', 'false')
+ + SetPlayersParameters(SelectRandomPlayers([Players], 1), 'imposter', 'true'),
+   0.0
+)
+```
+
+What it does:
+
+1. Checks if the triggering player's `ready` variable is true
+2. If ready, sets all players' `imposter` to false
+3. Then picks one random player and sets their `imposter` to true
+4. If not ready, does nothing (returns 0.0)
+
+Common use: only starting game logic when players have confirmed they're ready.
 
 ***
 
