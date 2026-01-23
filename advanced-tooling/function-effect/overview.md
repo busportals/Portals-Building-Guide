@@ -118,8 +118,8 @@ A short line that can calculate something or check a condition.
 
 ### What’s next
 
-In the next pages you’ll learn:
+In the next pages you'll learn:
 
-* The Portals-only additions (special task/value reads, SetTask, SetVariable, OnChange)
+* The Portals-only additions (special task/value reads, SetTask, SetVariable, Trigger on Tasks Change)
 * How to write readable if statements
-* The most common operators and functions you’ll use in expressions
+* The most common operators and functions you'll use in expressions

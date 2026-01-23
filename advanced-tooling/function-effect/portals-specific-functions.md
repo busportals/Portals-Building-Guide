@@ -273,74 +273,39 @@ Note: SelectRandom can include numbers, strings, variables, and full expressions
 
 ***
 
-### OnChange trigger
+### Trigger on Tasks Change
 
-OnChange is used to react when something changes:
+When you enable the **Trigger on Tasks Change** toggle, the function will automatically evaluate whenever any variable or task mentioned in your expression changes value or state.
 
-* A task changes state, or
-* A variable changes value
+This replaces the need for manually wrapping expressions in OnChange checks. The system automatically detects which tasks and variables your function references and re-evaluates when any of them change.
 
-Important:
+Example:
 
-* Use task names without the 1\_ prefix.
+```
+if($T{puzzle1} == 'Completed',
+   SetVariable('doorUnlocked', 1.0, 0.0),
+   0.0
+)
+```
+
+With **Trigger on Tasks Change** enabled:
+
+* The function automatically runs whenever `puzzle1` changes state
+* When `puzzle1` becomes Completed, it sets doorUnlocked to 1
+* No need to wrap in OnChange — the toggle handles it
 
 ***
 
-#### OnChange for tasks
+### Activate on Start
 
-**OnChange('taskName', 'TaskState')**
+When you enable the **Activate on Start** toggle, the function will evaluate once when the player logs into the space. This is equivalent to having **Trigger on Tasks Change** checked on player login.
 
-&#x20;**(only when it hits a specific state)**
+Common uses:
 
-Example:
-
-```
-OnChange('puzzle1', 'Completed')
-```
-
-What it does: becomes true at the moment puzzle1 changes into the Completed state. (It won’t be true forever — it’s a “just happened” trigger.)
-
-**OnChange('taskName')**
-
-&#x20;**(any state change)**
-
-Example:
-
-```
-OnChange('questStep')
-```
-
-What it does: becomes true whenever questStep changes state (NotActive → Active, Active → Completed, etc).
-
-***
-
-#### OnChange for variables
-
-**OnChange('variableName', logicalExpression)**
-
-Example:
-
-```
-OnChange('coins', >= 10.0)
-```
-
-What it does: triggers when coins changes and meets the condition “10 or more”.
-
-Example:
-
-```
-OnChange('health', == 0.0)
-```
-
-What it does: triggers when health changes and becomes exactly 0.
-
-Example:
-
-```
-OnChange('speed', < 3.0)
-```
-
-What it does: triggers when speed changes and becomes less than 3.
+* Initialize player variables on join
+* Assign player to a team or role
+* Set up starting game state
+* Trigger welcome effects or spawn logic
 
 ***
 
@@ -348,8 +313,10 @@ What it does: triggers when speed changes and becomes less than 3.
 
 #### 1) When a task completes, set a variable
 
+With **Trigger on Tasks Change** enabled:
+
 ```
-if(OnChange('puzzle1', 'Completed'),
+if($T{puzzle1} == 'Completed',
    SetVariable('doorUnlocked', 1.0, 0.0),
    0.0
 )
@@ -357,15 +324,18 @@ if(OnChange('puzzle1', 'Completed'),
 
 What it does:
 
-* When puzzle1 becomes Completed, it sets doorUnlocked to 1 immediately.
-* Otherwise it does nothing (returns 0).
+* The function runs automatically when puzzle1 changes state
+* If puzzle1 is Completed, it sets doorUnlocked to 1 immediately
+* Otherwise it does nothing (returns 0)
 
 ***
 
 #### 2) When coins reach 10+, complete a task
 
+With **Trigger on Tasks Change** enabled:
+
 ```
-if(OnChange('coins', >= 10.0),
+if($N{coins} >= 10.0,
    SetTask('buyDoor', 'Completed', 0.0),
    0.0
 )
@@ -373,51 +343,47 @@ if(OnChange('coins', >= 10.0),
 
 What it does:
 
-* When coins changes and is now 10 or more, it completes the buyDoor task immediately.
-* Otherwise it does nothing.
+* The function runs automatically when coins changes value
+* If coins is 10 or more, it completes the buyDoor task immediately
+* Otherwise it does nothing
 
 ***
 
-#### 3) Trigger when either change happens, but only when both states are true
+#### 3) React when both conditions are satisfied
+
+With **Trigger on Tasks Change** enabled:
 
 ```
-(OnChange('task1', 'Active') || OnChange('task2', 'Completed'))
-&& $T{task1} == 'Active'
-&& $T{task2} == 'Completed'
-```
-
-What it does:
-
-* It triggers when either:
-  * task1 becomes Active, or
-  * task2 becomes Completed
-* But it only returns true if _right now_ both are true:
-  * task1 is Active
-  * task2 is Completed
-
-
-
-This is useful when you want “as soon as both conditions are satisfied, react”.
-
-***
-
-#### 4) React to any state change and pick a result based on the current state
-
-```
-if(OnChange('questStep'),
-   ifs(
-     $T{questStep} == 'NotActive', SetVariable('hintText', 0.0, 0.0),
-     $T{questStep} == 'Active',    SetVariable('hintText', 1.0, 0.0),
-                                   SetVariable('hintText', 2.0, 0.0)
-   ),
+if($T{task1} == 'Active' && $T{task2} == 'Completed',
+   SetTask('reward', 'Active', 0.0),
    0.0
 )
 ```
 
 What it does:
 
-* Whenever questStep changes state:
-  * If it’s NotActive → set hintText to 0
-  * If it’s Active → set hintText to 1
-  * Otherwise (Completed) → set hintText to 2
-* If questStep didn’t change, nothing happens.
+* The function runs whenever task1 or task2 changes
+* If both conditions are true (task1 is Active AND task2 is Completed), it activates the reward task
+* This pattern is useful for "unlock when multiple conditions are met" scenarios
+
+***
+
+#### 4) Pick a result based on current state
+
+With **Trigger on Tasks Change** enabled:
+
+```
+ifs(
+  $T{questStep} == 'NotActive', SetVariable('hintText', 0.0, 0.0),
+  $T{questStep} == 'Active',    SetVariable('hintText', 1.0, 0.0),
+                                SetVariable('hintText', 2.0, 0.0)
+)
+```
+
+What it does:
+
+* The function runs whenever questStep changes state
+* Sets hintText based on the current state:
+  * NotActive → hintText = 0
+  * Active → hintText = 1
+  * Completed → hintText = 2

@@ -21,6 +21,47 @@ You can also use custom variables you've created in the Variable system.
 
 ***
 
+### AssignNumbersInOrder([Players], 'variableName')
+
+Assigns sequential numbers (1, 2, 3, etc.) to each player in the room.
+
+Example:
+
+```
+AssignNumbersInOrder([Players], 'playernumber')
+```
+
+What it does:
+
+* Gives each player a unique number starting from 1
+* First player gets 1, second gets 2, third gets 3, etc.
+* Stores the number in the specified variable for each player
+
+Common use: assigning spawn points, player slots, turn order, or team positions.
+
+Example with spawn points:
+
+```
+AssignNumbersInOrder([Players], 'playernumber')
+```
+
+Then use a function with **Trigger on Tasks Change** enabled to assign spawn points based on player number:
+
+```
+if($N{playernumber} == 1.0,
+   SetTask('spawn1', 'Active', 0.0),
+   if($N{playernumber} == 2.0,
+      SetTask('spawn2', 'Active', 0.0),
+      if($N{playernumber} == 3.0,
+         SetTask('spawn3', 'Active', 0.0),
+         0.0
+      )
+   )
+)
+```
+
+***
+
 ### SelectRandomPlayers([Players], count)
 
 Picks a random selection of players from a list.
@@ -69,6 +110,31 @@ What it does:
 
 * Picks 3 random players
 * Returns their usernames
+
+***
+
+### Reading Player Variables
+
+To read a player's variable value, use the standard `$N{variableName}` syntax. This works consistently with both single-player and multiplayer variables.
+
+Example:
+
+```
+$N{playernumber}
+```
+
+What it does: returns the current player's playernumber value.
+
+Example in a condition:
+
+```
+if($N{team} == 1.0,
+   SetTask('redTeamSpawn', 'Active', 0.0),
+   SetTask('blueTeamSpawn', 'Active', 0.0)
+)
+```
+
+What it does: checks the player's team variable and activates the appropriate spawn point.
 
 ***
 

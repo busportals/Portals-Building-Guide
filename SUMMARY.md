@@ -32,6 +32,8 @@
   * [Combat NPC](building-basics/portals-building-tools/combat-npc.md)
   * [Destructible](building-basics/portals-building-tools/destructible.md)
   * [Guns](building-basics/portals-building-tools/guns/README.md)
+    * [Pistol](building-basics/portals-building-tools/guns/pistol.md)
+    * [Rifle](building-basics/portals-building-tools/guns/rifle.md)
     * [Shotgun](building-basics/portals-building-tools/guns/shotgun.md)
 * [Space Options](building-basics/space-options/README.md)
   * [General](building-basics/space-options/general.md)
@@ -68,6 +70,7 @@
   * [Key Pressed](interactive-studio/triggers/key-pressed.md)
   * [🔡 Key Released](interactive-studio/triggers/key-released.md)
   * [Player Died](interactive-studio/triggers/player-died.md)
+  * [On Player Leave](interactive-studio/triggers/player-leave.md)
   * [Player Login](interactive-studio/triggers/player-login.md)
   * [Player Started Moving](interactive-studio/triggers/player-started-moving.md)
   * [Player Stopped Moving](interactive-studio/triggers/player-stopped-moving.md)
@@ -115,6 +118,7 @@
   * [Lock Movement](interactive-studio/effects/lock-movement.md)
   * [Message to NPC](interactive-studio/effects/message-to-npc.md)
   * [Move Item](interactive-studio/effects/move-item.md)
+  * [Move Item to Player](interactive-studio/effects/move-item-to-player.md)
   * [Notification Pill](interactive-studio/effects/notification-pill.md)
   * [Play Emote](interactive-studio/effects/play-emote.md)
   * [Play Sound Once](interactive-studio/effects/play-sound-once.md)
@@ -139,6 +143,7 @@
   * [Unlock Camera](interactive-studio/effects/unlock-camera.md)
   * [Unlock Movement](interactive-studio/effects/unlock-movement.md)
   * [Update Value](interactive-studio/effects/update-value.md)
+  * [Update String Value](interactive-studio/effects/update-string-value.md)
   * [NPC Specific Effects](interactive-studio/effects/npc-specific-effects/README.md)
     * [Turn To Player](interactive-studio/effects/npc-specific-effects/turn-to-player.md)
     * [Walk to Position](interactive-studio/effects/npc-specific-effects/walk-to-position.md)
@@ -158,6 +163,7 @@
   * [Operators](advanced-tooling/function-effect/operators.md)
   * [Conditions (if)](advanced-tooling/function-effect/conditions-if-ifs.md)
   * [Functions](advanced-tooling/function-effect/functions.md)
+  * [Multiplayer Functions](advanced-tooling/function-effect/multiplayer-functions.md)
 
 ## How To
 

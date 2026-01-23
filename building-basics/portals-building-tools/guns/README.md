@@ -55,4 +55,6 @@ Guns have dedicated triggers for building interactive experiences:
 
 ### Available Gun Types
 
+* [Pistol](pistol.md) – Versatile weapon
+* [Rifle](rifle.md) – Weapon for various combat scenarios
 * [Shotgun](shotgun.md) – Close-range weapon with spread projectiles
