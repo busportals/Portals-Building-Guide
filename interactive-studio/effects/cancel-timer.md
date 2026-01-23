@@ -1,6 +1,6 @@
 ---
-icon: timer-off
 description: 'Effect: Cancels the current timer and invalidates the current time.'
+icon: alarm-minus
 ---
 
 # Cancel Timer

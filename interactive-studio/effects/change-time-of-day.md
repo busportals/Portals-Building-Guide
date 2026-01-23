@@ -1,6 +1,6 @@
 ---
-icon: sun-horizon
 description: 'Effect: Change the rooms fog settings.'
+icon: sunset
 ---
 
 # Change Time of Day
