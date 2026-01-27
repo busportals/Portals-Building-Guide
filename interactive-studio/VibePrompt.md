@@ -45,7 +45,7 @@ Variables store numeric or string values that can be used in game logic, display
 **Variable Types:**
 - **Numeric**: Standard number variable. Use with `$N{varName}` syntax in FunctionEffector, or with UpdateScoreEvent/DisplayValueEvent effects.
 - **String**: Text variable. Use with `$N{varName}` syntax in FunctionEffector, or with UpdateScoreEventString effect.
-- **Player**: Per-player variable. Use with `SelectPlayerParameter(paramName)` and `SetPlayerParameter(paramName, value)` functions in FunctionEffector.
+- **Player**: Per-player variable. Use with `$N{paramName}` syntax to read and `SetPlayerParameter(paramName, value)` to write in FunctionEffector.
 
 **Multiplayer vs Persistent:**
 - `multiplayer: true` - All players share the same variable value. When any player changes it, everyone sees the change immediately. **Cannot be combined with persistent** (if multiplayer is true, persistent is ignored).
@@ -104,7 +104,7 @@ Variables store numeric or string values that can be used in game logic, display
 - **Set variable value**: Use `SetVariable('varName', value)` in FunctionEffector
 - **Display variable**: Use `DisplayValueEvent` effect with the variable's label
 - **Trigger on variable change**: Use `ScoreTrigger` with the variable's label, or `OnChange($N{varName})` in FunctionEffector
-- **Player variables**: Use `SelectPlayerParameter('paramName')` and `SetPlayerParameter('paramName', value)`
+- **Player variables**: Use `$N{paramName}` to read and `SetPlayerParameter('paramName', value)` to write
 
 ### Items
 Items are interactive objects in the room identified by their `itemLabel`. Each item can have:
@@ -316,7 +316,7 @@ FunctionEffector supports special syntax to reference game state:
 - `SetVariable(varName, value, delaySeconds)` - Set variable with delay
 
 **Player Management:**
-- `SelectPlayerParameter(paramName)` - Get local player's parameter value
+- `$N{paramName}` - Get local player's parameter value (variable substitution syntax)
 - `SetPlayerParameter(paramName, value)` - Set local player's parameter
 - `SelectPlayersParameters(Players, paramName)` - Get parameter from all players
 - `SetPlayersParameters(Players, paramName, value)` - Set parameter for all players

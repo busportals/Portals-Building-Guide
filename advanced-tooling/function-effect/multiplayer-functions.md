@@ -262,10 +262,10 @@ What it does:
 ### Example 6: Conditional Role Assignment
 
 ```
-if(SelectPlayerParameter('ready') == 'true',
+if($N{ready} == true,
    SetPlayersParameters([Players], 'imposter', 'false')
- + SetPlayersParameters(SelectRandomPlayers([Players], 1), 'imposter', 'true'),
-   0.0
+ + SetPlayersParameters(SelectRandomPlayers([Players], $N{impostersNeeded}), 'imposter', 'true'),
+   'false'
 )
 ```
 
@@ -273,8 +273,8 @@ What it does:
 
 1. Checks if the triggering player's `ready` variable is true
 2. If ready, sets all players' `imposter` to false
-3. Then picks one random player and sets their `imposter` to true
-4. If not ready, does nothing (returns 0.0)
+3. Then picks a number of random players (based on `impostersNeeded` variable) and sets their `imposter` to true
+4. If not ready, returns 'false'
 
 Common use: only starting game logic when players have confirmed they're ready.
 
