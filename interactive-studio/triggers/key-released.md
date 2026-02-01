@@ -1,6 +1,6 @@
 ---
-icon: keyboard-up
 description: Trigger based on releasing a specific keyboard key or mouse click.
+icon: keyboard-down
 ---
 
 # Key Released

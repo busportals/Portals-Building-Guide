@@ -1,11 +1,9 @@
 ---
-icon: mouse-pointer
 description: Trigger based on a user clicking on a specific item in-game.
+icon: computer-mouse-button-left
 ---
 
 # Click
-
-
 
 ## Configuration
 
