@@ -169,19 +169,6 @@
 
 * [Create a basic token trading space](how-to/create-a-basic-token-trading-space.md)
 * [Setup Side Scroller Camera](how-to/setup-side-scroller-camera.md)
-* [Create a Door System](how-to/create-door-system.md)
-* [Create a Score Counter](how-to/create-score-counter.md)
-* [Create an NPC Quest Giver](how-to/create-npc-quest-giver.md)
-* [Create a Collectible Hunt](how-to/create-collectible-hunt.md)
-* [Create a Timed Challenge](how-to/create-timed-challenge.md)
-
-## Game Design Patterns
-
-* [Overview](game-design-patterns/README.md)
-* [Collectible Games](game-design-patterns/collectible-games.md)
-* [Puzzle Games](game-design-patterns/puzzle-games.md)
-* [Quest/RPG Games](game-design-patterns/quest-rpg-games.md)
-* [Racing Games](game-design-patterns/race-games.md)
 
 ## Troubleshooting
 
