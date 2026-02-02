@@ -4,19 +4,40 @@ These functions let you work with players in multiplayer spaces. They're essenti
 
 ***
 
-## Player Parameters
+## Quick Reference
 
-Before diving into functions, you need to know about player parameters:
+### Player List & Properties
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `[Players]` | List | All players currently in the room |
+| Syntax | What It Does | Example |
+|--------|--------------|---------|
+| `[Players]` | All players currently in the room | `SetPlayersParameters([Players], 'health', 100)` |
+| `$N{variableName}` | Read current player's variable | `$N{team}` returns player's team value |
+| `playerName` | Built-in: player's username | Use with `SelectPlayersParameters` |
+| `health` | Built-in: player's health (default 100) | Use with `SelectPlayersParameters` |
 
-**Built-in player properties:**
-- `playerName` - The player's username
-- `health` - The player's health (default: 100, no max limit)
+### Functions
 
-You can also use custom variables you've created in the Variable system.
+| Function | What It Does | Example | Details |
+|----------|--------------|---------|---------|
+| `AssignNumbersInOrder` | Give each player a unique number (1, 2, 3...) | `AssignNumbersInOrder([Players], 'slot')` | [Details](#assignnumbersinorder-players-variablename) |
+| `SelectRandomPlayers` | Pick random players from a list | `SelectRandomPlayers([Players], 2)` | [Details](#selectrandomplayers-players-count) |
+| `SelectPlayers` | Filter players by a parameter value | `SelectPlayers([Players], 'team', 'red')` | [Details](#selectplayers-players-parametername-parametervalue) |
+| `SelectPlayersParameters` | Get a parameter value from each player | `SelectPlayersParameters([Players], 'health')` | [Details](#selectplayersparameters-players-parametername) |
+| `SetPlayersParameters` | Set a parameter on all players in a list | `SetPlayersParameters([Players], 'role', 'hider')` | [Details](#setplayersparameters-players-parametername-value) |
+| `CountArray` | Count items in a list | `CountArray(SelectPlayers([Players], 'alive', 'true'))` | [Details](#countarray-list) |
+| `PrintString` | Debug output to console | `PrintString([Players])` | [Details](#printstring-value) |
+
+### Common Patterns
+
+| Pattern | Example |
+|---------|---------|
+| Assign roles to random players | `SetPlayersParameters(SelectRandomPlayers([Players], 2), 'impostor', 'true')` |
+| Count players with a role | `CountArray(SelectPlayers([Players], 'impostor', 'true'))` |
+| Set default then override | `SetPlayersParameters([Players], 'team', 'blue') + SetPlayersParameters(SelectRandomPlayers([Players], 3), 'team', 'red')` |
+
+***
+
+## Detailed Reference
 
 ***
 
