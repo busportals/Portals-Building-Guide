@@ -59,6 +59,22 @@ if(condition1,
 )
 ```
 
+### Match data types in if() true/false outcomes
+
+When chaining multiple `if()` statements with `+`, the true and false outcomes must return the same data type. If the true outcome returns a string (like `SetTask`), the false outcome must also be a string.
+
+```
+// Wrong - SetTask returns string, but false case is number
+if($TN{Task1} == 1.0, SetTask('Pin1', 'Active', 0.0), 0.0)
++ if($TN{Task2} == 1.0, SetTask('Pin2', 'Active', 0.0), 0.0)
+
+// Correct - both outcomes are strings
+if($TN{Task1} == 1.0, SetTask('Pin1', 'Active', 0.0), '')
++ if($TN{Task2} == 1.0, SetTask('Pin2', 'Active', 0.0), '')
+```
+
+Use `''` (empty string) for string functions, `0.0` for number functions.
+
 ---
 
 ## Tasks

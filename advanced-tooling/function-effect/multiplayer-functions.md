@@ -155,6 +155,64 @@ Common use: applying effects to all players, resetting values, setting up game s
 
 ***
 
+### SelectPlayers([Players], 'parameterName', parameterValue)
+
+Filters a list of players to only those matching a specific parameter value.
+
+Example:
+
+```
+SelectPlayers([Players], 'impostor', 'true')
+```
+
+What it does:
+
+* Returns a list of players whose `impostor` parameter equals `'true'`
+* Only includes players that match the exact value
+
+Common use: finding all impostors, getting all players on a specific team, filtering by role.
+
+Example with teams:
+
+```
+SelectPlayers([Players], 'team', 'red')
+```
+
+What it does: returns all players on the red team.
+
+***
+
+### CountArray(list)
+
+Counts the number of items in a list.
+
+Example:
+
+```
+CountArray(SelectPlayers([Players], 'impostor', 'true'))
+```
+
+What it does:
+
+* First, `SelectPlayers` gets all players where `impostor` is `'true'`
+* Then, `CountArray` counts how many players are in that list
+* Returns a number (e.g., 2 if there are 2 impostors)
+
+Common use: checking how many players have a specific role, counting team sizes, win condition logic.
+
+Example with win condition:
+
+```
+if(CountArray(SelectPlayers([Players], 'impostor', 'true')) == 0.0,
+   SetTask('CrewmatesWin', 'Active', 0.0),
+   0.0
+)
+```
+
+What it does: if there are no impostors left, activate the crewmates win task.
+
+***
+
 ### PrintString(value)
 
 Prints a value to the console for debugging. Only visible in browser developer tools.
