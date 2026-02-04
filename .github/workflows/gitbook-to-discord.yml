@@ -37,6 +37,19 @@ jobs:
           FILES=$(head -c 5000 files.txt | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "files=$FILES" >> $GITHUB_OUTPUT
 
+      - name: Generate GitBook URLs
+        id: urls
+        run: |
+          # Generate URL mapping from diff
+          if [[ -n "${{ github.event.before }}" && -n "${{ github.event.after }}" ]]; then
+            git diff ${{ github.event.before }} ${{ github.event.after }} | python3 .github/scripts/generate-gitbook-urls.py > urls.txt
+          else
+            echo "No section links available" > urls.txt
+          fi
+          # Escape newlines for GitHub Actions outputs
+          URLS=$(sed ':a;N;$!ba;s/\n/\\n/g' urls.txt)
+          echo "mapping=$URLS" >> $GITHUB_OUTPUT
+
       - name: Generate AI summary
         id: summary
         env:
