@@ -1,6 +1,6 @@
 ---
-icon: signal-stream
 description: 'Effect: Sends a text string from Portals into an iframe.'
+icon: signal-stream
 ---
 
 # Send Message to Iframes
@@ -65,10 +65,10 @@ testrole: {"Player1"="true", "Player2"="false"}
 
 **Player variables** (any variable set using `SetPlayersParameters` or other multiplayer functions) return an array of values for all players in the space, keyed by username:
 
-| Send to Message input                             | Sent to iframe                                          |
-| ------------------------------------------------- | ------------------------------------------------------- |
-| testrole: \|testrole\|                            | testrole: {"Player1"="true", "Player2"="false"}         |
-| \|team\|                                          | {"Player1"="red", "Player2"="blue"}                     |
+| Send to Message input  | Sent to iframe                                  |
+| ---------------------- | ----------------------------------------------- |
+| testrole: \|testrole\| | testrole: {"Player1"="true", "Player2"="false"} |
+| \|team\|               | {"Player1"="red", "Player2"="blue"}             |
 
 ## SDK Integration
 
@@ -169,9 +169,9 @@ From the Portals side, use the "Send Message To Iframes" effect to send messages
 You can place the following url as an iframe into your space to test the Send Message to Iframes effect is firing properly in-game
 
 ```
-https://portalsterminal.replit.app/?noBlur=true&height=300&left=10&top=10&width=600
+https://busportals.github.io/portals-games/iframe-debugger/?noBlur=true&height=300&left=10&top=10&width=600&hideCloseButton=true
 ```
 
 <figure><img src="../../.gitbook/assets/terminal.png" alt=""><figcaption></figcaption></figure>
 
-This will post the message sent in green along with a timestamp of when the message was received.&#x20;
+This will post the message sent in green along with a timestamp of when the message was received.
