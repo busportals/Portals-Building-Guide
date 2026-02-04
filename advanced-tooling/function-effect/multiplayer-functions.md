@@ -26,6 +26,7 @@ These functions let you work with players in multiplayer spaces. They're essenti
 | `SetPlayersParameters` | Set a parameter on all players in a list | `SetPlayersParameters([Players], 'role', 'hider')` | [Details](#setplayersparameters-players-parametername-value) |
 | `CountArray` | Count items in a list | `CountArray(SelectPlayers([Players], 'alive', 'true'))` | [Details](#countarray-list) |
 | `PrintString` | Debug output to console | `PrintString([Players])` | [Details](#printstring-value) |
+| `UpdateMultiplayerNumericVariable` | Update a multiplayer variable via server | `UpdateMultiplayerNumericVariable('red', 10.0, 0.0, 0.0)` | [Details](#updatemultiplayernumericvariable-variablename-value-operationtype-delay) |
 
 ### Common Patterns
 
@@ -249,6 +250,87 @@ What it does:
 * Prints the list of all player names to the console
 
 Common use: testing and debugging your expressions before going live.
+
+***
+
+### UpdateMultiplayerNumericVariable('variableName', value, operationType, delay)
+
+Updates a multiplayer variable via the server, ensuring proper synchronization and tracking across all clients.
+
+Syntax:
+
+```
+UpdateMultiplayerNumericVariable('variableName', value, operationType, delay)
+```
+
+**Parameters:**
+- `variableName` - Name of the multiplayer variable to update
+- `value` - The number to use in the operation
+- `operationType` - The type of operation (see table below)
+- `delay` - Delay in seconds before the update (use decimals like 0.0)
+
+**Operation Types:**
+
+| Type | Operation | Description |
+|------|-----------|-------------|
+| 0.0 | Set | Replace the current value |
+| 1.0 | Add | Add to the current value |
+| 2.0 | Subtract | Subtract from the current value |
+| 3.0 | Multiply | Multiply the current value |
+| 4.0 | Divide | Divide the current value |
+
+**Important:** Use decimals (0.0, 1.0, etc.) for all numeric values to avoid cast errors.
+
+#### Examples
+
+**Set (replace the value):**
+
+```
+UpdateMultiplayerNumericVariable('red', 10.0, 0.0, 0.0)
+```
+
+What it does: Sets `red` to 10.0 immediately.
+
+**Add:**
+
+```
+UpdateMultiplayerNumericVariable('red', 5.0, 1.0, 0.0)
+```
+
+What it does: Adds 5.0 to `red`.
+
+**Subtract:**
+
+```
+UpdateMultiplayerNumericVariable('red', 2.0, 2.0, 0.0)
+```
+
+What it does: Subtracts 2.0 from `red`.
+
+**Multiply:**
+
+```
+UpdateMultiplayerNumericVariable('red', 2.0, 3.0, 0.0)
+```
+
+What it does: Multiplies `red` by 2.0.
+
+**Divide:**
+
+```
+UpdateMultiplayerNumericVariable('red', 2.0, 4.0, 0.0)
+```
+
+What it does: Divides `red` by 2.0.
+
+#### When to Use
+
+Use `UpdateMultiplayerNumericVariable` instead of `SetVariable` for multiplayer variables when you need:
+- Server-side validation and tracking
+- Atomic operations (add/subtract/multiply/divide) that avoid race conditions
+- Proper synchronization across all clients
+
+Common use: team scores, shared resource pools, game state counters, any multiplayer variable that multiple players might update simultaneously.
 
 ***
 
