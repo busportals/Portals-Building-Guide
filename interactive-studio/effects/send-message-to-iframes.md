@@ -28,18 +28,47 @@ The Message field supports variable placeholders using pipe syntax. Any text wra
 
 #### Built-in Variable
 
-* |username|: Sends the player’s identifier as a quoted string.
+* |username|: Sends the player's identifier as a quoted string.
   * If the player has a Portals ID set, that value is used.
-  * Otherwise, the player’s name is used.
+  * Otherwise, the player's name is used.
   * Example value: "bus"
 
+#### Player Variables
+
+Player variables are variables set using `SetPlayersParameters` and other multiplayer functions. These are server-side variables where values are stored per player.
+
+When a player variable is used in the pipe bracket syntax (e.g., |testrole|), the effect sends an array to the iframe containing the value for every player in the space, keyed by their username.
+
+Example value sent to iframe:
+
+```
+{"Player1"="true", "Player2"="false"}
+```
+
+In this example, `Player1` and `Player2` are the players' usernames, and `true`/`false` are their respective values for that variable.
+
+You can add additional text around the variable so the iframe knows how to interpret the data. For example, setting the message to `testrole: |testrole|` would send:
+
+```
+testrole: {"Player1"="true", "Player2"="false"}
+```
+
 #### Examples
+
+**Regular variables** return a single value for the current player:
 
 | Send to Message input                             | Sent to iframe                  |
 | ------------------------------------------------- | ------------------------------- |
 | Hello \|username\|                                | Hello "bus"                     |
 | user=\|username\| level=\|level\| coins=\|coins\| | user="bus" level=3 coins=125    |
 | {"score":\|score\| , "username":\|username\|}     | {"score":10 , "username":"bus"} |
+
+**Player variables** (any variable set using `SetPlayersParameters` or other multiplayer functions) return an array of values for all players in the space, keyed by username:
+
+| Send to Message input                             | Sent to iframe                                          |
+| ------------------------------------------------- | ------------------------------------------------------- |
+| testrole: \|testrole\|                            | testrole: {"Player1"="true", "Player2"="false"}         |
+| \|team\|                                          | {"Player1"="red", "Player2"="blue"}                     |
 
 ## SDK Integration
 
