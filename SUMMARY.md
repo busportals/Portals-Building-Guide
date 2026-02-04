@@ -181,7 +181,3 @@
 ## Building Competitions
 
 * [December 2025 - Christmas Building Competition](building-competitions/december-2025-christmas-building-competition.md)
-
-***
-
-* [Hmmm...](hmmm....md)

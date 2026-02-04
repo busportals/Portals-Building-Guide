@@ -1,3 +1,0 @@
-# Hmmm...
-
-This is just bus testing a new feature that will have the minor updates include a link to the update.
