@@ -126,7 +126,8 @@ Items are created with a specific `itemType` that determines their behavior. Ava
 - **"Destructible"**: An object that can be damaged and destroyed
 - **"Vehicle"**: A drivable vehicle
 
-These above are the ONLY item types do not use anything else in the ItemType label or the data will not work
+These above are the ONLY item types do not use anything else in the ItemType label or the data will not work,
+if users ask for something either tell them its not a thing or use the closest thing. EG. if they ask for a Cube use ResizableCube
 
 ### Item-Specific Triggers and Effects
 Different item types have access to different sets of triggers and effects:
