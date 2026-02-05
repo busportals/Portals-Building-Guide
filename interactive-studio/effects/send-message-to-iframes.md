@@ -26,12 +26,15 @@ The Message field supports variable placeholders using pipe syntax. Any text wra
 * Format: |variableName|
 * Example: Hello |username|
 
-#### Built-in Variable
+#### Built-in Variables
 
 * |username|: Sends the player's identifier as a quoted string.
   * If the player has a Portals ID set, that value is used.
   * Otherwise, the player's name is used.
   * Example value: "bus"
+
+* |position|: Sends the current position of all players in the space as an array keyed by username. Each position is an (x, y, z) coordinate.
+  * Example value: {"buster"="(-32.49, 22.21, -99.82)"}
 
 #### Player Variables
 
@@ -62,6 +65,7 @@ testrole: {"Player1"="true", "Player2"="false"}
 | Hello \|username\|                                | Hello "bus"                     |
 | user=\|username\| level=\|level\| coins=\|coins\| | user="bus" level=3 coins=125    |
 | {"score":\|score\| , "username":\|username\|}     | {"score":10 , "username":"bus"} |
+| \|position\|                                      | {"buster"="(-32.49, 22.21, -99.82)"}  |
 
 **Player variables** (any variable set using `SetPlayersParameters` or other multiplayer functions) return an array of values for all players in the space, keyed by username:
 

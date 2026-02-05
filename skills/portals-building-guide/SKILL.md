@@ -699,6 +699,10 @@ RespawnRed task (on Active):
 
 **Configuration:** Enter the message string. Use `|variableName|` to include variable values.
 
+**Built-in variables:**
+- `|username|` - player's Portals ID or name as a quoted string
+- `|position|` - all players' positions as an array keyed by username, e.g. `{"buster"="(-32.49, 22.21, -99.82)"}`
+
 **CRITICAL:** Do NOT use JSON with colons. Colons break the parser. Use underscore format instead.
 
 **Correct:** `score_|Red_Score|` → sends "score_25"
@@ -1376,6 +1380,7 @@ This is the #1 source of iframe bugs. The syntax is DIFFERENT depending on direc
 score_|Red_Score|_|Blue_Score|
 ```
 - Use pipe syntax `|variableName|` for variables
+- Built-in variables: `|username|` (player ID/name), `|position|` (all players' positions)
 - Do NOT use `$N{variableName}` - that's for Function Effects only
 - Do NOT use JSON with colons - it breaks the parser
 
