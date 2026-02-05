@@ -11,31 +11,55 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get changed files
+        id: files
+        run: |
+          # Extract published page paths from SUMMARY.md
+          python3 -c "
+          import re
+          with open('SUMMARY.md') as f:
+              for m in re.finditer(r'\[.*?\]\((.+?\.md)\)', f.read()):
+                  print(m.group(1))
+          " | sort -u > published_pages.txt
+
+          # Produce a name-status list for the commit range (e.g., A/M/R/D file.md)
+          if [[ -n "${{ github.event.before }}" && -n "${{ github.event.after }}" ]]; then
+            git diff --name-status ${{ github.event.before }} ${{ github.event.after }} > all_files.txt
+          else
+            echo "No files list available" > all_files.txt
+          fi
+
+          # Filter to only include files published in GitBook (listed in SUMMARY.md)
+          python3 -c "
+          published = set(open('published_pages.txt').read().splitlines())
+          with open('all_files.txt') as f:
+              for line in f:
+                  parts = line.strip().split('\t')
+                  if len(parts) >= 2 and any(p in published for p in parts[1:]):
+                      print(line.strip())
+          " > files.txt
+
+          # Escape newlines for GitHub Actions outputs
+          FILES=$(head -c 5000 files.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
       - name: Get commit diff
         id: diff
         run: |
-          # Check if valid SHAs are available to avoid empty diff
           if [[ -n "${{ github.event.before }}" && -n "${{ github.event.after }}" ]]; then
-            git diff ${{ github.event.before }} ${{ github.event.after }} > diff.txt
+            # Only diff files that are published in GitBook
+            PUBLISHED_FILES=$(awk -F'\t' '{for(i=2;i<=NF;i++) print $i}' files.txt 2>/dev/null | tr '\n' ' ')
+            if [[ -n "${PUBLISHED_FILES// /}" ]]; then
+              git diff ${{ github.event.before }} ${{ github.event.after }} -- $PUBLISHED_FILES > diff.txt
+            else
+              echo "No published GitBook pages changed" > diff.txt
+            fi
           else
             echo "No valid diff available" > diff.txt
           fi
           # Limit diff size to avoid token limits in OpenAI API
           DIFF=$(head -c 10000 diff.txt | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "diff=$DIFF" >> $GITHUB_OUTPUT
-
-      - name: Get changed files
-        id: files
-        run: |
-          # Produce a name-status list for the commit range (e.g., A/M/R/D file.md)
-          if [[ -n "${{ github.event.before }}" && -n "${{ github.event.after }}" ]]; then
-            git diff --name-status ${{ github.event.before }} ${{ github.event.after }} > files.txt
-          else
-            echo "No files list available" > files.txt
-          fi
-          # Escape newlines for GitHub Actions outputs
-          FILES=$(head -c 5000 files.txt | sed ':a;N;$!ba;s/\n/\\n/g')
-          echo "files=$FILES" >> $GITHUB_OUTPUT
 
       - name: Generate GitBook URLs
         id: urls
