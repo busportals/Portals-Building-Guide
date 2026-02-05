@@ -2,11 +2,36 @@
 """
 Generate GitBook URLs with section anchors from git diff output.
 Reads diff from stdin, outputs URL mapping to stdout.
+Only generates links for pages listed in SUMMARY.md (i.e. published in GitBook).
 """
 import sys
 import re
+import os
 
 GITBOOK_BASE = "https://prtls.gitbook.io/portals-building-guide"
+
+
+def get_published_pages():
+    """
+    Parse SUMMARY.md to extract the set of file paths that are published in GitBook.
+    Returns a set of relative paths like {'interactive-studio/overview.md', 'README.md', ...}
+    """
+    # SUMMARY.md is at the repo root; this script runs from repo root in CI
+    summary_path = os.path.join(os.path.dirname(__file__), '..', '..', 'SUMMARY.md')
+    summary_path = os.path.normpath(summary_path)
+
+    published = set()
+    try:
+        with open(summary_path, 'r') as f:
+            for line in f:
+                # Match markdown links like [Title](path/to/file.md)
+                for match in re.finditer(r'\[.*?\]\((.+?\.md)\)', line):
+                    published.add(match.group(1))
+    except FileNotFoundError:
+        # If SUMMARY.md is missing, don't filter (allow all)
+        return None
+
+    return published
 
 def extract_headers_from_diff(diff_text):
     """
@@ -81,6 +106,9 @@ def main():
     # Read diff from stdin
     diff_text = sys.stdin.read()
 
+    # Get the set of pages published in GitBook
+    published_pages = get_published_pages()
+
     # Extract headers
     headers = extract_headers_from_diff(diff_text)
 
@@ -98,6 +126,10 @@ def main():
         if file_path in seen_files:
             continue
         seen_files.add(file_path)
+
+        # Skip files not published in GitBook (not listed in SUMMARY.md)
+        if published_pages is not None and file_path not in published_pages:
+            continue
 
         page_url = file_path_to_url(file_path)
         anchor = text_to_anchor(header_text)
