@@ -113,6 +113,38 @@ PortalsSdk.closeIframe();
 
 ***
 
+### Refocusing Player Controls
+
+When a player interacts with an iframe, their keyboard inputs are captured by the iframe, which locks their movement. To unlock the player so they can move around while the iframe is still open, use:
+
+```
+PortalsSdk.focusGameKeyboard();
+```
+
+This returns keyboard focus to the game environment, allowing the player to move freely again.
+
+{% hint style="info" %}
+If you want an iframe to stay open while the player can still move and interact with the world, you may need to call `focusGameKeyboard()` multiple times — each time the player clicks on or interacts with the iframe, keyboard focus will shift back to it. Call this method again after each interaction to re-enable player movement.
+{% endhint %}
+
+#### Example: Always-Open Iframe with Player Movement
+
+```
+<button onclick="doSomething()">Interact</button>
+
+<script>
+  function doSomething() {
+    // Handle your iframe interaction logic
+    // ...
+
+    // Return control to the player after interacting
+    PortalsSdk.focusGameKeyboard();
+  }
+</script>
+```
+
+***
+
 ### Query String Options
 
 You can customize the iframe UI behavior using URL query parameters:
