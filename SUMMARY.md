@@ -181,3 +181,17 @@
 ## Building Competitions
 
 * [December 2025 - Christmas Building Competition](building-competitions/december-2025-christmas-building-competition.md)
+
+## API
+
+* [Overview](api/README.md)
+  * [Authentication](api/authentication.md)
+  * [Rooms](api/rooms.md)
+  * [Asset Uploads](api/assets.md)
+  * [Room Data Format](api/room-data-format.md)
+  * [Item Types](api/item-types.md)
+  * [Interactions](api/interactions.md)
+  * [Quests](api/quests.md)
+  * [Settings](api/settings.md)
+  * [Function Effects & NCalc](api/function-effects.md)
+  * [Examples](api/examples.md)
