@@ -6,7 +6,7 @@ Build and manage interactive 3D rooms programmatically.
 
 ## Authentication
 
-All endpoints require an access key passed as a request header. Get your key at [theportal.to/api](https://theportal.to/api).
+All endpoints require an access key passed as a request header. Get your key at [theportal.to/api-access](https://theportal.to/api-access).
 
 | Header | Used by |
 |--------|---------|

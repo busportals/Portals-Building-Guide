@@ -1,6 +1,6 @@
 # Authentication
 
-All API endpoints require authentication via your access key. Get your key at [theportal.to/api](https://theportal.to/api).
+All API endpoints require authentication via your access key. Get your key at [theportal.to/api-access](https://theportal.to/api-access).
 
 ## Verify Access Key
 
