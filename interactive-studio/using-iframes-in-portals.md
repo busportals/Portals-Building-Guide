@@ -68,9 +68,16 @@ The stringified message sent to Unity must follow this structure:
 ```
 {
   "TaskName": "string",           // e.g., "level1_intro"
-  "TaskTargetState": "string"     // see valid values below
+  "TaskTargetState": "string",    // see valid values below
+  "Delay": number                 // (optional) delay in seconds before the state change is applied
 }
 ```
+
+| Property          | Type   | Required | Description                                                    |
+| ----------------- | ------ | -------- | -------------------------------------------------------------- |
+| TaskName          | string | Yes      | The name of the task to target.                                |
+| TaskTargetState   | string | Yes      | The state transition to apply (see valid values below).        |
+| Delay             | number | No       | Delay in seconds before the state change is applied. e.g. 0.5 |
 
 #### Valid TaskTargetState Values
 
@@ -110,6 +117,18 @@ PortalsSdk.sendMessageToUnity(JSON.stringify({
 
 PortalsSdk.closeIframe();
 ```
+
+#### Example: Send Message with Delay
+
+```
+PortalsSdk.sendMessageToUnity(JSON.stringify({
+  TaskName: "uiopen",
+  TaskTargetState: "SetAnyToActive",
+  Delay: 0.5
+}));
+```
+
+This will wait 0.5 seconds before applying the state change, which is useful for sequencing multiple state transitions or syncing with animations.
 
 ***
 
