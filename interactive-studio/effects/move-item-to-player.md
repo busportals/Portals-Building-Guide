@@ -24,6 +24,7 @@ description: 'Effect: Moves an object to the player''s position with optional of
 | Offset Z                   | Numerical input     | Depth offset from the player's position along the Z axis.                                                           |
 | Offset From Player Direction | Toggle            | When enabled, the offset is applied relative to the direction the player is facing rather than world coordinates.   |
 | Match Player Rotation      | Toggle              | When enabled, the object will rotate to match the player's current rotation.                                        |
+| Networked                  | Toggle              | When enabled, the item's movement is synced across all players in the session so everyone can see it.               |
 
 ## Compatibility
 
