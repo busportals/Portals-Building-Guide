@@ -144,6 +144,10 @@
   * [Unlock Movement](interactive-studio/effects/unlock-movement.md)
   * [Update Value](interactive-studio/effects/update-value.md)
   * [Update String Value](interactive-studio/effects/update-string-value.md)
+  * [Attach Item To Player](interactive-studio/effects/attach-item-to-player.md)
+  * [Detach Item From Player](interactive-studio/effects/detach-item-from-player.md)
+  * [Spectate Player](interactive-studio/effects/spectate-player.md)
+  * [Stop Spectating Player](interactive-studio/effects/stop-spectating-player.md)
   * [NPC Specific Effects](interactive-studio/effects/npc-specific-effects/README.md)
     * [Turn To Player](interactive-studio/effects/npc-specific-effects/turn-to-player.md)
     * [Walk to Position](interactive-studio/effects/npc-specific-effects/walk-to-position.md)
@@ -156,6 +160,7 @@
 
 ## Advanced Tooling
 
+* [Portals Functions Quick Reference](advanced-tooling/portals-functions-quick-reference.md)
 * [Function Effect](advanced-tooling/function-effect/README.md)
   * [Overview](advanced-tooling/function-effect/overview.md)
   * [Portals Specific Functions](advanced-tooling/function-effect/portals-specific-functions.md)
@@ -164,6 +169,10 @@
   * [Conditions (if)](advanced-tooling/function-effect/conditions-if-ifs.md)
   * [Functions](advanced-tooling/function-effect/functions.md)
   * [Multiplayer Functions](advanced-tooling/function-effect/multiplayer-functions.md)
+* [Javascript Function](advanced-tooling/javascript-function/README.md)
+  * [Overview](advanced-tooling/javascript-function/overview.md)
+  * [Portals Functions](advanced-tooling/javascript-function/portals-functions.md)
+  * [Multiplayer Functions](advanced-tooling/javascript-function/multiplayer-functions.md)
 
 ## How To
 
