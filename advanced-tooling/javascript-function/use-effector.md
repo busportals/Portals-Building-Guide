@@ -154,62 +154,6 @@ The effect name string must match exactly (case-sensitive). For details on what 
 
 #### Visibility & Display
 
-##### ShowObject
-
-`'ShowObject'` — No parameters.
-
-##### HideObject
-
-`'HideObject'` — No parameters.
-
-##### ShowOutline
-
-`'ShowOutline'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `color` | string | `"FFFFFF"` | Hex color without `#` |
-| `width` | float | `6.0` | Outline width |
-
-##### HideOutline
-
-`'HideOutline'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `color` | string | `"FFFFFF"` | Hex color without `#` |
-
-##### DisplayValue
-
-`'DisplayValue'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `label` | string | | Value label |
-| `color` | string | `"FF9500"` | Hex color without `#` |
-
-##### HideValue
-
-`'HideValue'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `label` | string | | Value label |
-
-##### DisplayAvatarScreen
-
-`'DisplayAvatarScreen'` — No parameters.
-
-##### NotificationPill
-
-`'NotificationPill'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `nt` | string | | Notification text |
-| `c` | string | | Color (hex) |
-| `hideBackground` | bool | `false` | Hide background |
-
 ##### ChangeText
 
 `'ChangeText'`
@@ -217,6 +161,10 @@ The effect name string must match exactly (case-sensitive). For details on what 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `text` | string | | New text |
+
+##### DisplayAvatarScreen
+
+`'DisplayAvatarScreen'` — No parameters.
 
 ##### DisplayBuySwap
 
@@ -236,9 +184,14 @@ The effect name string must match exactly (case-sensitive). For details on what 
 | `id` | string | | Swap ID |
 | `prepared` | bool | | Whether swap is prepared |
 
-##### HideSellSwap
+##### DisplayValue
 
-`'HideSellSwap'` — No parameters.
+`'DisplayValue'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `label` | string | | Value label |
+| `color` | string | `"FF9500"` | Hex color without `#` |
 
 ##### HideAllPlayers
 
@@ -248,17 +201,56 @@ The effect name string must match exactly (case-sensitive). For details on what 
 |-----------|------|---------|-------------|
 | `show` | bool | `false` | Set to `true` to show all players |
 
+##### HideObject
+
+`'HideObject'` — No parameters.
+
+##### HideOutline
+
+`'HideOutline'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `color` | string | `"FFFFFF"` | Hex color without `#` |
+
+##### HideSellSwap
+
+`'HideSellSwap'` — No parameters.
+
+##### HideValue
+
+`'HideValue'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `label` | string | | Value label |
+
+##### NotificationPill
+
+`'NotificationPill'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `nt` | string | | Notification text |
+| `c` | string | | Color (hex) |
+| `hideBackground` | bool | `false` | Hide background |
+
+##### ShowObject
+
+`'ShowObject'` — No parameters.
+
+##### ShowOutline
+
+`'ShowOutline'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `color` | string | `"FFFFFF"` | Hex color without `#` |
+| `width` | float | `6.0` | Outline width |
+
 ***
 
 #### Movement & Player Control
-
-##### LockMovement
-
-`'LockMovement'` — No parameters.
-
-##### UnlockMovement
-
-`'UnlockMovement'` — No parameters.
 
 ##### AddVelocityToPlayer
 
@@ -270,6 +262,62 @@ The effect name string must match exactly (case-sensitive). For details on what 
 | `accelerationTime` | float | | Time to reach target velocity |
 | `local` | bool | `false` | Use local space |
 | `randomOffset` | Vector3 | | Random offset to velocity |
+
+##### ChangeMovementProfile
+
+`'ChangeMovementProfile'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `mvmtProfile` | string | | Movement profile name |
+
+##### LockMovement
+
+`'LockMovement'` — No parameters.
+
+##### MoveItemToPlayer
+
+`'MoveItemToPlayer'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `offset` | Vector3 | | Position offset from player |
+| `playerRotation` | bool | `false` | Follow player rotation |
+| `rotationOffset` | Vector3 | | Rotation offset |
+| `useForwardDirection` | bool | `false` | Use player's forward direction |
+| `multiplayer` | bool | `false` | Enable for multiplayer |
+
+##### MoveToSpot
+
+`'MoveToSpot'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `transformState` | TransformState | | Target transform |
+| `relative` | bool | `false` | Use relative positioning |
+| `fixedUpdate` | bool | `false` | Use fixed update |
+
+**Example:** Move an object 1 unit on the X axis relative to its current position over 1 second:
+
+```javascript
+UseEffector({{Object}}, 'MoveToSpot', '{"transformState":{"position":[1.0,0.0,0.0],"rotation":[0.0,0.0,0.0,1.0],"scale":[0.0,0.0,0.0],"duration":1.0},"relative":true,"fixedUpdate":false}');
+```
+
+##### MutePlayer
+
+`'MutePlayer'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `mute` | bool | `true` | Mute the player |
+
+##### StartAutoRun
+
+`'StartAutoRun'` — No parameters.
+
+##### StopAutoRun
+
+`'StopAutoRun'` — No parameters.
 
 ##### Teleport
 
@@ -293,42 +341,6 @@ UseEffector({{Object}}, 'Teleport', '{"id":"your-room-id","sn":"test1","sr":0.0}
 UseEffector({{Object}}, 'Teleport', '{"id":"your-room-id","sn":"test1","sr":3.0}');
 ```
 
-##### MoveToSpot
-
-`'MoveToSpot'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `transformState` | TransformState | | Target transform |
-| `relative` | bool | `false` | Use relative positioning |
-| `fixedUpdate` | bool | `false` | Use fixed update |
-
-**Example:** Move an object 1 unit on the X axis relative to its current position over 1 second:
-
-```javascript
-UseEffector({{Object}}, 'MoveToSpot', '{"transformState":{"position":[1.0,0.0,0.0],"rotation":[0.0,0.0,0.0,1.0],"scale":[0.0,0.0,0.0],"duration":1.0},"relative":true,"fixedUpdate":false}');
-```
-
-##### MoveItemToPlayer
-
-`'MoveItemToPlayer'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `offset` | Vector3 | | Position offset from player |
-| `playerRotation` | bool | `false` | Follow player rotation |
-| `rotationOffset` | Vector3 | | Rotation offset |
-| `useForwardDirection` | bool | `false` | Use player's forward direction |
-| `multiplayer` | bool | `false` | Enable for multiplayer |
-
-##### StartAutoRun
-
-`'StartAutoRun'` — No parameters.
-
-##### StopAutoRun
-
-`'StopAutoRun'` — No parameters.
-
 ##### ToggleLockCursor
 
 `'ToggleLockCursor'`
@@ -337,50 +349,23 @@ UseEffector({{Object}}, 'MoveToSpot', '{"transformState":{"position":[1.0,0.0,0.
 |-----------|------|---------|-------------|
 | `lockCursor` | bool | `true` | Lock the cursor |
 
-##### MutePlayer
+##### UnlockMovement
 
-`'MutePlayer'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `mute` | bool | `true` | Mute the player |
-
-##### ChangeMovementProfile
-
-`'ChangeMovementProfile'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `mvmtProfile` | string | | Movement profile name |
+`'UnlockMovement'` — No parameters.
 
 ***
 
 #### Camera & Visual
 
-##### LockCamera
+##### ChangeBloom
 
-`'LockCamera'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `allowEffectorOnStart` | bool | | Allow effector on start |
-| `timeToUnlock` | float | `5.0` | Seconds until auto-unlock (0 = never) |
-
-##### UnlockCamera
-
-`'UnlockCamera'` — No parameters.
-
-##### ToggleFreeCam
-
-`'ToggleFreeCam'`
+`'ChangeBloom'`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `enterFreeCam` | bool | | Enter free camera mode |
-| `x` | float | | Camera X position |
-| `y` | float | | Camera Y position |
-| `z` | float | | Camera Z position |
-| `lookAtPlayer` | bool | | Camera looks at player |
+| `Intensity` | float | | Bloom intensity |
+| `Clamp` | float | | Bloom clamp |
+| `Diffusion` | float | | Bloom diffusion |
 
 ##### ChangeCameraState
 
@@ -405,27 +390,6 @@ UseEffector({{Object}}, 'MoveToSpot', '{"transformState":{"position":[1.0,0.0,0.
 | `zoomAmount` | float | `0` | Target zoom amount |
 | `lockZoom` | bool | `false` | Lock zoom at this level |
 
-##### SetCameraFilter
-
-`'SetCameraFilter'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `url` | string | | Image URL |
-| `alpha` | float | `0.8` | Filter opacity |
-| `blackBars` | bool | `false` | Show black bars |
-| `imageScaleType` | CameraFilter.ImageScaleType | | Scale type for the image |
-
-##### ChangeBloom
-
-`'ChangeBloom'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `Intensity` | float | | Bloom intensity |
-| `Clamp` | float | | Bloom clamp |
-| `Diffusion` | float | | Bloom diffusion |
-
 ##### ChangeFog
 
 `'ChangeFog'`
@@ -443,6 +407,15 @@ UseEffector({{Object}}, 'MoveToSpot', '{"transformState":{"position":[1.0,0.0,0.
 |-----------|------|---------|-------------|
 | `toNight` | bool | `true` | Change to night |
 
+##### LockCamera
+
+`'LockCamera'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `allowEffectorOnStart` | bool | | Allow effector on start |
+| `timeToUnlock` | float | `5.0` | Seconds until auto-unlock (0 = never) |
+
 ##### RotateSkybox
 
 `'RotateSkybox'`
@@ -452,9 +425,59 @@ UseEffector({{Object}}, 'MoveToSpot', '{"transformState":{"position":[1.0,0.0,0.
 | `rotation` | float | `180.0` | Target rotation in degrees |
 | `duration` | float | `5.0` | Duration of rotation |
 
+##### SetCameraFilter
+
+`'SetCameraFilter'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `url` | string | | Image URL |
+| `alpha` | float | `0.8` | Filter opacity |
+| `blackBars` | bool | `false` | Show black bars |
+| `imageScaleType` | CameraFilter.ImageScaleType | | Scale type for the image |
+
+##### ToggleFreeCam
+
+`'ToggleFreeCam'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `enterFreeCam` | bool | | Enter free camera mode |
+| `x` | float | | Camera X position |
+| `y` | float | | Camera Y position |
+| `z` | float | | Camera Z position |
+| `lookAtPlayer` | bool | | Camera looks at player |
+
+##### UnlockCamera
+
+`'UnlockCamera'` — No parameters.
+
 ***
 
 #### Audio
+
+##### ChangeAudius
+
+`'ChangeAudius'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ap` | string | | Audius playlist/track URL |
+
+##### PlaySoundInALoop
+
+`'PlaySoundInALoop'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Url` | string | | Sound file URL |
+| `Dist` | float | | Max audible distance |
+| `Preload` | bool | | Preload the sound |
+| `PlayOnStart` | bool | | Play when effect starts |
+| `pitchVariance` | float | | Random pitch variation |
+| `delay` | float | | Delay before playing |
+| `volume` | float | `1.0` | Volume level |
+| `fadeIn` | float | `0` | Fade in duration |
 
 ##### PlaySoundOnce
 
@@ -485,21 +508,6 @@ UseEffector({{Object}}, 'PlaySoundOnce', '{"Url":"https://your-sound-url.mp3","D
 UseEffector({{Object}}, 'PlaySoundOnce', '{"Url":"https://your-sound-url.mp3","Dist":20.0,"Preload":false,"PlayOnStart":false,"pitchVariance":0.0,"delay":0.0,"volume":0.5,"spatialise":true,"fadeIn":1.0,"playFromPlayerNetworked":false}');
 ```
 
-##### PlaySoundInALoop
-
-`'PlaySoundInALoop'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `Url` | string | | Sound file URL |
-| `Dist` | float | | Max audible distance |
-| `Preload` | bool | | Preload the sound |
-| `PlayOnStart` | bool | | Play when effect starts |
-| `pitchVariance` | float | | Random pitch variation |
-| `delay` | float | | Delay before playing |
-| `volume` | float | `1.0` | Volume level |
-| `fadeIn` | float | `0` | Fade in duration |
-
 ##### StopSound
 
 `'StopSound'`
@@ -517,77 +525,9 @@ UseEffector({{Object}}, 'PlaySoundOnce', '{"Url":"https://your-sound-url.mp3","D
 |-----------|------|---------|-------------|
 | `Muted` | bool | | Mute the sound |
 
-##### ChangeAudius
-
-`'ChangeAudius'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `ap` | string | | Audius playlist/track URL |
-
 ***
 
 #### Avatar & Wearables
-
-##### ChangeAvatar
-
-`'ChangeAvatar'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `Url` | string | | Avatar URL |
-| `Persistent` | bool | | Persist across sessions |
-
-##### ChangeAvatarMood
-
-`'ChangeAvatarMood'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `mood` | int | | Mood index |
-
-##### LockAvatarChange
-
-`'LockAvatarChange'` — No parameters.
-
-##### UnlockAvatarChange
-
-`'UnlockAvatarChange'` — No parameters.
-
-##### ChangeRoundyWearable
-
-`'ChangeRoundyWearable'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `ItemID` | string | | Wearable item ID |
-| `Persistent` | bool | | Persist across sessions |
-
-##### PlayerEmote
-
-`'PlayerEmote'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `animationName` | string | `""` | Emote animation name |
-| `moveStopsEmote` | bool | | Movement cancels the emote |
-
-##### DoEmote
-
-`'DoEmote'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `emoteName` | string | | Emote name |
-| `moveStopsEmote` | bool | | Movement cancels the emote |
-
-##### ChangeVoiceGroup
-
-`'ChangeVoiceGroup'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `group` | string | `""` | Voice group name |
 
 ##### AttachItemToPlayer
 
@@ -615,6 +555,40 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"Head","localOffset":
 UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOffset":{"position":[0.0,0.1,0.0],"rotation":[0.0,0.0,0.0,1.0],"scale":[1.0,1.0,1.0],"duration":0.0},"multiplayer":false}');
 ```
 
+##### ChangeAvatar
+
+`'ChangeAvatar'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Url` | string | | Avatar URL |
+| `Persistent` | bool | | Persist across sessions |
+
+##### ChangeAvatarMood
+
+`'ChangeAvatarMood'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `mood` | int | | Mood index |
+
+##### ChangeRoundyWearable
+
+`'ChangeRoundyWearable'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ItemID` | string | | Wearable item ID |
+| `Persistent` | bool | | Persist across sessions |
+
+##### ChangeVoiceGroup
+
+`'ChangeVoiceGroup'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `group` | string | `""` | Voice group name |
+
 ##### DetachItemFromPlayer
 
 `'DetachItemFromPlayer'`
@@ -623,9 +597,85 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 |-----------|------|---------|-------------|
 | `multiplayer` | bool | `false` | Enable for multiplayer |
 
+##### DoEmote
+
+`'DoEmote'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `emoteName` | string | | Emote name |
+| `moveStopsEmote` | bool | | Movement cancels the emote |
+
+##### LockAvatarChange
+
+`'LockAvatarChange'` — No parameters.
+
+##### PlayerEmote
+
+`'PlayerEmote'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `animationName` | string | `""` | Emote animation name |
+| `moveStopsEmote` | bool | | Movement cancels the emote |
+
+##### UnlockAvatarChange
+
+`'UnlockAvatarChange'` — No parameters.
+
 ***
 
 #### Timers, Scores & Leaderboards
+
+##### CancelTimer
+
+`'CancelTimer'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `tn` | string | | Timer name |
+| `ci` | string | `""` | Custom identifier |
+
+##### ClearLeaderboard
+
+`'ClearLeaderboard'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `label` | string | `"Score"` | Score label |
+| `ci` | string | `""` | Custom identifier |
+| `locally` | bool | | Clear locally only |
+
+##### DateTimer
+
+`'DateTimer'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ToUnixTimeSeconds` | long | | Unix timestamp (seconds) |
+| `r` | int | | Number of repetitions |
+| `p` | int | | Repeat period (multiplied by `re`) |
+| `re` | RepeatEvery | | `Never=0`, `Minute=60`, `Hour=3600`, `Day=86400`, `Week=604800` |
+| `f` | bool | `true` | Fire on first player trigger |
+
+##### OpenLeaderboard
+
+`'OpenLeaderboard'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `lb` | string | | Leaderboard label |
+| `ci` | string | `""` | Custom identifier |
+| `tb` | bool | `true` | Show top board |
+
+##### PostScoreToLeaderboard
+
+`'PostScoreToLeaderboard'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `label` | string | `"Score"` | Score label |
+| `ow` | bool | | Overwrite existing score |
 
 ##### StartTimer
 
@@ -650,27 +700,6 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | `ci` | string | `""` | Custom identifier |
 | `sendTimeToChat` | bool | `true` | Send time to chat |
 
-##### CancelTimer
-
-`'CancelTimer'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `tn` | string | | Timer name |
-| `ci` | string | `""` | Custom identifier |
-
-##### DateTimer
-
-`'DateTimer'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `ToUnixTimeSeconds` | long | | Unix timestamp (seconds) |
-| `r` | int | | Number of repetitions |
-| `p` | int | | Repeat period (multiplied by `re`) |
-| `re` | RepeatEvery | | `Never=0`, `Minute=60`, `Hour=3600`, `Day=86400`, `Week=604800` |
-| `f` | bool | `true` | Fire on first player trigger |
-
 ##### UpdateScore
 
 `'UpdateScore'`
@@ -689,38 +718,30 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | `label` | string | | Score label |
 | `targetText` | string | | Target text value |
 
-##### PostScoreToLeaderboard
-
-`'PostScoreToLeaderboard'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `label` | string | `"Score"` | Score label |
-| `ow` | bool | | Overwrite existing score |
-
-##### OpenLeaderboard
-
-`'OpenLeaderboard'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `lb` | string | | Leaderboard label |
-| `ci` | string | `""` | Custom identifier |
-| `tb` | bool | `true` | Show top board |
-
-##### ClearLeaderboard
-
-`'ClearLeaderboard'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `label` | string | `"Score"` | Score label |
-| `ci` | string | `""` | Custom identifier |
-| `locally` | bool | | Clear locally only |
-
 ***
 
 #### Animation & Objects
+
+##### AnimateObjectInLoop
+
+`'AnimateObjectInLoop'` — No parameters.
+
+##### DuplicateItem
+
+`'DuplicateItem'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `TS` | TransformState | | Transform for the duplicate |
+| `destroyAfterTime` | float | `0` | Seconds until destroyed (0 = never) |
+
+##### PlayAnimationOnce
+
+`'PlayAnimationOnce'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `speed` | float | | Animation speed |
 
 ##### PortalsAnimation
 
@@ -743,14 +764,6 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 |-----------|------|---------|-------------|
 | `StopAtCertainTransformStep` | int | | Stop at specific keyframe index |
 
-##### PlayAnimationOnce
-
-`'PlayAnimationOnce'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `speed` | float | | Animation speed |
-
 ##### StopAnimation
 
 `'StopAnimation'`
@@ -759,26 +772,36 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 |-----------|------|---------|-------------|
 | `stop` | float | `-1.0` | Normalized time to stop at (-1 = end of clip) |
 
-##### AnimateObjectInLoop
-
-`'AnimateObjectInLoop'` — No parameters.
-
-##### DuplicateItem
-
-`'DuplicateItem'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `TS` | TransformState | | Transform for the duplicate |
-| `destroyAfterTime` | float | `0` | Seconds until destroyed (0 = never) |
-
 ***
 
 #### Weapons & Combat
 
-##### EquipGun
+##### ChangeEnemyHealth
 
-`'EquipGun'` — No parameters.
+`'ChangeEnemyHealth'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `op` | int | | Operation (e.g. add/set) |
+| `healthChange` | int | | Amount to change |
+
+##### ChangePlayerHealth
+
+`'ChangePlayerHealth'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `op` | int | `1` | Operation (e.g. add/set) |
+| `healthChange` | int | | Amount to change |
+
+##### DamageOverTime
+
+`'DamageOverTime'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `damage` | int | `2` | Damage per tick |
+| `duration` | float | `5.0` | Duration in seconds |
 
 ##### DequipGun
 
@@ -788,9 +811,13 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 |-----------|------|---------|-------------|
 | `returnToOriginalSpot` | bool | `true` | Return gun to original position |
 
-##### TossGun
+##### EquipGun
 
-`'TossGun'` — No parameters.
+`'EquipGun'` — No parameters.
+
+##### RespawnDestructible
+
+`'RespawnDestructible'` — No parameters.
 
 ##### ResetGun
 
@@ -804,40 +831,43 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 |-----------|------|---------|-------------|
 | `damage` | int | `5` | Damage amount |
 
-##### DamageOverTime
+##### TossGun
 
-`'DamageOverTime'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `damage` | int | `2` | Damage per tick |
-| `duration` | float | `5.0` | Duration in seconds |
-
-##### ChangePlayerHealth
-
-`'ChangePlayerHealth'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `op` | int | `1` | Operation (e.g. add/set) |
-| `healthChange` | int | | Amount to change |
-
-##### ChangeEnemyHealth
-
-`'ChangeEnemyHealth'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `op` | int | | Operation (e.g. add/set) |
-| `healthChange` | int | | Amount to change |
-
-##### RespawnDestructible
-
-`'RespawnDestructible'` — No parameters.
+`'TossGun'` — No parameters.
 
 ***
 
 #### NPC
+
+##### AgentSayMessage
+
+`'AgentSayMessage'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `message` | string | | Message text |
+
+##### AttackPlayer
+
+`'AttackPlayer'` — No parameters.
+
+##### ChangeNPCName
+
+`'ChangeNPCName'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `newName` | string | `""` | New NPC name |
+
+##### DuplicateEnemy
+
+`'DuplicateEnemy'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `spawnName` | string | `""` | Spawn point name |
+| `count` | int | `1` | Number of duplicates |
+| `randomRadius` | float | `2` | Random spawn radius |
 
 ##### NpcAnimation
 
@@ -876,21 +906,29 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | `m` | string | | Message text |
 | `r` | bool | | Reverse (hide message) |
 
-##### ChangeNPCName
+##### ResetEnemy
 
-`'ChangeNPCName'`
+`'ResetEnemy'` — No parameters.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `newName` | string | `""` | New NPC name |
+##### ReviveEnemy
 
-##### TurnToPlayer
+`'ReviveEnemy'` — No parameters.
 
-`'TurnToPlayer'` — No parameters.
+##### StartSpeaking
+
+`'StartSpeaking'` — No parameters.
+
+##### StopSpeaking
+
+`'StopSpeaking'` — No parameters.
 
 ##### TurnBackToDefaultRotation
 
 `'TurnBackToDefaultRotation'` — No parameters.
+
+##### TurnToPlayer
+
+`'TurnToPlayer'` — No parameters.
 
 ##### WalkNpcToSpot
 
@@ -901,44 +939,6 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | `walkSpeed` | float | `3` | Walk speed |
 | `endPosition` | Vector3 | | Destination position |
 | `endRotation` | Quaternion | | Destination rotation |
-
-##### StartSpeaking
-
-`'StartSpeaking'` — No parameters.
-
-##### StopSpeaking
-
-`'StopSpeaking'` — No parameters.
-
-##### AgentSayMessage
-
-`'AgentSayMessage'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `message` | string | | Message text |
-
-##### AttackPlayer
-
-`'AttackPlayer'` — No parameters.
-
-##### DuplicateEnemy
-
-`'DuplicateEnemy'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `spawnName` | string | `""` | Spawn point name |
-| `count` | int | `1` | Number of duplicates |
-| `randomRadius` | float | `2` | Random spawn radius |
-
-##### ResetEnemy
-
-`'ResetEnemy'` — No parameters.
-
-##### ReviveEnemy
-
-`'ReviveEnemy'` — No parameters.
 
 ***
 
@@ -962,14 +962,6 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | `closeAll` | bool | `false` | Close all iframes |
 | `iframeUrl` | string | `""` | Specific URL to close (empty = close all) |
 
-##### SendMessageToIframes
-
-`'SendMessageToIframes'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `iframeMsg` | string | | Message (supports `\|username\|` and `\|variable_label\|` placeholders) |
-
 ##### OpenWebsite
 
 `'OpenWebsite'`
@@ -977,6 +969,14 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `url` | string | | Website URL |
+
+##### SendMessageToIframes
+
+`'SendMessageToIframes'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `iframeMsg` | string | | Message (supports `\|username\|` and `\|variable_label\|` placeholders) |
 
 ***
 
@@ -1042,32 +1042,6 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 |-----------|------|---------|-------------|
 | `triggerZoneId` | string | | Trigger zone ID |
 
-##### DeactivateTriggerZone
-
-`'DeactivateTriggerZone'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `triggerZoneId` | string | | Trigger zone ID |
-
-##### RunTriggerFrom
-
-`'RunTriggerFrom'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `linkedTask` | TaskTriggerSubscription | | Linked task trigger |
-| `times` | int | `-1` | Number of times to fire (-1 = unlimited) |
-
-##### RunTriggersFrom
-
-`'RunTriggersFrom'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `linkedTasks` | List\<TaskTriggerSubscription\> | | Linked task triggers |
-| `useRandom` | bool | `false` | Fire a random one instead of all |
-
 ##### CompleteQuest
 
 `'CompleteQuest'`
@@ -1075,6 +1049,14 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `id` | string | | Quest ID |
+
+##### DeactivateTriggerZone
+
+`'DeactivateTriggerZone'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `triggerZoneId` | string | | Trigger zone ID |
 
 ##### ResetAllTasks
 
@@ -1106,32 +1088,27 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 | `OnStart` | bool | | Reset on start |
 | `ItemId` | string | | Item ID to reset |
 
+##### RunTriggerFrom
+
+`'RunTriggerFrom'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `linkedTask` | TaskTriggerSubscription | | Linked task trigger |
+| `times` | int | `-1` | Number of times to fire (-1 = unlimited) |
+
+##### RunTriggersFrom
+
+`'RunTriggersFrom'`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `linkedTasks` | List\<TaskTriggerSubscription\> | | Linked task triggers |
+| `useRandom` | bool | `false` | Fire a random one instead of all |
+
 ***
 
 #### Other
-
-##### EditInfoBox
-
-`'EditInfoBox'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | string | `""` | Info box title |
-| `elements` | List\<string\> | | List of content elements |
-
-##### SwitchItems
-
-`'SwitchItems'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `OnStart` | bool | | Activate on start |
-| `GeneratorId` | string | | Generator ID |
-| `SuccessMsg` | string | | Success message |
-| `FailMsg` | string | | Failure message |
-| `OperationsCount` | int | | Number of operations |
-| `rewardItems` | List\<ItemsAmountPair\> | | Reward items |
-| `paymentItems` | List\<ItemsAmountPair\> | | Payment items |
 
 ##### ChangeToken
 
@@ -1149,34 +1126,14 @@ UseEffector({{Object}}, 'AttachItemToPlayer', '{"bodyPart":"RightHand","localOff
 |-----------|------|---------|-------------|
 | `time` | int | | Time interval index (options: 1, 15, 60 minutes) |
 
-##### OpenGachaPanel
+##### EditInfoBox
 
-`'OpenGachaPanel'`
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `id` | string | | Gacha panel ID |
-
-##### HideGachaPanel
-
-`'HideGachaPanel'` — No parameters.
-
-##### SendMessageToServerQuest
-
-`'SendMessageToServerQuest'`
+`'EditInfoBox'`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `json` | string | | JSON message |
-| `jsonRefresh` | string | | JSON refresh message |
-
-##### RefreshUserInventory
-
-`'RefreshUserInventory'` — No parameters.
-
-##### StartTraitorGame
-
-`'StartTraitorGame'` — No parameters.
+| `title` | string | `""` | Info box title |
+| `elements` | List\<string\> | | List of content elements |
 
 ***
 
