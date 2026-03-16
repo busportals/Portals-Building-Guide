@@ -101,6 +101,7 @@
   * [Change Camera Zoom](interactive-studio/effects/change-camera-zoom.md)
   * [Change Fog](interactive-studio/effects/change-fog.md)
   * [Change Movement Profile](interactive-studio/effects/change-movement-profile.md)
+  * [Change Pet](interactive-studio/effects/change-pet.md)
   * [Change Player Health](interactive-studio/effects/change-player-health.md)
   * [Change Time of Day](interactive-studio/effects/change-time-of-day.md)
   * [Change Voice Group](interactive-studio/effects/change-voice-group.md)
