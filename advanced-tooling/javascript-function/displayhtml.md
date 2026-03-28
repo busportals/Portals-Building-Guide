@@ -60,10 +60,10 @@ Code after `displayHtml()` in the same code field executes directly and can mani
 
 Since the HTML string lives inside a JavaScript string delimited by single quotes:
 
-| Need | Escape as | Context |
-|------|-----------|---------|
-| Double quotes for HTML attributes | `\"` | `<div id=\"myid\">` |
-| Single quotes inside onclick | `\\&#39;` | `onclick="SetVariable(\\&#39;name\\&#39;, 1.0, 0.0)"` |
+| Need                              | Escape as | Context                                               |
+| --------------------------------- | --------- | ----------------------------------------------------- |
+| Double quotes for HTML attributes | `\"`      | `<div id=\"myid\">`                                   |
+| Single quotes inside onclick      | `\\&#39;` | `onclick="SetVariable(\\&#39;name\\&#39;, 1.0, 0.0)"` |
 
 **Tip:** Inside `<script>` IIFE tags, use double quotes for all string literals — they are safe because the `displayHtml('...')` wrapper uses single quotes as its delimiter.
 
@@ -105,6 +105,5 @@ displayHtml('<button onclick="UseEffector(\\&#39;itemId123\\&#39;, \\&#39;MyEffe
 
 ## Important rules
 
-* **Lowercase variable names only** — Variable names with uppercase letters (e.g., `bX`, `hitCount`) cause `EvaluateAsync` errors. Use all-lowercase: `ballx`, `hitcount`.
 * **Pre-initialize reactive variables** — Variables read with `$N{varName}` in reactive tasks must exist before the task evaluates. Initialize them in a separate Player Login task with **Activate on Start** enabled on an item that loads first.
 * **Single argument only** — `displayHtml()` takes exactly one argument: the HTML string.
