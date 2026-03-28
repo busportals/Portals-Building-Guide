@@ -82,4 +82,5 @@ In the next pages you'll learn:
 
 * The Portals functions available in JavaScript (SetTask, SetVariable, reading game state)
 * Multiplayer functions for working with multiple players
+* displayHtml — rendering custom HTML overlays on top of the game scene
 * UseEffector — calling effects directly from JavaScript code

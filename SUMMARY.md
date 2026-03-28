@@ -201,6 +201,7 @@
   * [Overview](advanced-tooling/javascript-function/overview.md)
   * [Portals Functions](advanced-tooling/javascript-function/portals-functions.md)
   * [Multiplayer Functions](advanced-tooling/javascript-function/multiplayer-functions.md)
+  * [displayHtml](advanced-tooling/javascript-function/displayhtml.md)
   * [UseEffector](advanced-tooling/javascript-function/use-effector.md)
 
 ## How To
